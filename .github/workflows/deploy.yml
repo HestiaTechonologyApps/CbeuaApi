@@ -43,7 +43,7 @@ jobs:
     - name: Stop Application
       run: |
         echo "Stopping application..."
-        echo '<html><body><h1>Maintenance in progress</h1></body></html>' > app_offline.htm
+        echo '<html><body><h1>Maintenance in progress-</h1></body></html>' > app_offline.htm
         curl -T app_offline.htm \
           --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
           ftp://win8231.site4now.net/cbeuagjf/app_offline.htm
