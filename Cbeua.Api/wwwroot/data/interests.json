@@ -1,0 +1,22 @@
+[
+  {
+    "id": "music",
+    "name": "Music",
+    "icon": "🎵"
+  },
+  {
+    "id": "sports",
+    "name": "Sports",
+    "icon": "⚽"
+  },
+  {
+    "id": "reading",
+    "name": "Reading",
+    "icon": "📚"
+  },
+  {
+    "id": "travel",
+    "name": "Travel",
+    "icon": "✈️"
+  }
+]

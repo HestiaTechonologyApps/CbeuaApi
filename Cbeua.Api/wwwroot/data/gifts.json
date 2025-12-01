@@ -1,0 +1,62 @@
+[
+  {
+    "id": "hug",
+    "name": "Virtual Hug",
+    "icon": "🤗",
+    "coin": 5
+  },
+  {
+    "id": "kiss",
+    "name": "Virtual Kiss",
+    "icon": "💋",
+    "coin": 10
+  },
+  {
+    "id": "rose",
+    "name": "Red Rose",
+    "icon": "🌹",
+    "coin": 15
+  },
+  {
+    "id": "heart",
+    "name": "Heart",
+    "icon": "❤️",
+    "coin": 20
+  },
+  {
+    "id": "cuddle",
+    "name": "Warm Cuddle",
+    "icon": "🫂",
+    "coin": 25
+  },
+  {
+    "id": "dinner",
+    "name": "Candlelight Dinner",
+    "icon": "🕯🍽",
+    "coin": 30
+  },
+  {
+    "id": "letter",
+    "name": "Love Letter",
+    "icon": "💌",
+    "coin": 35
+  },
+  {
+    "id": "teddy",
+    "name": "Teddy Bear",
+    "icon": "🧸",
+    "coin": 40
+  },
+  {
+    "id": "chocolate",
+    "name": "Chocolate Box",
+    "icon": "🍫",
+    "coin": 45
+  },
+  {
+    "id": "hands",
+    "name": "Holding Hands",
+    "icon": "🤝",
+    "coin": 50
+  }
+]

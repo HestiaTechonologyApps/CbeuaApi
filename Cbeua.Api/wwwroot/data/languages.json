@@ -1,0 +1,17 @@
+[
+  {
+    "id": "en",
+    "name": "English",
+    "icon": "🇬🇧"
+  },
+  {
+    "id": "ml",
+    "name": "Malayalam",
+    "icon": "🇮🇳"
+  },
+  {
+    "id": "hi",
+    "name": "Hindi",
+    "icon": "🇮🇳"
+  }
+]
