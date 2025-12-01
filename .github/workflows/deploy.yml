@@ -29,21 +29,21 @@ jobs:
         rm -rf ./publish
         
         echo "Building and publishing..."
-        dotnet publish cbeua.Api/cbeua.Api.csproj \
+        dotnet publish Cbeua.Api/Cbeua.Api.csproj \
           --configuration Release \
           --output ./publish
         
         echo ""
         echo "Files published:"
         find ./publish -type f | wc -l
-        ls -lh ./publish/cbeua.Api.dll
+        ls -lh ./publish/Cbeua.Api.dll
         echo "Microsoft.Extensions DLLs:"
         ls ./publish/Microsoft.Extensions*.dll 2>/dev/null | head -5 || echo "No Extensions DLLs found"
     
     - name: Stop Application
       run: |
         echo "Stopping application..."
-        echo '<html><body><h1>Maintenance in progress-</h1></body></html>' > app_offline.htm
+        echo '<html><body><h1>Maintenance in progress</h1></body></html>' > app_offline.htm
         curl -T app_offline.htm \
           --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
           ftp://win8231.site4now.net/cbeuagjf/app_offline.htm
@@ -51,10 +51,10 @@ jobs:
     
     - name: Delete Old DLL
       run: |
-        echo "Deleting old cbeua.Api.dll..."
+        echo "Deleting old Cbeua.Api.dll..."
         curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
           ftp://win8231.site4now.net/ \
-          -Q "-DELE /cbeuagjf/cbeua.Api.dll" 2>&1 || echo "Deleted"
+          -Q "-DELE /cbeuagjf/Cbeua.Api.dll" 2>&1 || echo "Deleted"
         sleep 5
     
     - name: Deploy All Files
@@ -78,7 +78,7 @@ jobs:
       run: |
         echo "Forcing IIS restart..."
         curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
-          ftp://win8231.site4now.net/cbeuagjf/web.config -o web.config.temp 2>/dev/null || echo '<?xml version="1.0" encoding="utf-8"?><configuration><system.webServer><handlers><add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" /></handlers><aspNetCore processPath="dotnet" arguments=".\cbeua.Api.dll" stdoutLogEnabled="false" hostingModel="inprocess" /></system.webServer></configuration>' > web.config.temp
+          ftp://win8231.site4now.net/cbeuagjf/web.config -o web.config.temp 2>/dev/null || echo '<?xml version="1.0" encoding="utf-8"?><configuration><system.webServer><handlers><add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" /></handlers><aspNetCore processPath="dotnet" arguments=".\Cbeua.Api.dll" stdoutLogEnabled="false" hostingModel="inprocess" /></system.webServer></configuration>' > web.config.temp
         
         echo "<!-- Deploy: $(date) -->" >> web.config.temp
         
