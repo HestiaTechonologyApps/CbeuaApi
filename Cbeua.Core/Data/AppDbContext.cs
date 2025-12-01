@@ -27,8 +27,7 @@ namespace Cbeua.InfraCore.Data
 
         public DbSet<FinancialYear> FinancialYears { get; set; }
 
-        public DbSet<ExpenseType> ExpenseTypes { get; set; }
-        public DbSet<ExpenseMaster> ExpenseMasters { get; set; }
+     
 
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Comment> comments { get; set; }
