@@ -1,0 +1,104 @@
+name: Deploy cbeua to SmarterASP
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Show Repository Structure
+      run: |
+        echo "Repository structure:"
+        ls -la
+        find . -name "*.csproj"
+    
+    - name: Clean and Build with All Dependencies
+      run: |
+        echo "Cleaning previous build..."
+        rm -rf ./publish
+        
+        echo "Building and publishing..."
+        dotnet publish cbeua.Api/cbeua.Api.csproj \
+          --configuration Release \
+          --output ./publish
+        
+        echo ""
+        echo "Files published:"
+        find ./publish -type f | wc -l
+        ls -lh ./publish/cbeua.Api.dll
+        echo "Microsoft.Extensions DLLs:"
+        ls ./publish/Microsoft.Extensions*.dll 2>/dev/null | head -5 || echo "No Extensions DLLs found"
+    
+    - name: Stop Application
+      run: |
+        echo "Stopping application..."
+        echo '<html><body><h1>Maintenance in progress</h1></body></html>' > app_offline.htm
+        curl -T app_offline.htm \
+          --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+          ftp://win8231.site4now.net/cbeuagjf/app_offline.htm
+        sleep 15
+    
+    - name: Delete Old DLL
+      run: |
+        echo "Deleting old cbeua.Api.dll..."
+        curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+          ftp://win8231.site4now.net/ \
+          -Q "-DELE /cbeuagjf/cbeua.Api.dll" 2>&1 || echo "Deleted"
+        sleep 5
+    
+    - name: Deploy All Files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: win8231.site4now.net
+        username: ${{ secrets.WEB_DEPLOY_USERNAME }}
+        password: ${{ secrets.WEB_DEPLOY_PASSWORD }}
+        local-dir: ./publish/
+        server-dir: /cbeuagjf/
+        port: 21
+        protocol: ftp
+        timeout: 600000
+        log-level: verbose
+        dangerous-clean-slate: false
+        exclude: |
+          **/.git*
+          **/.git*/**
+    
+    - name: Touch web.config
+      run: |
+        echo "Forcing IIS restart..."
+        curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+          ftp://win8231.site4now.net/cbeuagjf/web.config -o web.config.temp 2>/dev/null || echo '<?xml version="1.0" encoding="utf-8"?><configuration><system.webServer><handlers><add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" /></handlers><aspNetCore processPath="dotnet" arguments=".\cbeua.Api.dll" stdoutLogEnabled="false" hostingModel="inprocess" /></system.webServer></configuration>' > web.config.temp
+        
+        echo "<!-- Deploy: $(date) -->" >> web.config.temp
+        
+        curl -T web.config.temp \
+          --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+          ftp://win8231.site4now.net/cbeuagjf/web.config
+        sleep 5
+    
+    - name: Start Application
+      run: |
+        echo "Starting application..."
+        curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+          ftp://win8231.site4now.net/ \
+          -Q "-DELE /cbeuagjf/app_offline.htm" 2>&1 || echo "Started"
+        sleep 20
+    
+    - name: Test
+      run: |
+        echo "Testing..."
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://sreenathganga-001-site16.jtempurl.com/ 2>/dev/null || echo "000")
+        echo "Response: $HTTP_CODE"
+        echo "=== DONE ==="
+        echo "URL: http://sreenathganga-001-site16.jtempurl.com/"
