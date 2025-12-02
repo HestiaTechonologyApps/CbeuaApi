@@ -18,7 +18,7 @@ namespace Cbeua.InfraCore.Data
 
         public DbSet<Company> Companies { get; set; }
 
-
+        public DbSet<ManagingComitee> ManagingComitees { get; set; }
 
 
 
