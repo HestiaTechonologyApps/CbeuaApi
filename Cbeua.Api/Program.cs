@@ -123,7 +123,7 @@ app.UseSwaggerUI();
 //    app.UseSwaggerUI();
 //}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors();
 // Use authentication and authorization
 app.UseAuthentication();
