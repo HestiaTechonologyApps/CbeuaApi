@@ -20,7 +20,7 @@ namespace Cbeua.InfraCore.Data
 
         public DbSet<ManagingComitee> ManagingComitees { get; set; }
 
-
+        public DbSet<MainPage> MainPages { get; set; }
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<User> Users { get; set; }

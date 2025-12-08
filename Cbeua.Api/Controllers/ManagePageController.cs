@@ -1,34 +1,31 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Cbeua.Domain.DTO;
-using Cbeua.Domain.Entities;
+﻿using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
-using CbeuaAPI.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cbeua.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
-    public class UserController : Api_BaseController
+    [Authorize]
+    public class ManagePageController : ControllerBase
     {
-        private readonly IUserService _service;
-        public UserController(IUserService service)
+        private readonly IMainPageService _service;
+        public ManagePageController(IMainPageService service)
         {
             _service = service;
         }
-
         [HttpGet]
         public async Task<CustomApiResponse> GetAll()
         {
             var response = new CustomApiResponse();
             try
             {
-                var users = await _service.GetAllAsync();
+                var managingComitees = await _service.GetAllAsync();
                 response.IsSucess = true;
-                response.Value = users;
+                response.Value = managingComitees;
                 response.StatusCode = 200;
             }
             catch (Exception ex)
@@ -39,12 +36,13 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpGet("{id}")]
         public async Task<CustomApiResponse> GetById(int id)
         {
             var response = new CustomApiResponse();
-            var user = await _service.GetByIdAsync(id);
-            if (user == null)
+            var managingComitee = await _service.GetByIdAsync(id);
+            if (managingComitee == null)
             {
                 response.IsSucess = false;
                 response.Error = "Not found";
@@ -53,22 +51,19 @@ namespace Cbeua.Api.Controllers
             else
             {
                 response.IsSucess = true;
-                response.Value = user;
+                response.Value = managingComitee;
                 response.StatusCode = 200;
             }
             return response;
         }
-        
-
-
 
         [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] User user)
+        public async Task<CustomApiResponse> Create([FromBody] MainPage mainPage)
         {
             var response = new CustomApiResponse();
             try
             {
-                var created = await _service.CreateAsync(user);
+                var created = await _service.CreateAsync(mainPage);
                 response.IsSucess = true;
                 response.Value = created;
                 response.StatusCode = 201;
@@ -82,19 +77,17 @@ namespace Cbeua.Api.Controllers
             return response;
         }
         [HttpPut("{id}")]
-        public async Task<CustomApiResponse> Update(int id, [FromBody] User user)
+        public async Task<CustomApiResponse> Update(int id, [FromBody] MainPage mainPage)
         {
             var response = new CustomApiResponse();
-
-            if (id != user.UserId)
+            if (id != mainPage.MainPageId)
             {
                 response.IsSucess = false;
                 response.Error = "Id mismatch";
                 response.StatusCode = 400;
                 return response;
             }
-
-            var updated = await _service.UpdateAsync(user);
+            var updated = await _service.UpdateAsync(mainPage);
             if (!updated)
             {
                 response.IsSucess = false;
@@ -103,14 +96,10 @@ namespace Cbeua.Api.Controllers
             }
             else
             {
-                // ✅ Hide password before sending response
-                user.PasswordHash = "";
-
                 response.IsSucess = true;
-                response.Value = user;
+                response.Value = mainPage;
                 response.StatusCode = 200;
             }
-
             return response;
         }
         [HttpDelete("{id}")]
@@ -132,19 +121,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-
-
-        [HttpPost("ChangePassWord")]
-        public async Task<CustomApiResponse> ChangePassWord([FromBody] PasswordChangeRequest passwordChangeRequest)
-        {
-            return await _service.ChangePassWord(passwordChangeRequest);
-            
-        }
-
-
     }
 
-
-    
 }
 

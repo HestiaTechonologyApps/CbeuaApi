@@ -1,6 +1,7 @@
 ﻿using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Cbeua.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ManagingComiteeController : ControllerBase
     {
         private readonly IManagingComiteeService _service;

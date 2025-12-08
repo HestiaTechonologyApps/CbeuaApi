@@ -26,8 +26,8 @@ namespace Cbeua.Core.Repositories
             int companyId = Convert.ToInt32(_currentUser.CompanyId);
 
             var query =
-                from m in _context.ManagingComitees
-                join cmp in _context.Companies on m.CompanyId equals cmp.CompanyId
+                from m in _context.ManagingComitees.AsNoTracking()
+                join cmp in _context.Companies.AsNoTracking() on m.CompanyId equals cmp.CompanyId
                 where m.CompanyId == companyId
                 select new ManagingComiteeDTO
                 {
