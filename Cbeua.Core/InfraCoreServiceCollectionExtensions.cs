@@ -41,6 +41,7 @@ namespace Cbeua.InfraCore
            
             services.AddScoped<IManagingComiteeRepository, ManagingComiteeRepository>();
             services.AddScoped<IMainPageRepository, ManagePageRepository>();
+            services.AddScoped<IDayQuoteRepository, DayQuoteRepository>();
 
 
             services.AddScoped<ICompanyRepository, CompanyRepository>();
