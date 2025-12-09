@@ -13,6 +13,7 @@ namespace Cbeua.Domain.DTO
         public DateTime ActionTime { get; set; }
         public string ActionTimeString { get; set; } = "";
         public string ActionType { get; set; } = "Login";
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
 
     }
 }

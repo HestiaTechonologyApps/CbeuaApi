@@ -43,5 +43,6 @@ namespace Cbeua.Domain.DTO
         public String DayQuote { get; set; } = "";
         public int CompanyId { get; set; } = 0;
         public string CompanyName { get; set; } = "";
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

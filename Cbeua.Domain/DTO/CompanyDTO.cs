@@ -33,5 +33,6 @@ namespace Cbeua.Domain.DTO
 
         public bool IsActive { get; set; } = true;
         public bool IsDeleted { get; set; } = false;
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

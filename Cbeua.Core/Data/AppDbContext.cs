@@ -22,11 +22,12 @@ namespace Cbeua.InfraCore.Data
 
         public DbSet<MainPage> MainPages { get; set; }
         public DbSet<DayQuote> DayQuotes { get; set; }
-
+        public DbSet<UserRoleRight> UserRoleRights { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<User> Users { get; set; }
 
         public DbSet<FinancialYear> FinancialYears { get; set; }
+
 
      
 

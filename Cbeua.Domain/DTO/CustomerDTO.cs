@@ -22,6 +22,7 @@ namespace Cbeua.Domain.DTO
         public int CompanyId { get; set; } = 0;
         public string ComapanyName = "";
         public bool IsDeleted { get; set; } = false;
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
 
     }
 }

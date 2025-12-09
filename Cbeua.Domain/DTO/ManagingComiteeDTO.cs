@@ -23,5 +23,6 @@ namespace Cbeua.Domain.DTO
         public int CompanyId { get; set; } = 0;
         public string CompanyName { get; set; } = "";
         public int order { get; set; }
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

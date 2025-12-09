@@ -16,5 +16,6 @@ namespace Cbeua.Domain.DTO
         public DateTime? EndDate { get; set; }
         public bool IsCurrent { get; set; } = false;
         public bool IsClosed { get; set; } = false;
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

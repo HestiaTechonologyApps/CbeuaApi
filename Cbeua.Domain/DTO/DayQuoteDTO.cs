@@ -13,5 +13,6 @@ namespace Cbeua.Domain.DTO
         public int MonthCode { get; set; }
         public String ToDayQuote { get; set; } = "";
         public String UnformatedContent { get; set; } = "";
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }
