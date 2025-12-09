@@ -11,5 +11,6 @@ namespace Cbeua.Domain.DTO
         public int YearOf { get; set; }
 
         public int YearName { get; set; }
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }
