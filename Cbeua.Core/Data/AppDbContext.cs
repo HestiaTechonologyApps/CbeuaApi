@@ -27,7 +27,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<YearMaster> YearMasters { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<CircleState> CircleStates { get; set; }
         public DbSet<FinancialYear> FinancialYears { get; set; }
 
 
