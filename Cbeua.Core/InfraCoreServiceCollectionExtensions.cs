@@ -43,6 +43,7 @@ namespace Cbeua.InfraCore
             services.AddScoped<IMainPageRepository, ManagePageRepository>();
             services.AddScoped<IDayQuoteRepository, DayQuoteRepository>();
             services.AddScoped<IUserRoleRightRepository, UserRoleRightRepository>();
+            services.AddScoped<IUserTypeRepository, UserTypeRepository>();
 
             services.AddScoped<ICompanyRepository, CompanyRepository>();
            
