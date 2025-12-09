@@ -19,7 +19,7 @@ namespace Cbeua.Domain.DTO
         public bool IsActive { get; set; } = true;
         public bool Islocked { get; set; } = false;
         public int CompanyId { get; set; } =0;
-        public string CompanyName { get; set; } = "";
+        public string ComapanyName { get; set; } = "";
         public DateTime? CreateAt { get; set; } = DateTime.UtcNow;
         public string CreateAtString { get; set; } = "";
         public DateTime? Lastlogin { get; set; }

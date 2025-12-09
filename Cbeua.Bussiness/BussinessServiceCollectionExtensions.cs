@@ -49,6 +49,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IDayQuoteService, DayQuoteService>();
             services.AddScoped<IUserRoleRightService, UserRoleRightService>();
             services.AddScoped<IUserTypeService, UserTypeService>();
+            services.AddScoped<IYearMasterService, YearMasterService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 

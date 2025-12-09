@@ -65,7 +65,7 @@ namespace Cbeua.Core.Repositories
                          Lastlogin = user.Lastlogin,
                          CreateAt = user.CreateAt,
                          CompanyId = user.CompanyId,
-                         CompanyName = comp.ComapanyName,
+                         ComapanyName = comp.ComapanyName,
                          CreateAtString = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt"),
 
                          LastloginString = user.Lastlogin.HasValue

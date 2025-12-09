@@ -24,6 +24,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<DayQuote> DayQuotes { get; set; }
         public DbSet<UserRoleRight> UserRoleRights { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
+        public DbSet<YearMaster> YearMasters { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<User> Users { get; set; }
 
