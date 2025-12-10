@@ -50,6 +50,7 @@ namespace Cbeua.InfraCore
             services.AddScoped<ICompanyRepository, CompanyRepository>();
            services.AddScoped<ICircleRepository, CircleRepository>();
             services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IBranchRepository, BranchRepository>();
 
             services.AddScoped<ITwilioSmsSender, TwilioSmsSender>();
            
