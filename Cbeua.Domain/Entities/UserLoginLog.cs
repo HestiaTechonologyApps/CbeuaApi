@@ -8,6 +8,8 @@ namespace Cbeua.Domain.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserLoginLogId { get; set; }
+
+      
         public int UserId { get; set; }
         public DateTime ActionTime { get; set; }
 

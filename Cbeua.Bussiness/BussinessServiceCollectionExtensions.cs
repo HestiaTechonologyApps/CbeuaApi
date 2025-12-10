@@ -50,6 +50,8 @@ namespace Cbeua.Bussiness
             services.AddScoped<IUserRoleRightService, UserRoleRightService>();
             services.AddScoped<IUserTypeService, UserTypeService>();
             services.AddScoped<IYearMasterService, YearMasterService>();
+            services.AddScoped<ICircleStateService, CircleStateService>();
+            services.AddScoped<IRefundContributionService, RefundContributionService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 
