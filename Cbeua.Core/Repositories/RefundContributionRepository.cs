@@ -22,10 +22,10 @@ namespace Cbeua.Core.Repositories
                     select new RefundContribution
                     {
                         RefundContributionId = rc.RefundContributionId,
-                        StaffNo = rc.StaffNo,
+                        
                         StateId = rc.StateId,
                         DesignationId = rc.DesignationId,
-                        DeathDate = rc.DeathDate,
+                        
                         RefundNO = rc.RefundNO,
                         BranchNameOFTime = rc.BranchNameOFTime,
                         DPCODEOfTime = rc.DPCODEOfTime,

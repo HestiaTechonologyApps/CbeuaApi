@@ -1,8 +1,10 @@
-﻿namespace Cbeua.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cbeua.Domain.Entities
 {
     public partial class Month
     {
-        
+        [Key]
         public int MonthCode { get; set; }
         public string MonthName { get; set; }
         public string Abbrivation { get; set; }

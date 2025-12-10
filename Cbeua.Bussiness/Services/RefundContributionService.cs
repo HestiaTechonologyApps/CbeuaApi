@@ -65,10 +65,10 @@ namespace Cbeua.Bussiness.Services
         {
             RefundContributionDTO refundContributionDTO = new RefundContributionDTO();
             refundContributionDTO.RefundContributionId = refundContribution.RefundContributionId;
-            refundContributionDTO.StaffNo = refundContribution.StaffNo;
+           // refundContributionDTO.StaffNo = refundContribution.StaffNo;
             refundContributionDTO.StateId = refundContribution.StateId;
             refundContributionDTO.DesignationId = refundContribution.DesignationId;
-            refundContributionDTO.DeathDate = refundContribution.DeathDate;
+          //  refundContributionDTO.DeathDate = refundContribution.DeathDate;
             refundContributionDTO.RefundNO = refundContribution.RefundNO;
             refundContributionDTO.BranchNameOFTime = refundContribution.BranchNameOFTime;
             refundContributionDTO.DPCODEOfTime = refundContribution.DPCODEOfTime;

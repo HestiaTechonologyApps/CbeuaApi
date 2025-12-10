@@ -10,10 +10,10 @@ namespace Cbeua.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class DayQuoteController : ControllerBase
+    public class StateController : ControllerBase
     {
-        private readonly IDayQuoteService _service;
-        public DayQuoteController(IDayQuoteService service)
+        private readonly IStateService _service;
+        public StateController(IStateService service)
         {
             _service = service;
         }
@@ -23,9 +23,9 @@ namespace Cbeua.Api.Controllers
             var response = new CustomApiResponse();
             try
             {
-                var dayQuotes = await _service.GetAllAsync();
+                var states = await _service.GetAllAsync();
                 response.IsSucess = true;
-                response.Value = dayQuotes;
+                response.Value = states;
                 response.StatusCode = 200;
             }
             catch (Exception ex)
@@ -40,8 +40,8 @@ namespace Cbeua.Api.Controllers
         public async Task<CustomApiResponse> GetById(int id)
         {
             var response = new CustomApiResponse();
-            var dayQuote = await _service.GetByIdAsync(id);
-            if (dayQuote == null)
+            var state = await _service.GetByIdAsync(id);
+            if (state == null)
             {
                 response.IsSucess = false;
                 response.Error = "Not found";
@@ -50,7 +50,7 @@ namespace Cbeua.Api.Controllers
             else
             {
                 response.IsSucess = true;
-                response.Value = dayQuote;
+                response.Value = state;
                 response.StatusCode = 200;
             }
             return response;
@@ -60,12 +60,12 @@ namespace Cbeua.Api.Controllers
 
 
         [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] DayQuote dayQuote)
+        public async Task<CustomApiResponse> Create([FromBody] State state)
         {
             var response = new CustomApiResponse();
             try
             {
-                var created = await _service.CreateAsync(dayQuote);
+                var created = await _service.CreateAsync(state);
                 response.IsSucess = true;
                 response.Value = created;
                 response.StatusCode = 201;
@@ -79,11 +79,11 @@ namespace Cbeua.Api.Controllers
             return response;
         }
         [HttpPut("{id}")]
-        public async Task<CustomApiResponse> Update(int id, [FromBody] DayQuote dayQuote)
+        public async Task<CustomApiResponse> Update(int id, [FromBody] State state)
         {
             var response = new CustomApiResponse();
 
-            if (id != dayQuote.DayQuoteId)
+            if (id != state.StateId)
             {
                 response.IsSucess = false;
                 response.Error = "Id mismatch";
@@ -91,7 +91,7 @@ namespace Cbeua.Api.Controllers
                 return response;
             }
 
-            var updated = await _service.UpdateAsync(dayQuote);
+            var updated = await _service.UpdateAsync(state);
             if (!updated)
             {
                 response.IsSucess = false;
@@ -101,12 +101,12 @@ namespace Cbeua.Api.Controllers
             else
             {
                 response.IsSucess = true;
-                response.Value = dayQuote;
+                response.Value = state;
                 response.StatusCode = 200;
             }
             return response;
 
-            
+
         }
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
@@ -127,9 +127,6 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-
-
-        
 
     }
 }

@@ -10,22 +10,23 @@ namespace Cbeua.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class DayQuoteController : ControllerBase
+    public class CircleController : ControllerBase
     {
-        private readonly IDayQuoteService _service;
-        public DayQuoteController(IDayQuoteService service)
+        private readonly ICircleService _service;
+        public CircleController(ICircleService service)
         {
             _service = service;
         }
+
         [HttpGet]
         public async Task<CustomApiResponse> GetAll()
         {
             var response = new CustomApiResponse();
             try
             {
-                var dayQuotes = await _service.GetAllAsync();
+                var circles = await _service.GetAllAsync();
                 response.IsSucess = true;
-                response.Value = dayQuotes;
+                response.Value = circles;
                 response.StatusCode = 200;
             }
             catch (Exception ex)
@@ -40,8 +41,8 @@ namespace Cbeua.Api.Controllers
         public async Task<CustomApiResponse> GetById(int id)
         {
             var response = new CustomApiResponse();
-            var dayQuote = await _service.GetByIdAsync(id);
-            if (dayQuote == null)
+            var circle = await _service.GetByIdAsync(id);
+            if (circle == null)
             {
                 response.IsSucess = false;
                 response.Error = "Not found";
@@ -50,7 +51,7 @@ namespace Cbeua.Api.Controllers
             else
             {
                 response.IsSucess = true;
-                response.Value = dayQuote;
+                response.Value = circle;
                 response.StatusCode = 200;
             }
             return response;
@@ -60,12 +61,12 @@ namespace Cbeua.Api.Controllers
 
 
         [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] DayQuote dayQuote)
+        public async Task<CustomApiResponse> Create([FromBody] Circle circle)
         {
             var response = new CustomApiResponse();
             try
             {
-                var created = await _service.CreateAsync(dayQuote);
+                var created = await _service.CreateAsync(circle);
                 response.IsSucess = true;
                 response.Value = created;
                 response.StatusCode = 201;
@@ -79,11 +80,11 @@ namespace Cbeua.Api.Controllers
             return response;
         }
         [HttpPut("{id}")]
-        public async Task<CustomApiResponse> Update(int id, [FromBody] DayQuote dayQuote)
+        public async Task<CustomApiResponse> Update(int id, [FromBody] Circle circle)
         {
             var response = new CustomApiResponse();
 
-            if (id != dayQuote.DayQuoteId)
+            if (id != circle.CircleId)
             {
                 response.IsSucess = false;
                 response.Error = "Id mismatch";
@@ -91,7 +92,7 @@ namespace Cbeua.Api.Controllers
                 return response;
             }
 
-            var updated = await _service.UpdateAsync(dayQuote);
+            var updated = await _service.UpdateAsync(circle);
             if (!updated)
             {
                 response.IsSucess = false;
@@ -101,12 +102,12 @@ namespace Cbeua.Api.Controllers
             else
             {
                 response.IsSucess = true;
-                response.Value = dayQuote;
+                response.Value = circle;
                 response.StatusCode = 200;
             }
             return response;
 
-            
+
         }
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
@@ -128,8 +129,6 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-
-        
 
     }
 }

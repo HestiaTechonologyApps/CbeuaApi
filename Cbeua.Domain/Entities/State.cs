@@ -9,8 +9,8 @@ namespace Cbeua.Domain.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StateId { get; set; }
-        public string Name { get; set; }
-        public string Abbreviation { get; set; }
+        public string Name { get; set; } = "";
+        public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
 
     }

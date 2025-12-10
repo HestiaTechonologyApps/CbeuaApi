@@ -11,8 +11,8 @@ namespace Cbeua.Domain.Entities
         public int CircleId { get; set; }
 
         public int? CircleCode { get; set; }
-        public string Name { get; set; }
-        public string Abbreviation { get; set; }
+        public string Name { get; set; } = "";
+        public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
         public int? StateId { get; set; }
         public DateTime? DateFrom { get; set; }

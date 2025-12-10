@@ -30,8 +30,20 @@ namespace Cbeua.InfraCore.Data
         public DbSet<CircleState> CircleStates { get; set; }
         public DbSet<FinancialYear> FinancialYears { get; set; }
 
-
-     public DbSet<RefundContribution> RefundContributions { get; set; }
+        public DbSet<Accounts> Accounts { get; set; }
+        public DbSet<AccountsDirectEntry> AccountsDirectEntries { get; set; }
+        public DbSet<Branch> Branches { get; set; }
+        public DbSet<Circle> Circles { get; set; }
+        public DbSet<ContributionMaster> ContributionMasters { get; set; }
+        public DbSet<DeathClaim> DeathClaims { get; set; }
+        public DbSet<Designation> Designations { get; set; }
+        public DbSet<Member> Members { get; set; }
+        public DbSet<Month> Months { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<Status> statuses { get; set; }
+        public DbSet<SupportTicket> SupportTickets { get; set; }
+        public DbSet<ContributionDetail> ContributionDetails { get; set; }
+        public DbSet<RefundContribution> RefundContributions { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Comment> comments { get; set; }
