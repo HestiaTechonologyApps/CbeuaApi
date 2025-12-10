@@ -31,7 +31,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<FinancialYear> FinancialYears { get; set; }
 
 
-     
+     public DbSet<RefundContribution> RefundContributions { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Comment> comments { get; set; }
