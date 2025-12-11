@@ -58,6 +58,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IDesignationsService, DesignationService>();
             services.AddScoped<IStatusService, StatusService>();
+            services.AddScoped<IMonthService, MonthService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 

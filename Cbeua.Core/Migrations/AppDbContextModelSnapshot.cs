@@ -61,7 +61,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.AccountsDirectEntry", b =>
@@ -136,7 +136,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("AccountsDirectEntryID");
 
-                    b.ToTable("AccountsDirectEntries");
+                    b.ToTable("AccountsDirectEntries", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Branch", b =>
@@ -185,7 +185,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("BranchId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Category", b =>
@@ -206,7 +206,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Circle", b =>
@@ -242,7 +242,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("CircleId");
 
-                    b.ToTable("Circles");
+                    b.ToTable("Circles", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.CircleState", b =>
@@ -270,7 +270,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("CircleId");
 
-                    b.ToTable("CircleStates");
+                    b.ToTable("CircleStates", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Common.Attachment", b =>
@@ -335,7 +335,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("AttachmentId");
 
-                    b.ToTable("Attachments");
+                    b.ToTable("Attachments", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Common.AuditLog", b =>
@@ -367,7 +367,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("LogID");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Common.Comment", b =>
@@ -418,7 +418,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("CommentId");
 
-                    b.ToTable("comments");
+                    b.ToTable("comments", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Common.FinancialYear", b =>
@@ -447,7 +447,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("FinancialYearId");
 
-                    b.ToTable("FinancialYears");
+                    b.ToTable("FinancialYears", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Company", b =>
@@ -518,7 +518,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("CompanyId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.ContributionDetail", b =>
@@ -587,7 +587,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasIndex("ContributionMasterId");
 
-                    b.ToTable("ContributionDetails");
+                    b.ToTable("ContributionDetails", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.ContributionMaster", b =>
@@ -658,7 +658,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("ContributionMasterId");
 
-                    b.ToTable("ContributionMasters");
+                    b.ToTable("ContributionMasters", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Customer", b =>
@@ -706,7 +706,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("CustomerId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.DayQuote", b =>
@@ -733,7 +733,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("DayQuoteId");
 
-                    b.ToTable("DayQuotes");
+                    b.ToTable("DayQuotes", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.DeathClaim", b =>
@@ -786,7 +786,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("DeathClaimId");
 
-                    b.ToTable("DeathClaims");
+                    b.ToTable("DeathClaims", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Designation", b =>
@@ -807,7 +807,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("DesignationId");
 
-                    b.ToTable("Designations");
+                    b.ToTable("Designations", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.ExceptionLog", b =>
@@ -867,7 +867,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExceptionLogs");
+                    b.ToTable("ExceptionLogs", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.MainPage", b =>
@@ -955,7 +955,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("MainPageId");
 
-                    b.ToTable("MainPages");
+                    b.ToTable("MainPages", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.ManagingComitee", b =>
@@ -994,7 +994,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("ManagingComiteeId");
 
-                    b.ToTable("ManagingComitees");
+                    b.ToTable("ManagingComitees", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Member", b =>
@@ -1080,7 +1080,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("MemberId");
 
-                    b.ToTable("Members");
+                    b.ToTable("Members", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Month", b =>
@@ -1101,7 +1101,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("MonthCode");
 
-                    b.ToTable("Months");
+                    b.ToTable("Months", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.RefundContribution", b =>
@@ -1159,7 +1159,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("RefundContributionId");
 
-                    b.ToTable("RefundContributions");
+                    b.ToTable("RefundContributions", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.State", b =>
@@ -1183,7 +1183,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("StateId");
 
-                    b.ToTable("States");
+                    b.ToTable("States", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.Status", b =>
@@ -1211,7 +1211,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("StatusId");
 
-                    b.ToTable("statuses");
+                    b.ToTable("statuses", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.SupportTicket", b =>
@@ -1253,7 +1253,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("SupportTicketId");
 
-                    b.ToTable("SupportTickets");
+                    b.ToTable("SupportTickets", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.User", b =>
@@ -1301,7 +1301,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.UserLoginLog", b =>
@@ -1324,7 +1324,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("UserLoginLogId");
 
-                    b.ToTable("UserLoginLogs");
+                    b.ToTable("UserLoginLogs", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.UserRoleRight", b =>
@@ -1347,7 +1347,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("UserRoleRightId");
 
-                    b.ToTable("UserRoleRights");
+                    b.ToTable("UserRoleRights", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.UserType", b =>
@@ -1368,7 +1368,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("UserTypeId");
 
-                    b.ToTable("UserTypes");
+                    b.ToTable("UserTypes", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.YearMaster", b =>
@@ -1384,7 +1384,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("YearOf");
 
-                    b.ToTable("YearMasters");
+                    b.ToTable("YearMasters", (string)null);
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.ContributionDetail", b =>
