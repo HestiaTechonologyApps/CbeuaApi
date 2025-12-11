@@ -11,7 +11,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     public interface IMainPageRepository : IGenericRepository<MainPage>
     {
         IQueryable<MainPageDTO> GetQueryableMainPageList();
-        Task<IEnumerable<MainPageDTO>> GetAllAsync();
-        Task<MainPageDTO> GetByIdDTOAsync(int id);
+       
     }
 }

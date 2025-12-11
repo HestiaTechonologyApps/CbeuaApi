@@ -1,13 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Cbeua.Domain.Entities
+namespace Cbeua.Domain.DTO
 {
-    public class DeathClaim
+    public class DeathClaimDTO
     {
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DeathClaimId { get; set; }
         public int MemberId { get; set; }
 
@@ -25,7 +25,7 @@ namespace Cbeua.Domain.Entities
 
         public string DDNO { get; set; } = "";
 
-        public DateTime? DDDATE { get; set; }   
+        public DateTime? DDDATE { get; set; }
 
 
         public decimal Amount { get; set; }
@@ -35,9 +35,5 @@ namespace Cbeua.Domain.Entities
 
         public int YearOF { get; set; }
 
-       
-       
     }
 }
-
-

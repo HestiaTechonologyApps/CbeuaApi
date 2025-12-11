@@ -26,14 +26,27 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<MainPageDTO>> GetAllAsync()
         {
-           var mainPages = await _repo.GetAllAsync();
-            return mainPages.ToList();
+            List<MainPageDTO> mainPageDTOs = new List<MainPageDTO>();
+
+            var mainPages = await _repo.GetAllAsync();
+
+            foreach (var mainPage in mainPages)
+            {
+                MainPageDTO mainPageDTO = await ConvertMainPageToDTO(mainPage);
+                mainPageDTOs.Add(mainPageDTO);
+
+
+            }
+
+            return mainPageDTOs;
         }
 
-        public Task<MainPageDTO?> GetByIdAsync(int id)
+        public async Task<MainPageDTO?> GetByIdAsync(int id)
         {
-            var mainPage = _repo.GetByIdDTOAsync(id);
-            return mainPage;
+            var q = await _repo.GetByIdAsync(id);
+            if (q == null) return null;
+            var mainPageDTO = await ConvertMainPageToDTO(q);
+            return mainPageDTO;
         }
 
         public async Task<MainPageDTO> CreateAsync(MainPage mainPage)
@@ -55,6 +68,7 @@ namespace Cbeua.Bussiness.Services
         private async Task<MainPageDTO> ConvertMainPageToDTO(MainPage mainPage)
         {
             MainPageDTO mainPageDTO = new MainPageDTO();
+            mainPageDTO.MainPageId = mainPage.MainPageId;
             mainPageDTO.CorouselImage1 = mainPage.CorouselImage1;
             mainPageDTO.CorouselImage2 = mainPage.CorouselImage2;
             mainPageDTO.CorouselImage3 = mainPage.CorouselImage3;

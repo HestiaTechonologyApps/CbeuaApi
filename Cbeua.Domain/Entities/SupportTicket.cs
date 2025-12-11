@@ -9,15 +9,15 @@ namespace Cbeua.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SupportTicketId { get; set; }
 
-        public String SupportTicketNum { get; set; }
+        public String SupportTicketNum { get; set; } = "";
 
-        public String Description { get; set; }
+        public String Description { get; set; } = "";
 
-        public String Priority { get; set; }
+        public String Priority { get; set; } = "";
 
-        public String Duration { get; set; }
+        public String Duration { get; set; } = "";
 
-        public String DeveloperRemark { get; set; }
+        public String DeveloperRemark { get; set; } = "";
 
         public Boolean isApproved { get; set; }
 
