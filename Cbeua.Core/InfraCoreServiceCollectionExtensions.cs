@@ -56,7 +56,7 @@ namespace Cbeua.InfraCore
            services.AddScoped<IDesignationRepository, DesignationRepository>();
             services.AddScoped<IStatusRepository, StatusRepository>();
             services.AddScoped<IMonthRepository, MonthRepository>();
-
+            services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 
