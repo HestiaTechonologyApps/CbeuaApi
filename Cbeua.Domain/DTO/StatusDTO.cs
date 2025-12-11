@@ -1,22 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Cbeua.Domain.Entities
+namespace Cbeua.Domain.DTO
 {
-    public partial class Status
+    public class StatusDTO
     {
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StatusId { get; set; }
         public string Name { get; set; } = "";
         public string Abbreviation { get; set; } = "";
         public string Description { get; set; } = "";
         public int? GroupId { get; set; }
-
-
-
     }
 }
-
-
