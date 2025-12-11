@@ -4,6 +4,7 @@ using Cbeua.InfraCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cbeua.Core.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211070549_addedcircle")]
+    partial class addedcircle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,8 +187,6 @@ namespace Cbeua.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BranchId");
-
-                    b.HasIndex("CircleId");
 
                     b.ToTable("Branches");
                 });
@@ -1391,17 +1392,6 @@ namespace Cbeua.Core.Migrations
                     b.ToTable("YearMasters");
                 });
 
-            modelBuilder.Entity("Cbeua.Domain.Entities.Branch", b =>
-                {
-                    b.HasOne("Cbeua.Domain.Entities.Circle", "Circle")
-                        .WithMany("Branches")
-                        .HasForeignKey("CircleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Circle");
-                });
-
             modelBuilder.Entity("Cbeua.Domain.Entities.Circle", b =>
                 {
                     b.HasOne("Cbeua.Domain.Entities.State", "State")
@@ -1418,11 +1408,6 @@ namespace Cbeua.Core.Migrations
                         .HasForeignKey("ContributionMasterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Cbeua.Domain.Entities.Circle", b =>
-                {
-                    b.Navigation("Branches");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.ContributionMaster", b =>
