@@ -44,6 +44,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<SupportTicket> SupportTickets { get; set; }
         public DbSet<ContributionDetail> ContributionDetails { get; set; }
         public DbSet<RefundContribution> RefundContributions { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Comment> comments { get; set; }

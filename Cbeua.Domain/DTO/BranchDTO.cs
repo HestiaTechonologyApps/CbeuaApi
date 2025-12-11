@@ -23,5 +23,6 @@ namespace Cbeua.Domain.DTO
 
 
         public bool IsRegCompleted { get; set; }
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

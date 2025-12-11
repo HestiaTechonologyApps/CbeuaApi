@@ -51,9 +51,9 @@ namespace Cbeua.InfraCore
            services.AddScoped<ICircleRepository, CircleRepository>();
             services.AddScoped<IStateRepository, StateRepository>();
             services.AddScoped<IBranchRepository, BranchRepository>();
-
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITwilioSmsSender, TwilioSmsSender>();
-           
+           services.AddScoped<IDesignationRepository, DesignationRepository>();
 
             services.AddScoped<ICommentRepository, CommentRepository>();
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
