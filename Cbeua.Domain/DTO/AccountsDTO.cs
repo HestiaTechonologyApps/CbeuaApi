@@ -18,5 +18,6 @@ namespace Cbeua.Domain.DTO
         public int TransMode { get; set; }
         public string Reference { get; set; } = "";
         public string Remark { get; set; } = "";
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

@@ -1,12 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Cbeua.Domain.Entities
+namespace Cbeua.Domain.DTO
 {
-    public partial class AccountsDirectEntry
+    public class AccountsDirectEntryDTO
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AccountsDirectEntryID { get; set; }
         public int MemberId { get; set; }
         public string Name { get; set; } = "";
@@ -27,7 +28,6 @@ namespace Cbeua.Domain.Entities
         public Boolean isApproved { get; set; }
         public String ApprovedBy { get; set; } = "";
         public String ApprovedDate { get; set; } = "";
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }
-
-

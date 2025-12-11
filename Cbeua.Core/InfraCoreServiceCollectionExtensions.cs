@@ -40,7 +40,7 @@ namespace Cbeua.InfraCore
             services.AddScoped<IUserRepository, UserRepository>();
            
             services.AddScoped<IManagingComiteeRepository, ManagingComiteeRepository>();
-            services.AddScoped<IMainPageRepository, ManagePageRepository>();
+            services.AddScoped<IMainPageRepository, MainPageRepository>();
             services.AddScoped<IDayQuoteRepository, DayQuoteRepository>();
             services.AddScoped<IUserRoleRightRepository, UserRoleRightRepository>();
             services.AddScoped<IUserTypeRepository, UserTypeRepository>();
@@ -59,6 +59,7 @@ namespace Cbeua.InfraCore
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAccountDirectEntryRepository, AccountDirectEntryRepository>();
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 
             //// Add helpers or utilities

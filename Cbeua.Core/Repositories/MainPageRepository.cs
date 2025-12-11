@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Core.Repositories
 {
-    public class ManagePageRepository : GenericRepository<MainPage>, IMainPageRepository
+    public class MainPageRepository : GenericRepository<MainPage>, IMainPageRepository
     {
         private readonly AppDbContext _context;
         private readonly ICurrentUserService _currentUser;
-        public ManagePageRepository(AppDbContext context, ICurrentUserService currentUser) : base(context)
+        public MainPageRepository(AppDbContext context, ICurrentUserService currentUser) : base(context)
         {
             _context = context;
             _currentUser = currentUser;

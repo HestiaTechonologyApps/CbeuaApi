@@ -10,10 +10,10 @@ namespace Cbeua.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ManagePageController : ControllerBase
+    public class MainPageController : ControllerBase
     {
         private readonly IMainPageService _service;
-        public ManagePageController(IMainPageService service)
+        public MainPageController(IMainPageService service)
         {
             _service = service;
         }

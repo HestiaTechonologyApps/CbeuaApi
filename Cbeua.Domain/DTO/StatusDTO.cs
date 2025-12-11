@@ -13,5 +13,6 @@ namespace Cbeua.Domain.DTO
         public string Abbreviation { get; set; } = "";
         public string Description { get; set; } = "";
         public int? GroupId { get; set; }
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

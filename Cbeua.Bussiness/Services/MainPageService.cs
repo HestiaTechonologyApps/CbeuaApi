@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Bussiness.Services
 {
-    public class ManagePageService : IMainPageService
+    public class MainPageService : IMainPageService
     {
         private readonly IMainPageRepository _repo;
         private readonly IAuditRepository _auditRepository;
         private readonly ICurrentUserService _currentUser;
 
         public String AuditTableName { get; set; } = "MANAGEPAGE";
-        public ManagePageService(IMainPageRepository repo, IAuditRepository auditRepository, ICurrentUserService currentUser)
+        public MainPageService(IMainPageRepository repo, IAuditRepository auditRepository, ICurrentUserService currentUser)
         {
             _repo = repo;
             this._auditRepository = auditRepository;

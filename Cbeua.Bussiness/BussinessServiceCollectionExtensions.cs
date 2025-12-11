@@ -45,7 +45,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IManagingComiteeService, ManagingComiteeService>();
-            services.AddScoped<IMainPageService, ManagePageService>();
+            services.AddScoped<IMainPageService, MainPageService>();
             services.AddScoped<IDayQuoteService, DayQuoteService>();
             services.AddScoped<IUserRoleRightService, UserRoleRightService>();
             services.AddScoped<IUserTypeService, UserTypeService>();
@@ -61,6 +61,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IMonthService, MonthService>();
             services.AddScoped<IMemberService, MemberService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAccountDirectEntryService, AccountDirectEntryService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 
