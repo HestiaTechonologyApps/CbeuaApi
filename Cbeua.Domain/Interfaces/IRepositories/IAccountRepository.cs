@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Domain.Interfaces.IRepositories
 {
-    public interface IMemberRepository : IGenericRepository<Member>
+    public interface IAccountRepository : IGenericRepository<Accounts>
     {
-        IQueryable<MemberDTO> GetQueryableMember();
+        IQueryable<AccountsDTO> GetQueryable();
     }
 }

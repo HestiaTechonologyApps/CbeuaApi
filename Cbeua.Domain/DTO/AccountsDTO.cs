@@ -1,12 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Cbeua.Domain.Entities
+namespace Cbeua.Domain.DTO
 {
-    public partial class Accounts
+    public class AccountsDTO
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long AccountId { get; set; }
         public int CircleId { get; set; }
         public int BranchId { get; set; }
@@ -17,8 +18,5 @@ namespace Cbeua.Domain.Entities
         public int TransMode { get; set; }
         public string Reference { get; set; } = "";
         public string Remark { get; set; } = "";
-       
     }
 }
-
-

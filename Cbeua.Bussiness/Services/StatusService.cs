@@ -64,7 +64,10 @@ namespace Cbeua.Bussiness.Services
         {
             StatusDTO statusDTO = new StatusDTO();
             statusDTO.StatusId = status.StatusId;
+            statusDTO.Abbreviation = status.Abbreviation;
             statusDTO.Name = status.Name;
+            statusDTO.Description = status.Description;
+            statusDTO.GroupId = status.GroupId;
             return statusDTO;
         }
 
