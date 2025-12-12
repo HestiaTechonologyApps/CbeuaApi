@@ -108,19 +108,28 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<bool> UpdateAsync(User user)
         {
-            user.CompanyId = int.Parse(_currentUser.CompanyId);
             var oldentity = await _repo.GetByIdAsync(user.UserId);
-            _repo.Detach(oldentity);
-            _repo.Update(user);
+            if (oldentity == null) return false;
+
+            // Only update allowed fields
+            oldentity.UserName = user.UserName;
+            oldentity.UserEmail = user.UserEmail;
+            oldentity.Address = user.Address;
+            oldentity.PhoneNumber = user.PhoneNumber;
+            oldentity.IsActive = user.IsActive;
+            oldentity.CompanyId = int.Parse(_currentUser.CompanyId);
+
             await _repo.SaveChangesAsync();
+
             await _auditRepository.LogAuditAsync<User>(
-               tableName: AuditTableName,
-               action: "update",
-               recordId: user.UserId,
-               oldEntity: oldentity,
-               newEntity: user,
-               changedBy: _currentUser.Email.ToString()  // Replace with actual user info
-           );
+                tableName: AuditTableName,
+                action: "update",
+                recordId: oldentity.UserId,
+                oldEntity: oldentity,
+                newEntity: user,
+                changedBy: _currentUser.Email
+            );
+
             return true;
         }
 
