@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Domain.Interfaces.IRepositories
 {
-    public interface IDeathClaimRepository : IGenericRepository<DeathClaim>
+    public interface ISupportTicketRepository : IGenericRepository<SupportTicket>
     {
-        IQueryable<DeathClaimDTO> GetQueryableDeathClaims();
+        IQueryable<SupportTicketDTO> GetQueryableSupportTickets();
     }
 }
