@@ -62,6 +62,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IMemberService, MemberService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAccountDirectEntryService, AccountDirectEntryService>();
+            services.AddScoped<IDeathClaimService, DeathClaimService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 
