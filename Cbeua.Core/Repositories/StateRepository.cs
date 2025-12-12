@@ -16,6 +16,7 @@ namespace Cbeua.Core.Repositories
         {
             _context = context;
         }
+
     }
    
 }

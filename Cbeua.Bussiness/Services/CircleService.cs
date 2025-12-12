@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,26 +24,24 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<CircleDTO>> GetAllAsync()
         {
-            List<CircleDTO> circleDTOs = new List<CircleDTO>();
-            var circles = await _repo.GetAllAsync();
+           // List<CircleDTO> circleDTOs = new List<CircleDTO>();
+            var circles =  _repo.QueryableCircles();
 
-            foreach (var circle in circles)
-            {
-                CircleDTO circleDTO = await ConvertCircleToDTO(circle);
-                circleDTOs.Add(circleDTO);
+            //foreach (var circle in circles)
+            //{
+            //    CircleDTO circleDTO = await ConvertCircleToDTO(circle);
+            //    circleDTOs.Add(circleDTO);
 
 
-            }
+            //}
 
-            return circleDTOs;
+            return await circles.ToListAsync () ;
         }
 
         public async Task<CircleDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var circleDTO = await ConvertCircleToDTO(q);
-            return circleDTO;
+            return await _repo.QueryableCircles()
+                       .FirstOrDefaultAsync(c => c.CircleId == id);
         }
 
         public async Task<CircleDTO> CreateAsync(Circle circle)

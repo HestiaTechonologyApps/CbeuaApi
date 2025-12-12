@@ -15,6 +15,7 @@ namespace Cbeua.Domain.DTO
         public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
         public int? StateId { get; set; }
+        public string StateName { get; set; } = "";
         public DateTime? DateFrom { get; set; }
         public string DateFromString => DateFrom.HasValue ? DateFrom.Value.ToString("yyyy-MM-dd") : "";
         public DateTime? DateTo { get; set; }
