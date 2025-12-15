@@ -19,8 +19,9 @@ namespace Cbeua.Domain.DTO
 
         public string Status { get; set; }
         public int CircleId { get; set; }
+        public string CircleName { get; set; }
         public int? StateId { get; set; }
-
+        public string StateName { get; set; }
 
         public bool IsRegCompleted { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();

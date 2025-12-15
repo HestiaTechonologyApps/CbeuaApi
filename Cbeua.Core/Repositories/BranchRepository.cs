@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.Entities;
+﻿using Cbeua.Domain.DTO;
+using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
 using System;
@@ -15,6 +16,25 @@ namespace Cbeua.Core.Repositories
         public BranchRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public IQueryable<BranchDTO> GetQuerableBranchList()
+        {
+            var q = from b in _context.Branches
+                    select new BranchDTO
+                    {
+                        BranchId = b.BranchId,
+                        DpCode = b.DpCode,
+                        Name = b.Name,
+                        Address1 = b.Address1,
+                        Address2 = b.Address2,
+                        Address3 = b.Address3,
+                        District = b.District,
+                        Status = b.Status,
+                        CircleId = b.CircleId,
+                        StateId = b.StateId,
+                        IsRegCompleted = b.IsRegCompleted
+                    };
+            return q;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.Entities;
+﻿using Cbeua.Domain.DTO;
+using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
 using System;
@@ -15,6 +16,19 @@ namespace Cbeua.Core.Repositories
         public CategoryRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public IQueryable<CategoryDTO> GetCategoryQuerableList()
+        {
+            var q = from c in _context.Categories
+                    select new CategoryDTO
+                    {
+                        CategoryId = c.CategoryId,
+                        Name = c.Name,
+                        Abbreviation = c.Abbreviation
+
+                        
+                    };
+            return q;
         }
     }
 }
