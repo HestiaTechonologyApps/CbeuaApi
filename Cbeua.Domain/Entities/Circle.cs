@@ -18,7 +18,7 @@ namespace Cbeua.Domain.Entities
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }    
 
-        public virtual ICollection<Branch> Branches { get; set; } = new List<Branch>(); 
+       
         public virtual State? State { get; set; }
     }
 }
