@@ -49,7 +49,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Comment> comments { get; set; }
 
-
+        public DbSet<DailyNews> DailyNews { get; set; }
 
 
         public DbSet<AuditLog> AuditLogs { get; set; }

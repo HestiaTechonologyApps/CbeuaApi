@@ -17,9 +17,9 @@ namespace Cbeua.Domain.DTO
         public int? StateId { get; set; }
         public string StateName { get; set; } = "";
         public DateTime? DateFrom { get; set; }
-        public string DateFromString => DateFrom.HasValue ? DateFrom.Value.ToString("yyyy-MM-dd") : "";
+        public string DateFromString => DateFrom.HasValue ? DateFrom.Value.ToString("yyyy-MM-dd HH:mm:ss") : "";
         public DateTime? DateTo { get; set; }
-        public string DateToString => DateTo.HasValue ? DateTo.Value.ToString("yyyy-MM-dd") : "";
+        public string DateToString => DateTo.HasValue ? DateTo.Value.ToString("yyyy-MM-dd HH:mm:ss") : "";
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }
