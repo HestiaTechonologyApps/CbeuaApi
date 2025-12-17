@@ -13,7 +13,7 @@ namespace Cbeua.Domain.Entities
         public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
 
-        public virtual List<Circle>? Circles { get; set; }
+        public  List<Circle>? Circles { get; set; }
     }
 }
 
