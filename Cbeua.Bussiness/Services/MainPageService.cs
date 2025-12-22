@@ -17,7 +17,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IAuditRepository _auditRepository;
         private readonly ICurrentUserService _currentUser;
 
-        public String AuditTableName { get; set; } = "MANAGEPAGE";
+        public String AuditTableName { get; set; } = "MAINPAGE";
         public MainPageService(IMainPageRepository repo, IAuditRepository auditRepository, ICurrentUserService currentUser)
         {
             _repo = repo;
@@ -35,10 +35,18 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MainPageDTO?> GetByIdAsync(int id)
         {
-            return await _repo
+            var dto = await _repo
                 .GetQueryableMainPageList()
                 .Where(x => x.MainPageId == id)
                 .FirstOrDefaultAsync();
+
+            if (dto == null)
+                return null;
+
+            dto.AuditLogs = await _auditRepository
+                .GetAuditLogsForEntityAsync("MAINPAGE", dto.MainPageId);
+
+            return dto;
         }
 
 
