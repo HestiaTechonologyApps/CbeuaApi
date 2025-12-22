@@ -19,7 +19,7 @@ namespace Cbeua.Domain.Entities
         public DateTime? DateTo { get; set; }    
 
        
-        public virtual State? State { get; set; }
+        public  State? State { get; set; }
     }
 }
 

@@ -46,7 +46,7 @@ namespace Cbeua.Domain.Entities
         public String RulesRegulation { get; set; } = "";
         public String DayQuote { get; set; } = "";
         public int CompanyId { get; set; } = 0;
-        public virtual Company? Company { get; set; }
+        public  Company? Company { get; set; }
 
     }
 }
