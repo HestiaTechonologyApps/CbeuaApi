@@ -50,6 +50,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<Comment> comments { get; set; }
 
         public DbSet<DailyNews> DailyNews { get; set; }
+        public DbSet<DirectPayment> DirectPayments { get; set; }
 
 
         public DbSet<AuditLog> AuditLogs { get; set; }
