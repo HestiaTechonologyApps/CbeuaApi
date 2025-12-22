@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,28 +27,20 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<MainPageDTO>> GetAllAsync()
         {
-            List<MainPageDTO> mainPageDTOs = new List<MainPageDTO>();
+            var mainPages = _repo.GetQueryableMainPageList();
 
-            var mainPages = await _repo.GetAllAsync();
-
-            foreach (var mainPage in mainPages)
-            {
-                MainPageDTO mainPageDTO = await ConvertMainPageToDTO(mainPage);
-                mainPageDTOs.Add(mainPageDTO);
-
-
-            }
-
-            return mainPageDTOs;
+            return await mainPages.ToListAsync();
         }
+
 
         public async Task<MainPageDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var mainPageDTO = await ConvertMainPageToDTO(q);
-            return mainPageDTO;
+            return await _repo
+                .GetQueryableMainPageList()
+                .Where(x => x.MainPageId == id)
+                .FirstOrDefaultAsync();
         }
+
 
         public async Task<MainPageDTO> CreateAsync(MainPage mainPage)
         {
