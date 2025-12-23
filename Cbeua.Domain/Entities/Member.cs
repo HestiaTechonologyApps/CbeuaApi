@@ -34,7 +34,7 @@ namespace Cbeua.Domain.Entities
 
         public string Name { get; set; } = "";
         public int GenderId { get; set; }
-        public int? ImageId { get; set; }
+      
         public DateTime? Dob { get; set; }
 
         public DateTime? Doj { get; set; }

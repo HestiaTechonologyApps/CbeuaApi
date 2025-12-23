@@ -71,7 +71,7 @@ namespace Cbeua.Bussiness.Services
             memberDTO.BranchId = member.BranchId;
             memberDTO.Name = member.Name;
             memberDTO.GenderId = member.GenderId;
-            memberDTO.ImageId = member.ImageId;
+            
             memberDTO.Dob = member.Dob;
             memberDTO.Doj = member.Doj; 
             memberDTO.DojtoScheme = member.DojtoScheme;

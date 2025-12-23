@@ -29,7 +29,7 @@ namespace Cbeua.Core.Repositories
                         BranchId = m.BranchId,
                         Name = m.Name,
                         GenderId = m.GenderId,
-                        ImageId = m.ImageId,
+                        
                         Dob = m.Dob,
                         Doj = m.Doj,
                         DojtoScheme = m.DojtoScheme,
