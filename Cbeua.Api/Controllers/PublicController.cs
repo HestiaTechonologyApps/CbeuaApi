@@ -18,9 +18,9 @@ namespace Cbeua.Api.Controllers
        
         public PublicController(IDailyNewsService dailyNewsService ,IDayQuoteService dayQuoteService ,IMainPageService mainPageService )
         {
-            dayQuoteService = dayQuoteService;
-            dailyNewsService = dailyNewsService;    
-            mainPageService = mainPageService;  
+           this.dayQuoteService = dayQuoteService;
+           this.dailyNewsService = dailyNewsService;    
+           this.mainPageService = mainPageService;  
         }
 
 

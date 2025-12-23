@@ -24,12 +24,12 @@ namespace Cbeua.Core.Repositories
 
         public IQueryable<MainPageDTO> GetQueryableMainPageList()
         {
-            int companyId = int.Parse(_currentUser.CompanyId);
+           // int companyId = int.Parse(_currentUser.CompanyId);
 
             return _context.MainPages
                 .AsNoTracking()
                 .Include(mp => mp.Company)
-                .Where(mp => mp.CompanyId == companyId)
+               // .Where(mp => mp.CompanyId == companyId)
                 .Select(mp => new MainPageDTO
                 {
                     MainPageId = mp.MainPageId,

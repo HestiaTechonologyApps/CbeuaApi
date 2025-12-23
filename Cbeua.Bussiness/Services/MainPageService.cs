@@ -15,14 +15,14 @@ namespace Cbeua.Bussiness.Services
     {
         private readonly IMainPageRepository _repo;
         private readonly IAuditRepository _auditRepository;
-        private readonly ICurrentUserService _currentUser;
+        
 
         public String AuditTableName { get; set; } = "MAINPAGE";
-        public MainPageService(IMainPageRepository repo, IAuditRepository auditRepository, ICurrentUserService currentUser)
+        public MainPageService(IMainPageRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
             this._auditRepository = auditRepository;
-            _currentUser = currentUser;
+            
         }
 
         public async Task<List<MainPageDTO>> GetAllAsync()
@@ -52,7 +52,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MainPageDTO> CreateAsync(MainPage mainPage)
         {
-            mainPage.CompanyId = int.Parse(_currentUser.CompanyId);
+           // mainPage.CompanyId = int.Parse(_currentUser.CompanyId);
             await _repo.AddAsync(mainPage);
             await _repo.SaveChangesAsync();
             await this._auditRepository.LogAuditAsync<MainPage>(
@@ -61,7 +61,7 @@ namespace Cbeua.Bussiness.Services
                 recordId: mainPage.MainPageId,
                 oldEntity: null,
                 newEntity: mainPage,
-                changedBy: _currentUser.Email.ToString() // Replace with actual user info
+                 changedBy: "System" // Replace with actual user info
             );
             return await ConvertMainPageToDTO(mainPage);
         }
@@ -97,7 +97,7 @@ namespace Cbeua.Bussiness.Services
             var oldentity = await _repo.GetByIdAsync(mainPage.MainPageId);
             _repo.Detach(oldentity);
             _repo.Update(mainPage);
-            mainPage.CompanyId = int.Parse(_currentUser.CompanyId);
+          //  mainPage.CompanyId = int.Parse(_currentUser.CompanyId);
             await _repo.SaveChangesAsync();
             await _auditRepository.LogAuditAsync<MainPage>(
               tableName: AuditTableName,
@@ -105,7 +105,7 @@ namespace Cbeua.Bussiness.Services
               recordId: mainPage.MainPageId,
               oldEntity: oldentity,
               newEntity: mainPage,
-              changedBy: _currentUser.Email.ToString() // Replace with actual user info
+               changedBy: "System" // Replace with actual user info
           );
             return true;
         }
@@ -123,7 +123,7 @@ namespace Cbeua.Bussiness.Services
                recordId: mainPage.MainPageId,
                oldEntity: mainPage,
                newEntity: mainPage,
-               changedBy: _currentUser.Email.ToString() // Replace with actual user info
+                changedBy: "System" // Replace with actual user info
            );
             return true;
         }
