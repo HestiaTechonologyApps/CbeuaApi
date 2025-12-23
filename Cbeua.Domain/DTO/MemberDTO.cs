@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,3 +43,9 @@ namespace Cbeua.Domain.DTO
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }
+public class ProfilePicUploadDto
+{
+    public int AppUserId { get; set; }
+    public IFormFile ProfilePic { get; set; }
+}
+

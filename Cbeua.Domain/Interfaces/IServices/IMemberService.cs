@@ -15,5 +15,6 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<MemberDTO> CreateAsync(Member member);
         Task<bool> UpdateAsync(Member member);
         Task<bool> DeleteAsync(int id);
+        Task<CustomApiResponse> UpdateProfilePicAsync(int MemberId, string ProfileImageSrc);
     }
 }

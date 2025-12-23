@@ -123,5 +123,18 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
             return true;
         }
+
+        public async Task<CustomApiResponse> UpdateProfilePicAsync(int MemberId, string ProfileImageSrc)
+        {
+            var member = await _repo.GetByIdAsync(MemberId);
+            if (member == null)
+                return new CustomApiResponse { IsSucess = false, Error = "Member not found", StatusCode = 404 };
+
+            member.ProfileImageSrc = ProfileImageSrc;
+            _repo.Update(member);
+            await _repo.SaveChangesAsync();
+
+            return new CustomApiResponse { IsSucess = true, Value = ProfileImageSrc, StatusCode = 200 };
+        }
     }
 }
