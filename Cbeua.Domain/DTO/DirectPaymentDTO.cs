@@ -15,7 +15,7 @@ namespace Cbeua.Domain.DTO
         public decimal Amount { get; set; }
 
         public DateTime PaymentDate { get; set; }
-        public string PaymentDatestring => PaymentDate.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string PaymentDatestring => PaymentDate.ToString("dd MMMM yyyy hh:mm tt") ?? "";
 
         public string PaymentMode { get; set; } = "";// Cash / Bank / UPI
 
@@ -25,7 +25,7 @@ namespace Cbeua.Domain.DTO
 
         public int CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string CreatedDatestring => CreatedDate.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string CreatedDatestring => CreatedDate.ToString("dd MMMM yyyy hh:mm tt") ?? "";
 
         public bool IsDeleted { get; set; }
     }

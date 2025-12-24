@@ -24,7 +24,7 @@ namespace Cbeua.Domain.DTO
 
         public int? ApprovedByUserId { get; set; }
         public DateTime? ApprovedDate { get; set; }
-        public string ApprovedDateSting => ApprovedDate.HasValue ? ApprovedDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "";
+        public string ApprovedDateSting => ApprovedDate.HasValue ? ApprovedDate.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>(); 
 
     }

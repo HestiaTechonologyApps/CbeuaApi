@@ -15,7 +15,7 @@ namespace Cbeua.Domain.DTO
 
         public int? DesignationId { get; set; }
         public DateTime? DeathDate { get; set; }
-        public string DeathDateString => DeathDate.HasValue ? DeathDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "";
+        public string DeathDateString => DeathDate.HasValue ? DeathDate.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
 
         public String RefundNO { get; set; } = "";
         public String BranchNameOFTime { get; set; } = "";

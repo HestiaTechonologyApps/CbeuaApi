@@ -15,7 +15,7 @@ namespace Cbeua.Domain.DTO
 
         public int? DesignationId { get; set; }
         public DateTime? DeathDate { get; set; }
-
+        public static string DeathDatestring => DateTime.Now.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public string Nominee { get; set; } = "";
 
         public string NomineeRelation { get; set; } = "";
@@ -26,7 +26,7 @@ namespace Cbeua.Domain.DTO
         public string DDNO { get; set; } = "";
 
         public DateTime? DDDATE { get; set; }
-
+        public static string DDDATEString => DateTime.Now.ToString("dd MMMM yyyy hh:mm tt") ?? "";
 
         public decimal Amount { get; set; }
 

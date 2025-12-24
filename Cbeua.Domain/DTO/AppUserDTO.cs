@@ -31,6 +31,7 @@ namespace Cbeua.Domain.DTO
         public string? ReferralCode { get; set; } 
         public string? ReferredBy { get; set; } 
         public DateTime? LastLogin { get; set; }
+        public String LastLoginString => LastLogin?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public bool IsAudultVerificationCompleted { get; set; }
         public string? Prefferedlanguage { get; set; } = "";
         public string? Interests { get; set; } = "";

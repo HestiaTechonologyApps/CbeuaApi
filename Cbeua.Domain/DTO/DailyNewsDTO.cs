@@ -16,7 +16,7 @@ namespace Cbeua.Domain.DTO
         public string Description { get; set; } = "";
 
         public DateTime NewsDate { get; set; }
-        public string NewsDateString => NewsDate.ToString("yyyy-MM-dd HH:mm:ss");
+        public string NewsDateString => NewsDate.ToString("dd MMMM yyyy hh:mm tt");
 
         public int CompanyId { get; set; } = 0;
 
@@ -25,7 +25,7 @@ namespace Cbeua.Domain.DTO
         public bool IsDeleted { get; set; }
 
         public DateTime CreatedOn { get; set; }
-        public string CreatedOnString => CreatedOn.ToString("yyyy-MM-dd HH:mm:ss");
+        public string CreatedOnString => CreatedOn.ToString("dd MMMM yyyy hh:mm tt");
 
         public string CreatedBy { get; set; } = "";
 

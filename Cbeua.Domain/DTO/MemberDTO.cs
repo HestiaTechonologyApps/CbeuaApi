@@ -20,20 +20,20 @@ namespace Cbeua.Domain.DTO
         public int GenderId { get; set; }
         public int? ImageId { get; set; }
         public DateTime? Dob { get; set; }
-        public string DobString => Dob?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string DobString => Dob?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
 
         public DateTime? Doj { get; set; }
-        public string DojString => Doj?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string DojString => Doj?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public DateTime? DojtoScheme { get; set;}
-        public string DojtoSchemeString => DojtoScheme?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string DojtoSchemeString => DojtoScheme?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public int StatusId { get; set; }
         public bool IsRegCompleted { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string CreatedDateString => CreatedDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string CreatedDateString => CreatedDate?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public int ModifiedByUserId { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        public string ModifiedDateString => ModifiedDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
+        public string ModifiedDateString => ModifiedDate?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public string Nominee { get; set; } = "";
         public string ProfileImageSrc { get; set; } = "";
         public string NomineeRelation { get; set; } = "";
