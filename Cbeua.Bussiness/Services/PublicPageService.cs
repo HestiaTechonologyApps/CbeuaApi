@@ -42,36 +42,100 @@ namespace Cbeua.Bussiness.Services
         private async Task<PublicPageDTO> ConvertPublicToDTO(PublicPage publicPage)
         {
             PublicPageDTO publicPageDTO = new PublicPageDTO();
-            publicPageDTO.PublicPageId = publicPage.PublicPageId;
-            publicPageDTO.NavbarTitle = publicPage.NavbarTitle;
-            publicPageDTO.NavbarSubTitle = publicPage.NavbarSubTitle;
-            publicPageDTO.NavbarLogoAlt = publicPage.NavbarLogoAlt;
-            publicPageDTO.NavbarMenuHead = publicPage.NavbarMenuHead;
-            publicPageDTO.NavbarMenuJson = publicPage.NavbarMenuJson;
-            publicPageDTO.NavbarLoginLabel = publicPage.NavbarLoginLabel;
-            publicPageDTO.NavbarLoginIconClass = publicPage.NavbarLoginIconClass;
-            publicPageDTO.NavbarPhone = publicPage.NavbarPhone;
-            publicPageDTO.NavbarEmail = publicPage.NavbarEmail;
-            publicPageDTO.HeroBadge = publicPage.HeroBadge;
-            publicPageDTO.HeroTitleLine1 = publicPage.HeroTitleLine1;
-            publicPageDTO.HeroTitleHighlight = publicPage.HeroTitleHighlight;
-            publicPageDTO.HeroTitleLine3 = publicPage.HeroTitleLine3;
-            publicPageDTO.HeroDescription = publicPage.HeroDescription;
-            publicPageDTO.HeroPrimaryBtnLabel = publicPage.HeroPrimaryBtnLabel;
-            publicPageDTO.HeroPrimaryBtnRoute = publicPage.HeroPrimaryBtnRoute;
-            publicPageDTO.HeroSecondaryBtnLabel = publicPage.HeroSecondaryBtnLabel;
-            publicPageDTO.HeroSecondaryBtnRoute = publicPage.HeroSecondaryBtnRoute;
-            publicPageDTO.FooterShortName = publicPage.FooterShortName;
-            publicPageDTO.FooterSubtitle = publicPage.FooterSubtitle;
-            publicPageDTO.FooterDescription = publicPage.FooterDescription;
-            publicPageDTO.FooterAddress1 = publicPage.FooterAddress1;
-            publicPageDTO.FooterAddress2 = publicPage.FooterAddress2;
-            publicPageDTO.FooterPhone = publicPage.FooterPhone;
-            publicPageDTO.FooterEmail = publicPage.FooterEmail;
-            publicPageDTO.FooterQuickLinksJson = publicPage.FooterQuickLinksJson;
-            publicPageDTO.FooterOfficeHoursJson = publicPage.FooterOfficeHoursJson;
-            publicPageDTO.FooterBottomBarText = publicPage.FooterBottomBarText;
-            
+            publicPageDTO.PublicPageId = publicPageDTO.PublicPageId;
+
+            /* ========== NAVBAR ========== */
+            publicPageDTO.NavBrandTitle = publicPageDTO.NavBrandTitle;
+            publicPageDTO.NavBrandSubTitle = publicPageDTO.NavBrandSubTitle;
+            publicPageDTO.NavLogoUrl = publicPageDTO.NavLogoUrl;
+            publicPageDTO.NavLogoAlt = publicPageDTO.NavLogoAlt;
+            publicPageDTO.NavMenuHead = publicPageDTO.NavMenuHead;
+
+            publicPageDTO.NavHomeLabel = publicPageDTO.NavHomeLabel;
+            publicPageDTO.NavAboutLabel = publicPageDTO.NavAboutLabel;
+            publicPageDTO.NavRulesLabel = publicPageDTO.NavRulesLabel;
+            publicPageDTO.NavDownloadsLabel = publicPageDTO.NavDownloadsLabel;
+            publicPageDTO.NavCommitteeLabel = publicPageDTO.NavCommitteeLabel;
+            publicPageDTO.NavClaimsLabel = publicPageDTO.NavClaimsLabel;
+            publicPageDTO.NavContactLabel = publicPageDTO.NavContactLabel;
+
+            publicPageDTO.NavLoginLabel = publicPageDTO.NavLoginLabel;
+            publicPageDTO.NavLoginIcon = publicPageDTO.NavLoginIcon;
+
+            publicPageDTO.NavPhoneIcon = publicPageDTO.NavPhoneIcon;
+            publicPageDTO.NavPhoneValue = publicPageDTO.NavPhoneValue;
+            publicPageDTO.NavEmailIcon = publicPageDTO.NavEmailIcon;
+            publicPageDTO.NavEmailValue = publicPageDTO.NavEmailValue;
+
+            /* ========== HOME – HERO ========== */
+            publicPageDTO.HomeHeroBadge = publicPageDTO.HomeHeroBadge;
+            publicPageDTO.HomeHeroTitle = publicPageDTO.HomeHeroTitle;
+            publicPageDTO.HomeHeroLine1 = publicPageDTO.HomeHeroLine1;
+            publicPageDTO.HomeHeroHighlight = publicPageDTO.HomeHeroHighlight;
+            publicPageDTO.HomeHeroLine3 = publicPageDTO.HomeHeroLine3;
+            publicPageDTO.HomeHeroDescription = publicPageDTO.HomeHeroDescription;
+
+            publicPageDTO.HomePrimaryBtnLabel = publicPageDTO.HomePrimaryBtnLabel;
+            publicPageDTO.HomePrimaryBtnRoute = publicPageDTO.HomePrimaryBtnRoute;
+            publicPageDTO.HomeSecondaryBtnLabel = publicPageDTO.HomeSecondaryBtnLabel;
+            publicPageDTO.HomeSecondaryBtnRoute = publicPageDTO.HomeSecondaryBtnRoute;
+
+            publicPageDTO.HomeHeroImageUrl = publicPageDTO.HomeHeroImageUrl;
+            publicPageDTO.HomeHeroImageAlt = publicPageDTO.HomeHeroImageAlt;
+
+            /* ========== HOME – FEATURES ========== */
+            publicPageDTO.HomeFeatureHeading = publicPageDTO.HomeFeatureHeading;
+            publicPageDTO.HomeFeatureLabel = publicPageDTO.HomeFeatureLabel;
+            publicPageDTO.HomeFeatureTitle = publicPageDTO.HomeFeatureTitle;
+            publicPageDTO.HomeFeatureSubTitle = publicPageDTO.HomeFeatureSubTitle;
+            publicPageDTO.HomeFeatureItemsJson = publicPageDTO.HomeFeatureItemsJson;
+
+            /* ========== HOME – ABOUT ========== */
+            publicPageDTO.HomeAboutLabel = publicPageDTO.HomeAboutLabel;
+            publicPageDTO.HomeAboutTitle = publicPageDTO.HomeAboutTitle;
+            publicPageDTO.HomeAboutParagraph = publicPageDTO.HomeAboutParagraph;
+
+            /* ========== FOOTER ========== */
+            publicPageDTO.FooterBrandShortName = publicPageDTO.FooterBrandShortName;
+            publicPageDTO.FooterBrandSubTitle = publicPageDTO.FooterBrandSubTitle;
+            publicPageDTO.FooterBrandDescription = publicPageDTO.FooterBrandDescription;
+            publicPageDTO.FooterLogoAlt = publicPageDTO.FooterLogoAlt;
+
+            publicPageDTO.FooterAddressLine1 = publicPageDTO.FooterAddressLine1;
+            publicPageDTO.FooterAddressLine2 = publicPageDTO.FooterAddressLine2;
+
+            publicPageDTO.FooterPhoneIcon = publicPageDTO.FooterPhoneIcon;
+            publicPageDTO.FooterPhoneValue = publicPageDTO.FooterPhoneValue;
+
+            publicPageDTO.FooterEmailIcon = publicPageDTO.FooterEmailIcon;
+            publicPageDTO.FooterEmailValue = publicPageDTO.FooterEmailValue;
+
+            publicPageDTO.FooterQuickLinksJson = publicPageDTO.FooterQuickLinksJson;
+            publicPageDTO.FooterOfficeHoursJson = publicPageDTO.FooterOfficeHoursJson;
+            publicPageDTO.FooterCopyrightText = publicPageDTO.FooterCopyrightText;
+
+            /* ========== PRIVACY POLICY ========== */
+            publicPageDTO.PrivacyHeroBadge = publicPageDTO.PrivacyHeroBadge;
+            publicPageDTO.PrivacyHeroTitle = publicPageDTO.PrivacyHeroTitle;
+            publicPageDTO.PrivacyHeroSubTitle = publicPageDTO.PrivacyHeroSubTitle;
+
+            publicPageDTO.PrivacyHeading1 = publicPageDTO.PrivacyHeading1;
+            publicPageDTO.PrivacyPara1 = publicPageDTO.PrivacyPara1;
+            publicPageDTO.PrivacyPara2 = publicPageDTO.PrivacyPara2;
+
+            publicPageDTO.PrivacyHeading2 = publicPageDTO.PrivacyHeading2;
+            publicPageDTO.PrivacyPara3 = publicPageDTO.PrivacyPara3;
+
+            publicPageDTO.PrivacyHeading3 = publicPageDTO.PrivacyHeading3;
+            publicPageDTO.PrivacyLine1 = publicPageDTO.PrivacyLine1;
+            publicPageDTO.PrivacyLine2 = publicPageDTO.PrivacyLine2;
+            publicPageDTO.PrivacyLine3 = publicPageDTO.PrivacyLine3;
+            publicPageDTO.PrivacyLine4 = publicPageDTO.PrivacyLine4;
+            publicPageDTO.PrivacyLine5 = publicPageDTO.PrivacyLine5;
+            publicPageDTO.PrivacyLine6 = publicPageDTO.PrivacyLine6;
+
+
+
             return publicPageDTO;
         }
 

@@ -20,46 +20,97 @@ namespace Cbeua.Core.Repositories
        public IQueryable<PublicPageDTO> GetQueryablePublicPageList()
         {
             return _context.publicPages
-                .Select(pp => new PublicPageDTO
+                .Select(wc => new PublicPageDTO
                 {
-                    PublicPageId = pp.PublicPageId,
-                    NavbarTitle = pp.NavbarTitle,
-                    NavbarSubTitle = pp.NavbarSubTitle,
-                    NavbarLogoAlt = pp.NavbarLogoAlt,
-                    NavbarMenuHead = pp.NavbarMenuHead,
-                    NavbarMenuJson = pp.NavbarMenuJson,
-                    NavbarLoginIconClass = pp.NavbarLoginIconClass,
-                    NavbarLoginLabel = pp.NavbarLoginLabel,
-                    NavbarPhone = pp.NavbarPhone,
-                    NavbarEmail = pp.NavbarEmail,
-                    HeroBadge = pp.HeroBadge,
-                    HeroTitleLine1 = pp.HeroTitleLine1,
-                    HeroTitleHighlight = pp.HeroTitleHighlight,
-                    HeroTitleLine3 = pp.HeroTitleLine3,
-                    HeroDescription = pp.HeroDescription,
-                    HeroPrimaryBtnLabel = pp.HeroPrimaryBtnLabel,
-                    HeroPrimaryBtnRoute = pp.HeroPrimaryBtnRoute,
-                    HeroSecondaryBtnLabel = pp.HeroSecondaryBtnLabel,
+                    PublicPageId = wc.PublicPageId,
+                    NavBrandTitle = wc.NavBrandTitle,
+                    NavBrandSubTitle = wc.NavBrandSubTitle,
+                    NavLogoUrl = wc.NavLogoUrl,
+                    NavLogoAlt = wc.NavLogoAlt,
+                    NavMenuHead = wc.NavMenuHead,
 
-                    HeroSecondaryBtnRoute = pp.HeroSecondaryBtnRoute,
-                    FeaturesHeadingLabel = pp.FeaturesHeadingLabel,
-                    FeaturesHeadingTitle = pp.FeaturesHeadingTitle,
-                    FeaturesHeadingSubtitle = pp.FeaturesHeadingSubtitle,
-                    FeaturesItemsJson = pp.FeaturesItemsJson,
-                    FooterSubtitle = pp.FooterSubtitle,
-                    FooterShortName = pp.FooterShortName,
-                    FooterDescription = pp.FooterDescription,
-                    FooterAddress1 = pp.FooterAddress1,
-                    FooterAddress2 = pp.FooterAddress2,
-                    FooterPhone = pp.FooterPhone,
-                    FooterEmail = pp.FooterEmail,
-                    FooterQuickLinksJson = pp.FooterQuickLinksJson,
-                    FooterOfficeHoursJson = pp.FooterOfficeHoursJson,
-                    FooterBottomBarText = pp.FooterBottomBarText
-                    
+                    NavHomeLabel = wc.NavHomeLabel,
+                    NavAboutLabel = wc.NavAboutLabel,
+                    NavRulesLabel = wc.NavRulesLabel,
+                    NavDownloadsLabel = wc.NavDownloadsLabel,
+                    NavCommitteeLabel = wc.NavCommitteeLabel,
+                    NavClaimsLabel = wc.NavClaimsLabel,
+                    NavContactLabel = wc.NavContactLabel,
 
+                    NavLoginLabel = wc.NavLoginLabel,
+                    NavLoginIcon = wc.NavLoginIcon,
 
+                    NavPhoneIcon = wc.NavPhoneIcon,
+                    NavPhoneValue = wc.NavPhoneValue,
+                    NavEmailIcon = wc.NavEmailIcon,
+                    NavEmailValue = wc.NavEmailValue,
 
+                    /* ========== HOME – HERO ========== */
+                    HomeHeroBadge = wc.HomeHeroBadge,
+                    HomeHeroTitle = wc.HomeHeroTitle,
+                    HomeHeroLine1 = wc.HomeHeroLine1,
+                    HomeHeroHighlight = wc.HomeHeroHighlight,
+                    HomeHeroLine3 = wc.HomeHeroLine3,
+                    HomeHeroDescription = wc.HomeHeroDescription,
+
+                    HomePrimaryBtnLabel = wc.HomePrimaryBtnLabel,
+                    HomePrimaryBtnRoute = wc.HomePrimaryBtnRoute,
+                    HomeSecondaryBtnLabel = wc.HomeSecondaryBtnLabel,
+                    HomeSecondaryBtnRoute = wc.HomeSecondaryBtnRoute,
+
+                    HomeHeroImageUrl = wc.HomeHeroImageUrl,
+                    HomeHeroImageAlt = wc.HomeHeroImageAlt,
+
+                    /* ========== HOME – FEATURES ========== */
+                    HomeFeatureHeading = wc.HomeFeatureHeading,
+                    HomeFeatureLabel = wc.HomeFeatureLabel,
+                    HomeFeatureTitle = wc.HomeFeatureTitle,
+                    HomeFeatureSubTitle = wc.HomeFeatureSubTitle,
+                    HomeFeatureItemsJson = wc.HomeFeatureItemsJson,
+
+                    /* ========== HOME – ABOUT ========== */
+                    HomeAboutLabel = wc.HomeAboutLabel,
+                    HomeAboutTitle = wc.HomeAboutTitle,
+                    HomeAboutParagraph = wc.HomeAboutParagraph,
+
+                    /* ========== FOOTER ========== */
+                    FooterBrandShortName = wc.FooterBrandShortName,
+                    FooterBrandSubTitle = wc.FooterBrandSubTitle,
+                    FooterBrandDescription = wc.FooterBrandDescription,
+                    FooterLogoAlt = wc.FooterLogoAlt,
+
+                    FooterAddressLine1 = wc.FooterAddressLine1,
+                    FooterAddressLine2 = wc.FooterAddressLine2,
+
+                    FooterPhoneIcon = wc.FooterPhoneIcon,
+                    FooterPhoneValue = wc.FooterPhoneValue,
+
+                    FooterEmailIcon = wc.FooterEmailIcon,
+                    FooterEmailValue = wc.FooterEmailValue,
+
+                    FooterQuickLinksJson = wc.FooterQuickLinksJson,
+                    FooterOfficeHoursJson = wc.FooterOfficeHoursJson,
+                    FooterCopyrightText = wc.FooterCopyrightText,
+
+                    /* ========== PRIVACY POLICY ========== */
+                    PrivacyHeroBadge = wc.PrivacyHeroBadge,
+                    PrivacyHeroTitle = wc.PrivacyHeroTitle,
+                    PrivacyHeroSubTitle = wc.PrivacyHeroSubTitle,
+
+                    PrivacyHeading1 = wc.PrivacyHeading1,
+                    PrivacyPara1 = wc.PrivacyPara1,
+                    PrivacyPara2 = wc.PrivacyPara2,
+
+                    PrivacyHeading2 = wc.PrivacyHeading2,
+                    PrivacyPara3 = wc.PrivacyPara3,
+
+                    PrivacyHeading3 = wc.PrivacyHeading3,
+                    PrivacyLine1 = wc.PrivacyLine1,
+                    PrivacyLine2 = wc.PrivacyLine2,
+                    PrivacyLine3 = wc.PrivacyLine3,
+                    PrivacyLine4 = wc.PrivacyLine4,
+                    PrivacyLine5 = wc.PrivacyLine5,
+                    PrivacyLine6 = wc.PrivacyLine6
 
                 });
         }
