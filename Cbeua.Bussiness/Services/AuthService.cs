@@ -225,7 +225,8 @@ namespace Cbeua.Business.Services
                 IsActive = user.IsActive,
                 CreateAt = user.CreateAt,
                 Lastlogin = user.Lastlogin,
-                CompanyId=user.CompanyId
+                CompanyId=user.CompanyId,
+                Role = user.Role
             };
         }
     }

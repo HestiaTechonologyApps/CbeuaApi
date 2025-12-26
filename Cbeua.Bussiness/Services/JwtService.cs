@@ -17,7 +17,11 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.NameIdentifier, user.UserName  .ToString()),
             new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
             new Claim(ClaimTypes.Email, user.UserEmail),
-            new Claim(ClaimTypes.GroupSid, user.CompanyId.ToString ())
+            new Claim(ClaimTypes.GroupSid, user.CompanyId.ToString ()),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim(ClaimTypes.SerialNumber, user.UserId.ToString())
+            
+
         };
 
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
