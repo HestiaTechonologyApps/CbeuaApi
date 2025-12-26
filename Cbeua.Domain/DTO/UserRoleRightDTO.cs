@@ -11,7 +11,7 @@ namespace Cbeua.Domain.DTO
         public int UserRoleRightId { get; set; }
 
         public DateTime ControllerName { get; set; }
-        public string ControllerNameString => ControllerName.ToString("yyyy-MM-dd HH:mm:ss");
+        public string ControllerNameString => ControllerName.ToString("dd MMMM yyyy hh:mm tt");
 
         public String ActionName { get; set; } = "";
 

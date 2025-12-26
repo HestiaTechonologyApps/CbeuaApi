@@ -59,6 +59,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<ExceptionLog> ExceptionLogs { get; set; }
         public IEnumerable<object> TripOrder { get; set; }
         public DbSet<UserLoginLog> UserLoginLogs { get; set; }
+        public DbSet<PublicPage> publicPages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
