@@ -40,5 +40,8 @@ namespace Cbeua.Core.Repositories
                     };
             return q;
         }
+    
+    
+    
     }
 }
