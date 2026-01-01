@@ -37,6 +37,8 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
+
+
         [HttpGet("{id}")]
         public async Task<CustomApiResponse> GetById(int id)
         {
