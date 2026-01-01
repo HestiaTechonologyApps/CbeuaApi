@@ -6,10 +6,10 @@ namespace Cbeua.Bussiness.Services
 {
     public class MonthlyContributionService : IMonthlyContributionService
     {
-        private readonly IMonthlyContributionService  _repo;
+        private readonly IMonthlyContributionRepository  _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "DESIGNATION";
-        public MonthlyContributionService(IMonthlyContributionService repo, IAuditRepository auditRepository)
+        public MonthlyContributionService(IMonthlyContributionRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
             _auditRepository = auditRepository;
