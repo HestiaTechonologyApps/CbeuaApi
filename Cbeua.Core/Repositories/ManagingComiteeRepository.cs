@@ -25,24 +25,50 @@ namespace Cbeua.Core.Repositories
         {
             int companyId = Convert.ToInt32(_currentUser.CompanyId);
 
-            var query =
-                from m in _context.ManagingComitees.AsNoTracking()
-                join cmp in _context.Companies.AsNoTracking() on m.CompanyId equals cmp.CompanyId
-                where m.CompanyId == companyId
-                select new ManagingComiteeDTO
-                {
-                    ManagingComiteeId = m.ManagingComiteeId,
-                    ManagingComitteeName = m.ManagingComitteeName,
-                    Position = m.Position,
-                    Description1 = m.Description1,
-                    Description2 = m.Description2,
-                    imageLocation = m.imageLocation,
-                    order = m.order,
-                    CompanyId = m.CompanyId,
-                    CompanyName = cmp.ComapanyName
-                };
+            if(companyId != 0)
+            {
+                var query =
+                    from m in _context.ManagingComitees.AsNoTracking()
+                    join cmp in _context.Companies.AsNoTracking() on m.CompanyId equals cmp.CompanyId
+                    where m.CompanyId == companyId
+                    select new ManagingComiteeDTO
+                    {
+                        ManagingComiteeId = m.ManagingComiteeId,
+                        ManagingComitteeName = m.ManagingComitteeName,
+                        Position = m.Position,
+                        Description1 = m.Description1,
+                        Description2 = m.Description2,
+                        imageLocation = m.imageLocation,
+                        order = m.order,
+                        CompanyId = m.CompanyId,
+                        CompanyName = cmp.ComapanyName
+                    };
 
-            return query;
+                return query;
+            }
+            else
+            {
+                var query =
+                    from m in _context.ManagingComitees.AsNoTracking()
+                    join cmp in _context.Companies.AsNoTracking() on m.CompanyId equals cmp.CompanyId
+                    select new ManagingComiteeDTO
+                    {
+                        ManagingComiteeId = m.ManagingComiteeId,
+                        ManagingComitteeName = m.ManagingComitteeName,
+                        Position = m.Position,
+                        Description1 = m.Description1,
+                        Description2 = m.Description2,
+                        imageLocation = m.imageLocation,
+                        order = m.order,
+                        CompanyId = m.CompanyId,
+                        CompanyName = cmp.ComapanyName
+                    };
+
+                return query;
+
+            }
+
+              
         }
 
 

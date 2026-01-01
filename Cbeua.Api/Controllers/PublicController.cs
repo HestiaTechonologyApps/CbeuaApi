@@ -17,15 +17,20 @@ namespace Cbeua.Api.Controllers
         private readonly IMainPageService mainPageService ;
         private readonly IPublicPageService publicPageService ;
         private readonly IManagingComiteeService _manageservice;
+        private readonly IAttachmentService _attachmentService;
+
+
 
         public PublicController(IDailyNewsService dailyNewsService ,IDayQuoteService dayQuoteService ,
-            IMainPageService mainPageService , IManagingComiteeService manageservice,IPublicPageService publicPageService)
+            IMainPageService mainPageService , IManagingComiteeService manageservice,
+            IPublicPageService publicPageService, IAttachmentService _attachmentService)
         {
            this.dayQuoteService = dayQuoteService;
            this.dailyNewsService = dailyNewsService;    
            this.mainPageService = mainPageService;  
               this._manageservice = manageservice;
               this.publicPageService = publicPageService;
+            this._attachmentService = _attachmentService;
         }
 
 
@@ -132,6 +137,30 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
+
+        [HttpGet("attachment")]
+        public async Task<CustomApiResponse> GetAllAttachment()
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var managingComitees = await _attachmentService.GetAllAsync ();
+
+                managingComitees = managingComitees.Where(u => u.TableName == "public").ToList();
+                response.IsSucess = true;
+                response.Value = managingComitees;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
+
 
 
     }
