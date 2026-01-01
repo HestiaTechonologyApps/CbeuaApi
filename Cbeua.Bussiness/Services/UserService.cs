@@ -88,6 +88,7 @@ namespace Cbeua.Bussiness.Services
             userDTO.CreateAt = user.CreateAt;
             userDTO.Lastlogin = user.Lastlogin;
             userDTO.CompanyId = user.CompanyId;
+            userDTO.StaffNo = user.StaffNo;
             userDTO.LastloginString = user.Lastlogin.HasValue ? user.Lastlogin.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
             userDTO.CreateAtSyring = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt");
 
