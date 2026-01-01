@@ -13,6 +13,7 @@ namespace Cbeua.Domain.DTO
         public int UserId { get; set; } // Primary Key
         public string UserName { get; set; } = "";
         public string UserEmail { get; set; } = "";
+        public int StaffNo { get; set; } = 0;
         public string PhoneNumber { get; set; } = "";
         public string Address { get; set; } = "";
         public string PasswordHash { get; set; } = "";
