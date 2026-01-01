@@ -122,6 +122,7 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.PrivacyHeading1 = publicPageDTO.PrivacyHeading1;
             publicPageDTO.PrivacyPara1 = publicPageDTO.PrivacyPara1;
             publicPageDTO.PrivacyPara2 = publicPageDTO.PrivacyPara2;
+            publicPageDTO.PrivacyParagraph3 = publicPageDTO.PrivacyParagraph3;
 
             publicPageDTO.PrivacyHeading2 = publicPageDTO.PrivacyHeading2;
             publicPageDTO.PrivacyPara3 = publicPageDTO.PrivacyPara3;
@@ -133,6 +134,7 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.PrivacyLine4 = publicPageDTO.PrivacyLine4;
             publicPageDTO.PrivacyLine5 = publicPageDTO.PrivacyLine5;
             publicPageDTO.PrivacyLine6 = publicPageDTO.PrivacyLine6;
+
 
 
 

@@ -181,6 +181,7 @@ namespace Cbeua.Domain.DTO
         public string PrivacyHeading1 { get; set; } = "";
         public string PrivacyPara1 { get; set; } = "";
         public string PrivacyPara2 { get; set; } = "";
+        public string PrivacyParagraph3 { get; set; } = "";
 
         public string PrivacyHeading2 { get; set; } = "";
         public string PrivacyPara3 { get; set; } = "";
