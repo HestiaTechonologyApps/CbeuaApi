@@ -21,8 +21,7 @@ namespace Cbeua.Domain.Entities
         public int CircleId { get; set; }
         public int? StateId { get; set; }
 
-        public Circle? Circle { get; set; }
-        public bool IsRegCompleted { get; set; }
+         public bool IsRegCompleted { get; set; }
 
        
 

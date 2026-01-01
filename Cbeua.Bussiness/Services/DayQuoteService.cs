@@ -71,6 +71,7 @@ namespace Cbeua.Bussiness.Services
             dayQuoteDTO.DayQuoteId = dayQuote.DayQuoteId;
             dayQuoteDTO.ToDayQuote = dayQuote.ToDayQuote;
             dayQuoteDTO.Day= dayQuote.Day;
+            dayQuoteDTO.MonthCode = dayQuote.MonthCode;
             dayQuoteDTO.UnformatedContent = dayQuote.UnformatedContent;
             return dayQuoteDTO;
         }
