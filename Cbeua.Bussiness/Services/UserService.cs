@@ -91,8 +91,7 @@ namespace Cbeua.Bussiness.Services
             userDTO.StaffNo = user.StaffNo;
             userDTO.LastloginString = user.Lastlogin.HasValue ? user.Lastlogin.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
             userDTO.CreateAtSyring = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt");
-
-
+            userDTO.Role = user.Role;
             userDTO.IsActive = user.IsActive;
            // userDTO.AuditLogs = await _auditRepository.GetAuditLogsForEntityAsync("User", user.UserId);
             return userDTO;
@@ -118,6 +117,9 @@ namespace Cbeua.Bussiness.Services
             oldentity.Address = user.Address;
             oldentity.PhoneNumber = user.PhoneNumber;
             oldentity.IsActive = user.IsActive;
+            oldentity.Role = user.Role;      
+            oldentity.StaffNo = user.StaffNo; 
+            oldentity.Islocked = user.Islocked; 
             oldentity.CompanyId = int.Parse(_currentUser.CompanyId);
 
             await _repo.SaveChangesAsync();
