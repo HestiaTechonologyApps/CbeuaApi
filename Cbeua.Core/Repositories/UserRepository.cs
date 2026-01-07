@@ -58,6 +58,7 @@ namespace Cbeua.Core.Repositories
                          UserId = user.UserId,
                          UserName = user.UserName,
                          UserEmail = user.UserEmail,
+                         StaffNo = user.StaffNo,
                          PhoneNumber = user.PhoneNumber,
                          Address = user.Address,
                          IsActive = user.IsActive,
@@ -66,6 +67,7 @@ namespace Cbeua.Core.Repositories
                          CreateAt = user.CreateAt,
                          CompanyId = user.CompanyId,
                          ComapanyName = comp.ComapanyName,
+                         Role = user.Role,
                          CreateAtString = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt"),
 
                          LastloginString = user.Lastlogin.HasValue
