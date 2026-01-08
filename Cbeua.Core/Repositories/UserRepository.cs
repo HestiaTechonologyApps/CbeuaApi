@@ -59,6 +59,7 @@ namespace Cbeua.Core.Repositories
                          UserName = user.UserName,
                          UserEmail = user.UserEmail,
                          StaffNo = user.StaffNo,
+                         MemberId = user.MemberId,
                          PhoneNumber = user.PhoneNumber,
                          Address = user.Address,
                          IsActive = user.IsActive,

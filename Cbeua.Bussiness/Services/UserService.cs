@@ -89,6 +89,7 @@ namespace Cbeua.Bussiness.Services
             userDTO.Lastlogin = user.Lastlogin;
             userDTO.CompanyId = user.CompanyId;
             userDTO.StaffNo = user.StaffNo;
+            userDTO.MemberId = user.MemberId;
             userDTO.LastloginString = user.Lastlogin.HasValue ? user.Lastlogin.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
             userDTO.CreateAtSyring = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt");
             userDTO.Role = user.Role;
@@ -118,7 +119,8 @@ namespace Cbeua.Bussiness.Services
             oldentity.PhoneNumber = user.PhoneNumber;
             oldentity.IsActive = user.IsActive;
             oldentity.Role = user.Role;      
-            oldentity.StaffNo = user.StaffNo; 
+            oldentity.StaffNo = user.StaffNo;
+            oldentity.MemberId = user.MemberId;
             oldentity.Islocked = user.Islocked; 
             oldentity.CompanyId = int.Parse(_currentUser.CompanyId);
 

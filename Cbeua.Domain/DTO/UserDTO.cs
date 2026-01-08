@@ -14,6 +14,7 @@ namespace Cbeua.Domain.DTO
         public string UserName { get; set; } = "";
         public string UserEmail { get; set; } = "";
         public int StaffNo { get; set; } = 0;
+        public int? MemberId { get; set; } = null;
         public string PhoneNumber { get; set; } = "";
         public string Address { get; set; } = "";
         public string PasswordHash { get; set; } = "";

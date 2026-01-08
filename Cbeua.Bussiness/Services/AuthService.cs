@@ -227,7 +227,8 @@ namespace Cbeua.Business.Services
                 Lastlogin = user.Lastlogin,
                 CompanyId=user.CompanyId,
                 Role = user.Role,
-                StaffNo = user.StaffNo
+                StaffNo = user.StaffNo,
+                MemberId = user.MemberId
             };
         }
     }
