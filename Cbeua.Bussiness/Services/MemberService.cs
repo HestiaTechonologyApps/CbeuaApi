@@ -31,10 +31,11 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MemberDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var memberDTO = await ConvertMemberToDTO(q);
-            return memberDTO;
+            var q =  _repo.GetQueryableMember();
+             var memeber =q.Where(u=>u.MemberId == id).FirstOrDefault ();
+
+         
+            return memeber;
         }
 
         public async Task<MemberDTO> CreateAsync(Member member)
