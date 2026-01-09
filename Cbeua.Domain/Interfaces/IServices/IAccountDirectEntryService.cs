@@ -11,6 +11,8 @@ namespace Cbeua.Domain.Interfaces.IServices
     public interface IAccountDirectEntryService
     {
         Task<List<AccountsDirectEntryDTO>> GetAllAsync();
+
+        Task<List<AccountsDirectEntryDTO>> GetByMemberId(int id);
         Task<AccountsDirectEntryDTO?> GetByIdAsync(int id);
         Task<AccountsDirectEntryDTO> CreateAsync(AccountsDirectEntry accountsDirect);
         Task<bool> UpdateAsync(AccountsDirectEntry accountsDirect);

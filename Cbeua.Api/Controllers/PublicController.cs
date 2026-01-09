@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+﻿using Cbeua.Core.Helpers;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -145,11 +146,11 @@ namespace Cbeua.Api.Controllers
             var response = new CustomApiResponse();
             try
             {
-                var managingComitees = await _attachmentService.GetAllAsync ();
+                var attachments = await _attachmentService.GetAllAsync ();
 
-                managingComitees = managingComitees.Where(u => u.TableName == "public").ToList();
+                attachments = attachments.Where(u => u.TableName == "public").ToList();
                 response.IsSucess = true;
-                response.Value = managingComitees;
+                response.Value = attachments;
                 response.StatusCode = 200;
             }
             catch (Exception ex)
@@ -161,7 +162,16 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
+        [HttpGet("download/{attachmentId}")]
+        public async Task<IActionResult> Download(int attachmentId)
+        {
+            var result = await _attachmentService.DownloadAttachmentAsync(attachmentId);
 
+            if (result.ErrorMessage != null)
+                return NotFound(ApiResponseFactory.Fail(result.ErrorMessage, System.Net.HttpStatusCode.NotFound));
+
+            return File(result.FileStream!, result.ContentType!, result.FileName!);
+        }
 
     }
 }

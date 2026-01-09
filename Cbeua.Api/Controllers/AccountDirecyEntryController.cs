@@ -57,6 +57,26 @@ namespace Cbeua.Api.Controllers
         }
 
 
+        [HttpGet("GetByMemberId{id}")]
+        public async Task<CustomApiResponse> GetByMemberId(int MemberId)
+        {
+            var response = new CustomApiResponse();
+            var accountsDirectEntry = await _service.GetByMemberId(MemberId);
+            if (accountsDirectEntry == null)
+            {
+                response.IsSucess = false;
+                response.Error = "Not found";
+                response.StatusCode = 404;
+            }
+            else
+            {
+                response.IsSucess = true;
+                response.Value = accountsDirectEntry;
+                response.StatusCode = 200;
+            }
+            return response;
+        }
+
 
 
         [HttpPost]

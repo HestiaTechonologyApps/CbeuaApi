@@ -3,6 +3,7 @@ using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,14 @@ namespace Cbeua.Bussiness.Services
             return accountsDirectEntrieDTOs;
         }
 
+
+        public async Task<List<AccountsDirectEntryDTO>> GetByMemberId(int id)
+        {
+            var q = _repo.GetQueryableListAccountDirect();
+            var items= await q.Where(x => x.MemberId == id).ToListAsync();
+            return items;
+        }
+
         public async Task<AccountsDirectEntryDTO?> GetByIdAsync(int id)
         {
             var q = await _repo.GetByIdAsync(id);
@@ -69,7 +78,7 @@ namespace Cbeua.Bussiness.Services
             accountsDirectEntryDTO.Name = accountsDirect.Name;
             accountsDirectEntryDTO.BranchId = accountsDirect.BranchId;
             accountsDirectEntryDTO.MonthCode = accountsDirect.MonthCode;
-            accountsDirectEntryDTO.YearOf =  accountsDirect.YearOf;
+            accountsDirectEntryDTO.YearOf = accountsDirect.YearOf;
             accountsDirectEntryDTO.DdIba = accountsDirect.DdIba;
             accountsDirectEntryDTO.DdIbaDate = accountsDirect.DdIbaDate;
             accountsDirectEntryDTO.Amt = accountsDirect.Amt;

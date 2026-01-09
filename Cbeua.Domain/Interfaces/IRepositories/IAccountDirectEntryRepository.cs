@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.Entities;
+﻿using Cbeua.Domain.DTO;
+using Cbeua.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
 {
     public interface IAccountDirectEntryRepository : IGenericRepository<AccountsDirectEntry>
     {
+        IQueryable<AccountsDirectEntryDTO> GetQueryableListAccountDirect();
     }
 }
