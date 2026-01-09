@@ -13,6 +13,14 @@ namespace Cbeua.Domain.DTO
 
         public int StaffNo { get; set; }
 
+        public string DesignationName { get; set; } = "";
+        public string BranchName { get; set; } = "";
+        public string Categoryname { get; set; } = "";
+        public string Status { get; set; } = "";
+        public string Gender { get; set; } = "";
+        public string DpCode { get; set; } = "";
+
+
         public int? DesignationId { get; set; }
         public int? CategoryId { get; set; }
         public int? BranchId { get; set; }

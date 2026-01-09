@@ -24,18 +24,9 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<MemberDTO>> GetAllAsync()
         {
-            List<MemberDTO> memberDTOs = new List<MemberDTO>();
-            var members = await _repo.GetAllAsync();
+            return  _repo.GetQueryableMember ().ToList();
 
-            foreach (var member in members)
-            {
-                MemberDTO memberDTO = await ConvertMemberToDTO(member);
-                memberDTOs.Add(memberDTO);
-
-
-            }
-
-            return memberDTOs;
+           
         }
 
         public async Task<MemberDTO?> GetByIdAsync(int id)
