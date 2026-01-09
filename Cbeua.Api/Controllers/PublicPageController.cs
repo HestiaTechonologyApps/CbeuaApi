@@ -37,13 +37,34 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
+        [HttpGet("{id}")]
+        public async Task<CustomApiResponse> GetById(int id)
+        {
+            var response = new CustomApiResponse();
+            var month = await _service.GetByIdAsync(id);
+            if (month == null)
+            {
+                response.IsSucess = false;
+                response.Error = "Not found";
+                response.StatusCode = 404;
+            }
+            else
+            {
+                response.IsSucess = true;
+                response.Value = month;
+                response.StatusCode = 200;
+            }
+            return response;
+        }
+
         [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] PublicPage publicPage)
+        public async Task<CustomApiResponse> Create([FromBody] PublicPage month)
         {
             var response = new CustomApiResponse();
             try
             {
-                var created = await _service.CreateAsync(publicPage);
+                var created = await _service.CreateAsync(month);
                 response.IsSucess = true;
                 response.Value = created;
                 response.StatusCode = 201;
@@ -56,6 +77,39 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
+        [HttpPut("{id}")]
+        public async Task<CustomApiResponse> Update(int id, [FromBody] PublicPage month)
+        {
+            var response = new CustomApiResponse();
+
+            if (id != month.PublicPageId)
+            {
+                response.IsSucess = false;
+                response.Error = "Id mismatch";
+                response.StatusCode = 400;
+                return response;
+            }
+
+            var updated = await _service.UpdateAsync(month);
+            if (!updated)
+            {
+                response.IsSucess = false;
+                response.Error = "Not found";
+                response.StatusCode = 404;
+            }
+            else
+            {
+                response.IsSucess = true;
+                response.Value = month;
+                response.StatusCode = 200;
+            }
+            return response;
+
+
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {
