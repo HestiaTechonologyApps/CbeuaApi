@@ -13,6 +13,10 @@ namespace Cbeua.Domain.DTO
         public string Name { get; set; } = "";
         public int BranchId { get; set; }
 
+        public string MemberName { get; set; } = ""; 
+        public string BranchName { get; set; } = "";  
+        public string MonthName { get; set; } = "";  
+
         public int MonthCode { get; set; }
         public int YearOf { get; set; }
         public string DdIba { get; set; } = "";

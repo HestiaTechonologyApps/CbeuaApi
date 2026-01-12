@@ -20,11 +20,17 @@ namespace Cbeua.Core.Repositories
         public IQueryable<AccountsDirectEntryDTO> GetQueryableListAccountDirect()
         {
             var q = from ade in _context.AccountsDirectEntries
+                    join m in _context.Members on ade.MemberId equals m.MemberId
+                    join b in _context.Branches on ade.BranchId equals b.BranchId
+                    join month in _context.Months on ade.MonthCode equals month.MonthCode
                     select new AccountsDirectEntryDTO
                     {
                         AccountsDirectEntryID = ade.AccountsDirectEntryID,
                         MemberId = ade.MemberId,
                         Name = ade.Name,
+                        MemberName = m.Name,
+                        BranchName = b.Name,
+                        MonthName = month.MonthName,
                         BranchId = ade.BranchId,
                         MonthCode = ade.MonthCode,
                         YearOf = ade.YearOf,
@@ -40,8 +46,6 @@ namespace Cbeua.Core.Repositories
                         isApproved = ade.isApproved,
                         ApprovedBy = ade.ApprovedBy,
                         ApprovedDate = ade.ApprovedDate
-
-
                     };
             return q;
         }

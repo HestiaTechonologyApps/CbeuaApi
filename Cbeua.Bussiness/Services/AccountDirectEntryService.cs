@@ -25,18 +25,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<AccountsDirectEntryDTO>> GetAllAsync()
         {
-            List<AccountsDirectEntryDTO> accountsDirectEntrieDTOs = new List<AccountsDirectEntryDTO>();
-            var accountsDirectEntries = await _repo.GetAllAsync();
-
-            foreach (var accountsDirectEntrie in accountsDirectEntries)
-            {
-                AccountsDirectEntryDTO accountsDirectEntryDTO = await ConvertAccountDirectEntryToDTO(accountsDirectEntrie);
-                accountsDirectEntrieDTOs.Add(accountsDirectEntryDTO);
-
-
-            }
-
-            return accountsDirectEntrieDTOs;
+            return _repo.GetQueryableListAccountDirect().ToList();
         }
 
 
