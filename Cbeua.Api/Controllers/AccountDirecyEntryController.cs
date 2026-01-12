@@ -57,7 +57,7 @@ namespace Cbeua.Api.Controllers
         }
 
 
-        [HttpGet("GetByMemberId{id}")]
+        [HttpGet("GetByMemberId{MemberId}")]
         public async Task<CustomApiResponse> GetByMemberId(int MemberId)
         {
             var response = new CustomApiResponse();
