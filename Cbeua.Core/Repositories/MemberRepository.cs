@@ -33,6 +33,7 @@ namespace Cbeua.Core.Repositories
                         BranchId = m.BranchId,
                         Name = m.Name,
                         GenderId = m.GenderId,
+                        Gender = m.GenderId == 0 ? "Male" : m.GenderId == 1 ? "Female" : "Others",
 
                         Dob = m.Dob,
                         Doj = m.Doj,
