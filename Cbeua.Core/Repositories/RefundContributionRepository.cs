@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.Entities;
+﻿using Cbeua.Domain.DTO;
+using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
 using System;
@@ -12,20 +13,30 @@ namespace Cbeua.Core.Repositories
     public class RefundContributionRepository : GenericRepository<RefundContribution>, IRefundContributionRepository
     {
         private readonly AppDbContext _context;
+
         public RefundContributionRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
-        public IQueryable<RefundContribution> GetQueryableRefundContributions()
+
+        public IQueryable<RefundContributionDTO> QueryableRefundContributions()
         {
             var q = from rc in _context.RefundContributions
-                    select new RefundContribution
+                    join m in _context.Members on rc.MemberId equals m.MemberId
+                    join s in _context.States on rc.StateId equals s.StateId into stateJoin
+                    from s in stateJoin.DefaultIfEmpty()
+                    join d in _context.Designations on rc.DesignationId equals d.DesignationId into designationJoin
+                    from d in designationJoin.DefaultIfEmpty()
+                    select new RefundContributionDTO
                     {
                         RefundContributionId = rc.RefundContributionId,
-                        
+                        MemberId = rc.MemberId,
+                        MemberName = m.Name,
+                        StaffNo = m.StaffNo,
                         StateId = rc.StateId,
+                        StateName = s.Name ?? "",
                         DesignationId = rc.DesignationId,
-                        
+                        DesignationName = d.Name ?? "",
                         RefundNO = rc.RefundNO,
                         BranchNameOFTime = rc.BranchNameOFTime,
                         DPCODEOfTime = rc.DPCODEOfTime,
@@ -36,12 +47,8 @@ namespace Cbeua.Core.Repositories
                         Amount = rc.Amount,
                         LastContribution = rc.LastContribution,
                         YearOF = rc.YearOF
-
                     };
             return q;
         }
-    
-    
-    
     }
 }

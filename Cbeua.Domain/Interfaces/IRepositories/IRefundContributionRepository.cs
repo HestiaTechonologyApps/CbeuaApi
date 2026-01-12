@@ -10,6 +10,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
 {
     public interface IRefundContributionRepository : IGenericRepository<RefundContribution>
     {
-       
+        IQueryable<RefundContributionDTO> QueryableRefundContributions();
     }
 }

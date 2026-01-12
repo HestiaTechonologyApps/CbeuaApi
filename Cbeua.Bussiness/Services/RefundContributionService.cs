@@ -15,6 +15,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IRefundContributionRepository _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "REFUNDCONTRIBUTION";
+
         public RefundContributionService(IRefundContributionRepository repository, IAuditRepository auditRepository)
         {
             _repo = repository;
@@ -23,26 +24,15 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<RefundContributionDTO>> GetAllAsync()
         {
-            List<RefundContributionDTO> refundContributionDTOs = new List<RefundContributionDTO>();
-            var refundContributions = await _repo.GetAllAsync();
-
-            foreach (var refundContribution in refundContributions)
-            {
-                RefundContributionDTO refundContributionDTO = await ConvertRefundContributionToDTO(refundContribution);
-                refundContributionDTOs.Add(refundContributionDTO);
-
-
-            }
-
-            return refundContributionDTOs;
+            return _repo.QueryableRefundContributions().ToList();
         }
 
         public async Task<RefundContributionDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var refunContributionDTO = await ConvertRefundContributionToDTO(q);
-            return refunContributionDTO;
+            var q = _repo.QueryableRefundContributions();
+            var refundContribution = q.Where(rc => rc.RefundContributionId == id).FirstOrDefault();
+
+            return refundContribution;
         }
 
         public async Task<RefundContributionDTO> CreateAsync(RefundContribution refundContribution)
@@ -56,8 +46,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: null,
                newEntity: refundContribution,
                changedBy: "System" // Replace with actual user info
-
-           );
+            );
             return await ConvertRefundContributionToDTO(refundContribution);
         }
 
@@ -65,10 +54,9 @@ namespace Cbeua.Bussiness.Services
         {
             RefundContributionDTO refundContributionDTO = new RefundContributionDTO();
             refundContributionDTO.RefundContributionId = refundContribution.RefundContributionId;
-           // refundContributionDTO.StaffNo = refundContribution.StaffNo;
+            refundContributionDTO.MemberId = refundContribution.MemberId;
             refundContributionDTO.StateId = refundContribution.StateId;
             refundContributionDTO.DesignationId = refundContribution.DesignationId;
-          //  refundContributionDTO.DeathDate = refundContribution.DeathDate;
             refundContributionDTO.RefundNO = refundContribution.RefundNO;
             refundContributionDTO.BranchNameOFTime = refundContribution.BranchNameOFTime;
             refundContributionDTO.DPCODEOfTime = refundContribution.DPCODEOfTime;
@@ -79,6 +67,8 @@ namespace Cbeua.Bussiness.Services
             refundContributionDTO.Amount = refundContribution.Amount;
             refundContributionDTO.LastContribution = refundContribution.LastContribution;
             refundContributionDTO.YearOF = refundContribution.YearOF;
+            // Note: MemberName, StaffNo, StateName, and DesignationName won't be populated here
+            // They will only be populated when using QueryableRefundContributions()
             return refundContributionDTO;
         }
 
@@ -95,7 +85,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: oldentity,
                newEntity: refundContribution,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             return true;
         }
 
@@ -111,7 +101,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: refund,
                newEntity: refund,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             await _repo.SaveChangesAsync();
             return true;
         }
