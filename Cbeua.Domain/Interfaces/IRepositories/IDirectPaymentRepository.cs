@@ -10,6 +10,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
 {
     public interface IDirectPaymentRepository : IGenericRepository<DirectPayment>
     {
-        
+        IQueryable<DirectPaymentDTO> QueryableDirectPayments();
     }
 }

@@ -16,6 +16,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IDirectPaymentRepository _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "DIRECTPAYMENT";
+
         public DirectPaymentService(IDirectPaymentRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
@@ -24,26 +25,15 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<DirectPaymentDTO>> GetAllAsync()
         {
-            List<DirectPaymentDTO> directPaymentDTOs = new List<DirectPaymentDTO>();
-            var directPayments = await _repo.GetAllAsync();
-
-            foreach (var directPayment in directPayments)
-            {
-                DirectPaymentDTO directPaymentDTO = await ConvertDirectPaymentToDTO(directPayment);
-                directPaymentDTOs.Add(directPaymentDTO);
-
-
-            }
-
-            return directPaymentDTOs;
+            return _repo.QueryableDirectPayments().ToList();
         }
 
         public async Task<DirectPaymentDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var directPaymentDTO = await ConvertDirectPaymentToDTO(q);
-            return directPaymentDTO;
+            var q = _repo.QueryableDirectPayments();
+            var directPayment = q.Where(dp => dp.DirectPaymentId == id).FirstOrDefault();
+
+            return directPayment;
         }
 
         public async Task<DirectPaymentDTO> CreateAsync(DirectPayment directPayment)
@@ -57,7 +47,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: null,
                newEntity: directPayment,
                changedBy: "System" // Replace with actual user info
-               );
+            );
             return await ConvertDirectPaymentToDTO(directPayment);
         }
 
@@ -73,6 +63,7 @@ namespace Cbeua.Bussiness.Services
             directPaymentDTO.Remarks = directPayment.Remarks;
             directPaymentDTO.CreatedByUserId = directPayment.CreatedByUserId;
             directPaymentDTO.CreatedDate = directPayment.CreatedDate;
+            directPaymentDTO.IsDeleted = directPayment.IsDeleted;
             return directPaymentDTO;
         }
 
@@ -84,12 +75,12 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
             await _auditRepository.LogAuditAsync<DirectPayment>(
                tableName: AuditTableName,
-            action: "update",
+               action: "update",
                recordId: directPayment.DirectPaymentId,
-            oldEntity: oldentity,
+               oldEntity: oldentity,
                newEntity: directPayment,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             return true;
         }
 
@@ -105,7 +96,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: directPayment,
                newEntity: directPayment,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             await _repo.SaveChangesAsync();
             return true;
         }
