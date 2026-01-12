@@ -13,13 +13,18 @@ namespace Cbeua.Core.Repositories
     public class BranchRepository : GenericRepository<Branch>, IBranchRepository
     {
         private readonly AppDbContext _context;
+
         public BranchRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
-        public IQueryable<BranchDTO> GetQuerableBranchList()
+
+        public IQueryable<BranchDTO> GetQuerableBranch()
         {
             var q = from b in _context.Branches
+                    join c in _context.Circles on b.CircleId equals c.CircleId
+                    join s in _context.States on b.StateId equals s.StateId into stateJoin
+                    from s in stateJoin.DefaultIfEmpty()
                     select new BranchDTO
                     {
                         BranchId = b.BranchId,
@@ -31,7 +36,9 @@ namespace Cbeua.Core.Repositories
                         District = b.District,
                         Status = b.Status,
                         CircleId = b.CircleId,
+                        CircleName = c.Name,
                         StateId = b.StateId,
+                        StateName = s.Name ?? "",
                         IsRegCompleted = b.IsRegCompleted
                     };
             return q;

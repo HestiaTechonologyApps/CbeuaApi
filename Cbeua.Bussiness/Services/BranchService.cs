@@ -16,6 +16,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IBranchRepository _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "BRANCH";
+
         public BranchService(IBranchRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
@@ -24,26 +25,15 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<BranchDTO>> GetAllAsync()
         {
-            List<BranchDTO> branchDTOs = new List<BranchDTO>();
-            var branches = await _repo.GetAllAsync();
-
-            foreach (var branch in branches)
-            {
-                BranchDTO branchDTO = await ConvertBranchToDTO(branch);
-                branchDTOs.Add(branchDTO);
-
-
-            }
-
-            return branchDTOs;
+            return _repo.GetQuerableBranch().ToList();
         }
 
         public async Task<BranchDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var branchDTO = await ConvertBranchToDTO(q);
-            return branchDTO;
+            var q = _repo.GetQuerableBranch();
+            var branch = q.Where(b => b.BranchId == id).FirstOrDefault();
+
+            return branch;
         }
 
         public async Task<BranchDTO> CreateAsync(Branch branch)
@@ -52,13 +42,12 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
             await this._auditRepository.LogAuditAsync<Branch>(
                tableName: AuditTableName,
-            action: "create",
+               action: "create",
                recordId: branch.BranchId,
-            oldEntity: null,
+               oldEntity: null,
                newEntity: branch,
                changedBy: "System" // Replace with actual user info
-
-           );
+            );
             return await ConvertBranchToDTO(branch);
         }
 
@@ -92,7 +81,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: oldentity,
                newEntity: branch,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             return true;
         }
 
@@ -108,7 +97,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: branch,
                newEntity: branch,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             await _repo.SaveChangesAsync();
             return true;
         }
