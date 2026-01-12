@@ -16,6 +16,7 @@ namespace Cbeua.Bussiness.Services
         private readonly ICircleRepository _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "CIRCLE";
+
         public CircleService(ICircleRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
@@ -24,24 +25,15 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<CircleDTO>> GetAllAsync()
         {
-           // List<CircleDTO> circleDTOs = new List<CircleDTO>();
-            var circles =  _repo.QueryableCircles();
-
-            //foreach (var circle in circles)
-            //{
-            //    CircleDTO circleDTO = await ConvertCircleToDTO(circle);
-            //    circleDTOs.Add(circleDTO);
-
-
-            //}
-
-            return await circles.ToListAsync () ;
+            return await _repo.QueryableCircles().ToListAsync();
         }
 
         public async Task<CircleDTO?> GetByIdAsync(int id)
         {
-            return await _repo.QueryableCircles()
-                       .FirstOrDefaultAsync(c => c.CircleId == id);
+            var q = _repo.QueryableCircles();
+            var circle = await q.Where(c => c.CircleId == id).FirstOrDefaultAsync();
+
+            return circle;
         }
 
         public async Task<CircleDTO> CreateAsync(Circle circle)
@@ -55,8 +47,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: null,
                newEntity: circle,
                changedBy: "System" // Replace with actual user info
-
-           );
+            );
             return await ConvertCircleToDTO(circle);
         }
 
@@ -87,7 +78,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: oldentity,
                newEntity: circle,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             return true;
         }
 
@@ -103,7 +94,7 @@ namespace Cbeua.Bussiness.Services
                oldEntity: circle,
                newEntity: circle,
                changedBy: "System" // Replace with actual user info
-           );
+            );
             await _repo.SaveChangesAsync();
             return true;
         }
