@@ -17,6 +17,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IAccountDirectEntryRepository _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "ACCOUNT_DIRECT_ENTRY";
+
         public AccountDirectEntryService(IAccountDirectEntryRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
@@ -25,23 +26,21 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<AccountsDirectEntryDTO>> GetAllAsync()
         {
-            return _repo.GetQueryableListAccountDirect().ToList();
+            return await _repo.GetQueryableListAccountDirect().ToListAsync();
         }
-
 
         public async Task<List<AccountsDirectEntryDTO>> GetByMemberId(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            var items= await q.Where(x => x.MemberId == id).ToListAsync();
+            var items = await q.Where(x => x.MemberId == id).ToListAsync();
             return items;
         }
 
         public async Task<AccountsDirectEntryDTO?> GetByIdAsync(int id)
         {
-            var q = await _repo.GetByIdAsync(id);
-            if (q == null) return null;
-            var accountsDirectEntrieDTO = await ConvertAccountDirectEntryToDTO(q);
-            return accountsDirectEntrieDTO;
+            var q = _repo.GetQueryableListAccountDirect();
+            var accountsDirectEntry = await q.FirstOrDefaultAsync(x => x.AccountsDirectEntryID == id);
+            return accountsDirectEntry;
         }
 
         public async Task<AccountsDirectEntryDTO> CreateAsync(AccountsDirectEntry accountsDirect)
@@ -54,33 +53,12 @@ namespace Cbeua.Bussiness.Services
                recordId: accountsDirect.AccountsDirectEntryID,
                oldEntity: null,
                newEntity: accountsDirect,
-               changedBy: "System" // Replace with actual user info
-               );
-            return await ConvertAccountDirectEntryToDTO(accountsDirect);
-        }
+               changedBy: "System"
+            );
 
-        private async Task<AccountsDirectEntryDTO> ConvertAccountDirectEntryToDTO(AccountsDirectEntry accountsDirect)
-        {
-            AccountsDirectEntryDTO accountsDirectEntryDTO = new AccountsDirectEntryDTO();
-            accountsDirectEntryDTO.AccountsDirectEntryID = accountsDirect.AccountsDirectEntryID;
-            accountsDirectEntryDTO.MemberId = accountsDirect.MemberId;
-            accountsDirectEntryDTO.Name = accountsDirect.Name;
-            accountsDirectEntryDTO.BranchId = accountsDirect.BranchId;
-            accountsDirectEntryDTO.MonthCode = accountsDirect.MonthCode;
-            accountsDirectEntryDTO.YearOf = accountsDirect.YearOf;
-            accountsDirectEntryDTO.DdIba = accountsDirect.DdIba;
-            accountsDirectEntryDTO.DdIbaDate = accountsDirect.DdIbaDate;
-            accountsDirectEntryDTO.Amt = accountsDirect.Amt;
-            accountsDirectEntryDTO.Enrl = accountsDirect.Enrl;
-            accountsDirectEntryDTO.Fine = accountsDirect.Fine;
-            accountsDirectEntryDTO.F9 = accountsDirect.F9;
-            accountsDirectEntryDTO.F10 = accountsDirect.F10;
-            accountsDirectEntryDTO.F11 = accountsDirect.F11;
-            accountsDirectEntryDTO.status = accountsDirect.status;
-            accountsDirectEntryDTO.isApproved = accountsDirect.isApproved;
-            accountsDirectEntryDTO.ApprovedBy = accountsDirect.ApprovedBy;
-            accountsDirectEntryDTO.ApprovedDate = accountsDirect.ApprovedDate;
-            return accountsDirectEntryDTO;
+            // Return the full DTO with joined data
+            return await GetByIdAsync(accountsDirect.AccountsDirectEntryID)
+                   ?? new AccountsDirectEntryDTO();
         }
 
         public async Task<bool> UpdateAsync(AccountsDirectEntry accountsDirect)
@@ -91,12 +69,12 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
             await _auditRepository.LogAuditAsync<AccountsDirectEntry>(
                tableName: AuditTableName,
-            action: "update",
+               action: "update",
                recordId: accountsDirect.AccountsDirectEntryID,
-            oldEntity: oldentity,
+               oldEntity: oldentity,
                newEntity: accountsDirect,
-               changedBy: "System" // Replace with actual user info
-           );
+               changedBy: "System"
+            );
             return true;
         }
 
@@ -111,8 +89,8 @@ namespace Cbeua.Bussiness.Services
                recordId: accountsDirectEntry.AccountsDirectEntryID,
                oldEntity: accountsDirectEntry,
                newEntity: accountsDirectEntry,
-               changedBy: "System" // Replace with actual user info
-           );
+               changedBy: "System"
+            );
             await _repo.SaveChangesAsync();
             return true;
         }
