@@ -10,10 +10,15 @@ namespace Cbeua.Domain.DTO
     {
         public int DeathClaimId { get; set; }
         public int MemberId { get; set; }
-
+        public string MemberName { get; set; }
+        public int StaffNo { get; set; }
         public int? StateId { get; set; }
 
+        public string StateName { get; set; }
+
         public int? DesignationId { get; set; }
+
+        public string DesignationName { get; set; }
         public DateTime? DeathDate { get; set; }
         public static string DeathDatestring => DateTime.Now.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public string Nominee { get; set; } = "";

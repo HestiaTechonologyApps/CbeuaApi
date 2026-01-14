@@ -17,15 +17,25 @@ namespace Cbeua.Core.Repositories
         {
             _context = context;
         }
+
         public IQueryable<DeathClaimDTO> GetQueryableDeathClaims()
         {
             var q = from dc in _context.DeathClaims
+                    join m in _context.Members on dc.MemberId equals m.MemberId
+                    join s in _context.States on dc.StateId equals s.StateId into stateJoin
+                    from s in stateJoin.DefaultIfEmpty()
+                    join d in _context.Designations on dc.DesignationId equals d.DesignationId into designationJoin
+                    from d in designationJoin.DefaultIfEmpty()
                     select new DeathClaimDTO
                     {
                         DeathClaimId = dc.DeathClaimId,
                         MemberId = dc.MemberId,
+                        MemberName = m.Name, // Direct from member join
+                        StaffNo = m.StaffNo, // Direct from member join
                         StateId = dc.StateId,
+                        StateName = s != null ? s.Name : "",
                         DesignationId = dc.DesignationId,
+                        DesignationName = d != null ? d.Name : "",
                         DeathDate = dc.DeathDate,
                         Nominee = dc.Nominee,
                         NomineeRelation = dc.NomineeRelation,
@@ -35,7 +45,6 @@ namespace Cbeua.Core.Repositories
                         Amount = dc.Amount,
                         LastContribution = dc.LastContribution,
                         YearOF = dc.YearOF
-
                     };
             return q;
         }

@@ -24,18 +24,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<DeathClaimDTO>> GetAllAsync()
         {
-            List<DeathClaimDTO> deathClaimDTOs = new List<DeathClaimDTO>();
-            var deathClaims = await _repo.GetAllAsync();
-
-            foreach (var deathClaim in deathClaims)
-            {
-                DeathClaimDTO deathClaimDTO = await ConvertDeathClaimToDTO(deathClaim);
-                deathClaimDTOs.Add(deathClaimDTO);
-
-
-            }
-
-            return deathClaimDTOs;
+            return _repo.GetQueryableDeathClaims().ToList();
         }
 
         public async Task<DeathClaimDTO?> GetByIdAsync(int id)
