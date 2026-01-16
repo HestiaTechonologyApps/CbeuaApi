@@ -106,6 +106,10 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.NewsSidebarQuoteTitle = publicPage.NewsSidebarQuoteTitle;
             publicPageDTO.NewsSidebarQuoteText = publicPage.NewsSidebarQuoteText;
             publicPageDTO.NewsQuickLinksJson = publicPage.NewsQuickLinksJson;
+            publicPageDTO.NewsSectionHeadingLabel = publicPage.NewsSectionHeadingLabel;
+            publicPageDTO.NewsSectionHeadingTitle = publicPage.NewsSectionHeadingTitle;
+            publicPageDTO.NewsSectionQuickLinksHead = publicPage.NewsSectionQuickLinksHead;
+            publicPageDTO.NewsTag = publicPage.NewsTag;
 
             /* ========== ABOUT PAGE ========== */
             publicPageDTO.AboutHeaderTitle = publicPage.AboutHeaderTitle;
@@ -123,6 +127,11 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.AboutHistoryPara3 = publicPage.AboutHistoryPara3;
             publicPageDTO.AboutHistoryPara4 = publicPage.AboutHistoryPara4;
             publicPageDTO.AboutHistoryPara5 = publicPage.AboutHistoryPara5;
+            publicPageDTO.AboutParagraph1 = publicPage.AboutParagraph1;
+            publicPageDTO.AboutParagraph2 = publicPage.AboutParagraph2;
+            publicPageDTO.AboutParagraph3 = publicPage.AboutParagraph3;
+            publicPageDTO.AboutParagraph4 = publicPage.AboutParagraph4;
+            publicPageDTO.AboutStatsJson = publicPage.AboutStatsJson;
 
             /* ========== RULES & REGULATIONS ========== */
             publicPageDTO.RulesHeaderTitle = publicPage.RulesHeaderTitle;
@@ -133,12 +142,17 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.RulesPreamblePara3 = publicPage.RulesPreamblePara3;
             publicPageDTO.RulesPreamblePara4 = publicPage.RulesPreamblePara4;
             publicPageDTO.RulesPreamblePara5 = publicPage.RulesPreamblePara5;
+            publicPageDTO.RulesPreamblePara6 = publicPage.RulesPreamblePara6;
             publicPageDTO.RulesSectionsJson = publicPage.RulesSectionsJson;
 
             /* ========== DOWNLOADS ========== */
             publicPageDTO.DownloadsHeaderTitle = publicPage.DownloadsHeaderTitle;
             publicPageDTO.DownloadsHeaderSubTitle = publicPage.DownloadsHeaderSubTitle;
             publicPageDTO.DownloadItemsJson = publicPage.DownloadItemsJson;
+            publicPageDTO.DownloadsCardTitle = publicPage.DownloadsCardTitle;
+            publicPageDTO.DownloadsCardIconClass = publicPage.DownloadsCardIconClass;
+            publicPageDTO.DownloadIcon = publicPage.DownloadIcon;
+            publicPageDTO.DownloadsContactButtonText = publicPage.DownloadsContactButtonText;
 
             /* ========== MANAGING COMMITTEE ========== */
             publicPageDTO.CommitteeHeaderTitle = publicPage.CommitteeHeaderTitle;

@@ -52,7 +52,7 @@ namespace Cbeua.Domain.DTO
         public string HomeFeatureLabel { get; set; } = "";
         public string HomeFeatureTitle { get; set; } = "";
         public string HomeFeatureSubTitle { get; set; } = "";
-        public string HomeFeatureItemsJson { get; set; } = ""; // icon,title,description[]
+        public string HomeFeatureItemsJson { get; set; } = "";
 
         public string HomeAboutLabel { get; set; } = "";
         public string HomeAboutTitle { get; set; } = "";
@@ -65,10 +65,14 @@ namespace Cbeua.Domain.DTO
         public string NewsBreadcrumbCurrentLabel { get; set; } = "";
         public string NewsLoadingText { get; set; } = "";
         public string NewsEmptyText { get; set; } = "";
-        public string NewsItemsJson { get; set; } = ""; // date,title,excerpt[]
+        public string NewsItemsJson { get; set; } = "";
         public string NewsSidebarQuoteTitle { get; set; } = "";
         public string NewsSidebarQuoteText { get; set; } = "";
-        public string NewsQuickLinksJson { get; set; } = ""; // labels[]
+        public string NewsQuickLinksJson { get; set; } = "";
+        public string NewsSectionHeadingLabel { get; set; } = "";
+        public string NewsSectionHeadingTitle { get; set; } = "";
+        public string NewsSectionQuickLinksHead { get; set; } = "";
+        public string NewsTag { get; set; } = "";
 
         /* ================= ABOUT PAGE ================= */
         public string AboutHeaderTitle { get; set; } = "";
@@ -90,6 +94,12 @@ namespace Cbeua.Domain.DTO
         public string AboutHistoryPara4 { get; set; } = "";
         public string AboutHistoryPara5 { get; set; } = "";
 
+        public string AboutParagraph1 { get; set; } = "";
+        public string AboutParagraph2 { get; set; } = "";
+        public string AboutParagraph3 { get; set; } = "";
+        public string AboutParagraph4 { get; set; } = "";
+        public string AboutStatsJson { get; set; } = "";
+
         /* ================= RULES & REGULATIONS ================= */
         public string RulesHeaderTitle { get; set; } = "";
         public string RulesHeaderSubTitle { get; set; } = "";
@@ -100,18 +110,23 @@ namespace Cbeua.Domain.DTO
         public string RulesPreamblePara3 { get; set; } = "";
         public string RulesPreamblePara4 { get; set; } = "";
         public string RulesPreamblePara5 { get; set; } = "";
+        public string RulesPreamblePara6 { get; set; } = "";
 
-        public string RulesSectionsJson { get; set; } = ""; // number,title,content/list[]
+        public string RulesSectionsJson { get; set; } = "";
 
         /* ================= DOWNLOADS ================= */
         public string DownloadsHeaderTitle { get; set; } = "";
         public string DownloadsHeaderSubTitle { get; set; } = "";
-        public string DownloadItemsJson { get; set; } = ""; // title,icon,fileKey,description[]
+        public string DownloadItemsJson { get; set; } = "";
+        public string DownloadsCardTitle { get; set; } = "";
+        public string DownloadsCardIconClass { get; set; } = "";
+        public string DownloadIcon { get; set; } = "";
+        public string DownloadsContactButtonText { get; set; } = "";
 
         /* ================= MANAGING COMMITTEE ================= */
         public string CommitteeHeaderTitle { get; set; } = "";
         public string CommitteeHeaderSubTitle { get; set; } = "";
-        public string CommitteeMembersJson { get; set; } = ""; // name,role,location,phone,email[]
+        public string CommitteeMembersJson { get; set; } = "";
 
         /* ================= CLAIMS PAGE ================= */
         public string ClaimsHeroTitle { get; set; } = "";
@@ -129,8 +144,8 @@ namespace Cbeua.Domain.DTO
         public string ClaimsStat3Value { get; set; } = "";
         public string ClaimsStat3Label { get; set; } = "";
 
-        public string ClaimsTableHeadersJson { get; set; } = ""; // name,total,year[]
-        public string ClaimsYearsRange { get; set; } = ""; // 2002-2020
+        public string ClaimsTableHeadersJson { get; set; } = "";
+        public string ClaimsYearsRange { get; set; } = "";
 
         /* ================= CONTACT US ================= */
         public string ContactHeaderTitle { get; set; } = "";
@@ -168,8 +183,8 @@ namespace Cbeua.Domain.DTO
         public string FooterEmailIcon { get; set; } = "";
         public string FooterEmailValue { get; set; } = "";
 
-        public string FooterQuickLinksJson { get; set; } = ""; // labels[]
-        public string FooterOfficeHoursJson { get; set; } = ""; // weekdays,time[]
+        public string FooterQuickLinksJson { get; set; } = "";
+        public string FooterOfficeHoursJson { get; set; } = "";
 
         public string FooterCopyrightText { get; set; } = "";
 
@@ -195,9 +210,5 @@ namespace Cbeua.Domain.DTO
         public string PrivacyLine6 { get; set; } = "";
 
         public bool IsActive { get; set; } = true;
-
-
-
-
     }
 }

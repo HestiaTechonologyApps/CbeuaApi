@@ -17,6 +17,7 @@ namespace Cbeua.Core.Repositories
         {
             _context = context;
         }
+
         public IQueryable<PublicPageDTO> GetQueryablePublicPageList()
         {
             return _context.publicPages
@@ -86,6 +87,10 @@ namespace Cbeua.Core.Repositories
                     NewsSidebarQuoteTitle = wc.NewsSidebarQuoteTitle,
                     NewsSidebarQuoteText = wc.NewsSidebarQuoteText,
                     NewsQuickLinksJson = wc.NewsQuickLinksJson,
+                    NewsSectionHeadingLabel = wc.NewsSectionHeadingLabel,
+                    NewsSectionHeadingTitle = wc.NewsSectionHeadingTitle,
+                    NewsSectionQuickLinksHead = wc.NewsSectionQuickLinksHead,
+                    NewsTag = wc.NewsTag,
 
                     /* ========== ABOUT PAGE ========== */
                     AboutHeaderTitle = wc.AboutHeaderTitle,
@@ -103,6 +108,11 @@ namespace Cbeua.Core.Repositories
                     AboutHistoryPara3 = wc.AboutHistoryPara3,
                     AboutHistoryPara4 = wc.AboutHistoryPara4,
                     AboutHistoryPara5 = wc.AboutHistoryPara5,
+                    AboutParagraph1 = wc.AboutParagraph1,
+                    AboutParagraph2 = wc.AboutParagraph2,
+                    AboutParagraph3 = wc.AboutParagraph3,
+                    AboutParagraph4 = wc.AboutParagraph4,
+                    AboutStatsJson = wc.AboutStatsJson,
 
                     /* ========== RULES & REGULATIONS ========== */
                     RulesHeaderTitle = wc.RulesHeaderTitle,
@@ -113,12 +123,17 @@ namespace Cbeua.Core.Repositories
                     RulesPreamblePara3 = wc.RulesPreamblePara3,
                     RulesPreamblePara4 = wc.RulesPreamblePara4,
                     RulesPreamblePara5 = wc.RulesPreamblePara5,
+                    RulesPreamblePara6 = wc.RulesPreamblePara6,
                     RulesSectionsJson = wc.RulesSectionsJson,
 
                     /* ========== DOWNLOADS ========== */
                     DownloadsHeaderTitle = wc.DownloadsHeaderTitle,
                     DownloadsHeaderSubTitle = wc.DownloadsHeaderSubTitle,
                     DownloadItemsJson = wc.DownloadItemsJson,
+                    DownloadsCardTitle = wc.DownloadsCardTitle,
+                    DownloadsCardIconClass = wc.DownloadsCardIconClass,
+                    DownloadIcon = wc.DownloadIcon,
+                    DownloadsContactButtonText = wc.DownloadsContactButtonText,
 
                     /* ========== MANAGING COMMITTEE ========== */
                     CommitteeHeaderTitle = wc.CommitteeHeaderTitle,
