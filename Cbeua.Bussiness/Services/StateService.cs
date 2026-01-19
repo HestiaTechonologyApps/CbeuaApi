@@ -27,14 +27,11 @@ namespace Cbeua.Bussiness.Services
             List<StateDTO> stateDTOs = new List<StateDTO>();
             var states = await _repo.GetAllAsync();
 
-            foreach (var state in states)
+            foreach (var state in states.Where(s => s.IsActive)) 
             {
                 StateDTO stateDTO = await ConvertStateToDTO(state);
                 stateDTOs.Add(stateDTO);
-
-
             }
-
             return stateDTOs;
         }
 
@@ -93,17 +90,33 @@ namespace Cbeua.Bussiness.Services
         {
             var state = await _repo.GetByIdAsync(id);
             if (state == null) return false;
-            _repo.Delete(state);
+
+            // Store old state for audit
+            var oldState = new State
+            {
+                StateId = state.StateId,
+                Name = state.Name,
+                Abbreviation = state.Abbreviation,
+                IsActive = state.IsActive
+            };
+
+            // Soft delete - mark as inactive instead of deleting
+            state.IsActive = false;
+            _repo.Update(state);
+
             await _auditRepository.LogAuditAsync<State>(
                tableName: AuditTableName,
                action: "Delete",
                recordId: state.StateId,
-               oldEntity: state,
+               oldEntity: oldState,
                newEntity: state,
-               changedBy: "System" // Replace with actual user info
-           );
+               changedBy: "System"
+            );
+
             await _repo.SaveChangesAsync();
+
             return true;
-        }
+        
+    }
     }
 }
