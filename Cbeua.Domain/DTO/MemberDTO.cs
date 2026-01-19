@@ -53,7 +53,7 @@ namespace Cbeua.Domain.DTO
 }
 public class ProfilePicUploadDto
 {
-    public int AppUserId { get; set; }
+    public int MemberId { get; set; }
     public IFormFile ProfilePic { get; set; }
 }
 

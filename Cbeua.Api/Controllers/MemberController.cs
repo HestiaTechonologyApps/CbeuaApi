@@ -136,7 +136,7 @@ namespace Cbeua.Api.Controllers
         [Consumes("multipart/form-data")]
         public async Task<CustomApiResponse> UploadProfilePic([FromForm] ProfilePicUploadDto dto)
         {
-            var appUserId = dto.AppUserId;
+            var memberId = dto.MemberId;  // Changed from AppUserId
             var profilePic = dto.ProfilePic;
 
             if (profilePic == null || profilePic.Length == 0)
@@ -152,23 +152,23 @@ namespace Cbeua.Api.Controllers
             if (!allowedContentTypes.Contains(profilePic.ContentType.ToLower()))
                 return new CustomApiResponse { IsSucess = false, Error = "Only image files (jpg, png, gif, webp) are allowed", StatusCode = 400 };
 
-            // Get user to check for old profile pic
-            var user = await _service.GetByIdAsync(appUserId);
-            if (user == null)
-                return new CustomApiResponse { IsSucess = false, Error = "User not found", StatusCode = 404 };
+            // Get member to check for old profile pic
+            var member = await _service.GetByIdAsync(memberId);  // Changed from appUserId
+            if (member == null)
+                return new CustomApiResponse { IsSucess = false, Error = "Member not found", StatusCode = 404 };
 
             // Prepare file path
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profilepics");
             Directory.CreateDirectory(uploadsFolder);
 
             var fileExtension = Path.GetExtension(profilePic.FileName);
-            var fileName = $"{appUserId}_{Guid.NewGuid()}{fileExtension}";
+            var fileName = $"{memberId}_{Guid.NewGuid()}{fileExtension}";  // Changed from appUserId
             var filePath = Path.Combine(uploadsFolder, fileName);
 
             // Delete old profile pic if exists and is not empty
-            if (!string.IsNullOrEmpty(user.ProfileImageSrc))
+            if (!string.IsNullOrEmpty(member.ProfileImageSrc))
             {
-                var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.ProfileImageSrc.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", member.ProfileImageSrc.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
                 if (System.IO.File.Exists(oldFilePath))
                 {
                     try { System.IO.File.Delete(oldFilePath); } catch { /* ignore file delete errors */ }
@@ -183,7 +183,7 @@ namespace Cbeua.Api.Controllers
 
             // Save relative path to DB
             var relativePath = $"/profilepics/{fileName}";
-            var result = await _service.UpdateProfilePicAsync(appUserId, relativePath);
+            var result = await _service.UpdateProfilePicAsync(memberId, relativePath);  // Changed from appUserId
 
             return result;
         }
