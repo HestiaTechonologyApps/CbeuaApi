@@ -1,4 +1,5 @@
-﻿using Cbeua.Core.Helpers;
+﻿using Cbeua.Bussiness.Services;
+using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
@@ -20,11 +21,11 @@ namespace Cbeua.Api.Controllers
         private readonly IManagingComiteeService _manageservice;
         private readonly IAttachmentService _attachmentService;
 
-
+        private readonly IDeathClaimService _deathservice;
 
         public PublicController(IDailyNewsService dailyNewsService ,IDayQuoteService dayQuoteService ,
             IMainPageService mainPageService , IManagingComiteeService manageservice,
-            IPublicPageService publicPageService, IAttachmentService _attachmentService)
+            IPublicPageService publicPageService, IAttachmentService _attachmentService, IDeathClaimService deathClaimService)
         {
            this.dayQuoteService = dayQuoteService;
            this.dailyNewsService = dailyNewsService;    
@@ -32,8 +33,29 @@ namespace Cbeua.Api.Controllers
               this._manageservice = manageservice;
               this.publicPageService = publicPageService;
             this._attachmentService = _attachmentService;
+            this._deathservice = deathClaimService;
+
         }
 
+        [HttpGet]
+        public async Task<CustomApiResponse> GetAll()
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var deathClaims = await _deathservice.GetAllAsync();
+                response.IsSucess = true;
+                response.Value = deathClaims;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
 
 
         [HttpGet("mainpage")]
