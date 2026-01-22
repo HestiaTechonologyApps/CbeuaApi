@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,7 @@ namespace Cbeua.Domain.DTO
         public string CompanyName { get; set; } = "";
         public int order { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
+
+        public IFormFile? Image { get; set; }
     }
 }

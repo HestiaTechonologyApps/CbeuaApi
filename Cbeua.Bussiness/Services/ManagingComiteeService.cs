@@ -16,6 +16,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IAuditRepository _auditRepository;
         private readonly ICurrentUserService _currentUser;
         public String AuditTableName { get; set; } = "MANAGINGCOMITEE";
+
         public ManagingComiteeService(IManagingComiteeRepository repo, IAuditRepository auditRepository, ICurrentUserService currentUser)
         {
             _repo = repo;
@@ -34,7 +35,7 @@ namespace Cbeua.Bussiness.Services
                 recordId: managingComitee.ManagingComiteeId,
                 oldEntity: null,
                 newEntity: managingComitee,
-                changedBy: _currentUser.Email.ToString() // Replace with actual user info
+                changedBy: _currentUser.Email.ToString()
             );
             return await ConvertManagingComiteeToDTO(managingComitee);
         }
@@ -66,7 +67,7 @@ namespace Cbeua.Bussiness.Services
                recordId: managingComitee.ManagingComiteeId,
                oldEntity: managingComitee,
                newEntity: managingComitee,
-               changedBy: _currentUser.Email.ToString() // Replace with actual user info
+               changedBy: _currentUser.Email.ToString()
            );
             return true;
         }
@@ -96,9 +97,23 @@ namespace Cbeua.Bussiness.Services
               recordId: managingComitee.ManagingComiteeId,
               oldEntity: oldentity,
               newEntity: managingComitee,
-              changedBy: _currentUser.Email.ToString() // Replace with actual user info
+              changedBy: _currentUser.Email.ToString()
           );
             return true;
+        }
+
+        // ADD THIS NEW METHOD
+        public async Task<CustomApiResponse> UpdateImageAsync(int managingComiteeId, string imageLocation)
+        {
+            var managingComitee = await _repo.GetByIdAsync(managingComiteeId);
+            if (managingComitee == null)
+                return new CustomApiResponse { IsSucess = false, Error = "Managing Committee member not found", StatusCode = 404 };
+
+            managingComitee.imageLocation = imageLocation;
+            _repo.Update(managingComitee);
+            await _repo.SaveChangesAsync();
+
+            return new CustomApiResponse { IsSucess = true, Value = imageLocation, StatusCode = 200 };
         }
     }
 }

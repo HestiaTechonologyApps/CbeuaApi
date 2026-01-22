@@ -15,5 +15,6 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<ManagingComiteeDTO> CreateAsync(ManagingComitee managingComitee);
         Task<bool> UpdateAsync(ManagingComitee managingComitee);
         Task<bool> DeleteAsync(int id);
+        Task<CustomApiResponse> UpdateImageAsync(int managingComiteeId, string imageLocation);
     }
 }
