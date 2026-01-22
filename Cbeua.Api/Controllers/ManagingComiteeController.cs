@@ -134,7 +134,7 @@ namespace Cbeua.Api.Controllers
         /// <returns></returns>
         [HttpPost("upload-image")]
         [Consumes("multipart/form-data")]
-        public async Task<CustomApiResponse> UploadImage([FromForm] ManagingComiteeDTO dto)
+        public async Task<CustomApiResponse> UploadImage([FromForm] ManagingComiteeImageUploadDto dto)
         {
             var managingComiteeId = dto.ManagingComiteeId;
             var image = dto.Image;

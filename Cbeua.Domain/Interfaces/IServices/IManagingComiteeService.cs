@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Domain.Interfaces.IServices
 {
-    public interface IManagingComiteeService 
+    public interface IManagingComiteeService
     {
         Task<List<ManagingComiteeDTO>> GetAllAsync();
         Task<ManagingComiteeDTO?> GetByIdAsync(int id);
