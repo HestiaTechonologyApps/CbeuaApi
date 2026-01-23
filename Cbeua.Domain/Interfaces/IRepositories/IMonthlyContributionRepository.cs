@@ -8,8 +8,8 @@ namespace Cbeua.Domain.Interfaces.IRepositories
 {
     public interface IMonthlyContributionRepository : IGenericRepository<MonthlyContribution>
     {
-        IQueryable<MonthlyContributionDTO> GetQueryableMonthlyContributionList();
-        Task<IEnumerable<MonthlyContributionDTO>> GetAllAsync();
-        Task<MonthlyContributionDTO> GetByIdDTOAsync(long id);
+        //IQueryable<MonthlyContributionDTO> GetQueryableMonthlyContributionList();
+        //Task<IEnumerable<MonthlyContributionDTO>> GetAllAsync();
+        //Task<MonthlyContributionDTO> GetByIdDTOAsync(long id);
     }
 }

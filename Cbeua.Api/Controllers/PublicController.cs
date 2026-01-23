@@ -37,8 +37,8 @@ namespace Cbeua.Api.Controllers
 
         }
 
-        [HttpGet("version")]
-        public async Task<CustomApiResponse> version()
+        [HttpGet("getversion")]
+        public async Task<CustomApiResponse> getversion()
         {
             var response = new CustomApiResponse();
             try
