@@ -9,7 +9,7 @@ namespace Cbeua.Domain.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
+        public long MonthlyContributionId { get; set; }
 
         public string FileName { get; set; } = "";
         public string FileLocation { get; set; } = "";

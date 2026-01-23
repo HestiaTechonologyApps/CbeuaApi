@@ -61,6 +61,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<UserLoginLog> UserLoginLogs { get; set; }
         public DbSet<PublicPage> publicPages { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<MonthlyContribution> MonthlyContributions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

@@ -9,7 +9,6 @@ using Cbeua.Business.Services;
 using Cbeua.Bussiness.Services;
 using Cbeua.Domain.Configurations;
 using Cbeua.Domain.Interfaces.IServices;
-using Cbeua.Domain.Interfaces.IServices.Common;
 
 
 
@@ -68,7 +67,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IDailyNewsService, DailyNewsService>();
             services.AddScoped<IDirectPaymentService, DirectPaymentService>();
             services.AddScoped<IPublicPageService, PublicPageService>();
-            //services.AddScoped<IMonthlyContributionService, MonthlyContributionService>();
+            services.AddScoped<IMonthlyContributionService, MonthlyContributionService>();
             services.AddScoped<IContactMessageService, ContactMessageService>();
             services.AddScoped<IEmailService, EmailService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
