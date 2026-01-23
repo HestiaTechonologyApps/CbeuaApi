@@ -37,6 +37,27 @@ namespace Cbeua.Api.Controllers
 
         }
 
+        [HttpGet("version")]
+        public async Task<CustomApiResponse> version()
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var version = "1.9";
+                response.IsSucess = true;
+                response.Value = version;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
+
+
         [HttpGet]
         public async Task<CustomApiResponse> GetAll()
         {
@@ -56,6 +77,8 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
+
 
 
         [HttpGet("mainpage")]
