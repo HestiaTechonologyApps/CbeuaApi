@@ -17,6 +17,7 @@ namespace Cbeua.Domain.DTO
         public string MonthName { get; set; } = "";
         public int MonthCode { get; set; }
         public int YearOf { get; set; }
+        public int YearName { get; set; }
         public string DdIba { get; set; } = "";
         public DateTime? DdIbaDate { get; set; }
         public string DdIbaDateString => DdIbaDate?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
