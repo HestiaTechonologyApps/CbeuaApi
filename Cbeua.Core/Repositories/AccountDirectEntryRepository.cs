@@ -13,6 +13,7 @@ namespace Cbeua.Core.Repositories
     public class AccountDirectEntryRepository : GenericRepository<AccountsDirectEntry>, IAccountDirectEntryRepository
     {
         private readonly AppDbContext _context;
+
         public AccountDirectEntryRepository(AppDbContext context) : base(context)
         {
             _context = context;
@@ -20,23 +21,29 @@ namespace Cbeua.Core.Repositories
 
         public IQueryable<AccountsDirectEntryDTO> GetQueryableListAccountDirect()
         {
+            // FIXED: Changed from INNER JOIN to LEFT JOIN to include all AccountsDirectEntries
+            // even if related records don't exist in Members, Branches, Months, or YearMasters tables
             var q = from ade in _context.AccountsDirectEntries
-                    join m in _context.Members on ade.MemberId equals m.MemberId
-                    join b in _context.Branches on ade.BranchId equals b.BranchId
-                    join month in _context.Months on ade.MonthCode equals month.MonthCode
-                    join year in _context.YearMasters on ade.YearOf equals year.YearOf
+                    join m in _context.Members on ade.MemberId equals m.MemberId into memberGroup
+                    from m in memberGroup.DefaultIfEmpty()
+                    join b in _context.Branches on ade.BranchId equals b.BranchId into branchGroup
+                    from b in branchGroup.DefaultIfEmpty()
+                    join month in _context.Months on ade.MonthCode equals month.MonthCode into monthGroup
+                    from month in monthGroup.DefaultIfEmpty()
+                    join year in _context.YearMasters on ade.YearOf equals year.YearOf into yearGroup
+                    from year in yearGroup.DefaultIfEmpty()
                     select new AccountsDirectEntryDTO
                     {
                         AccountsDirectEntryID = ade.AccountsDirectEntryID,
                         MemberId = ade.MemberId,
                         Name = ade.Name,
-                        MemberName = m.Name,
-                        BranchName = b.Name,
-                        MonthName = month.MonthName,
+                        MemberName = m != null ? m.Name : "",
+                        BranchName = b != null ? b.Name : "",
+                        MonthName = month != null ? month.MonthName : "",
                         BranchId = ade.BranchId,
                         MonthCode = ade.MonthCode,
                         YearOf = ade.YearOf,
-                        YearName = year.YearName,
+                        YearName = year != null ? year.YearName : 0,
                         DdIba = ade.DdIba,
                         DdIbaDate = ade.DdIbaDate,
                         Amt = ade.Amt,

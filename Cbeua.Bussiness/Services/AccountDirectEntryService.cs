@@ -26,20 +26,23 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<AccountsDirectEntryDTO>> GetAllAsync()
         {
-            return _repo.GetQueryableListAccountDirect().ToList();
+            // FIXED: Use ToListAsync for proper async execution
+            return await _repo.GetQueryableListAccountDirect().ToListAsync();
         }
 
         public async Task<List<AccountsDirectEntryDTO>> GetByMemberId(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            var items = q.Where(x => x.MemberId == id).ToList();
+            // FIXED: Use ToListAsync for proper async execution
+            var items = await q.Where(x => x.MemberId == id).ToListAsync();
             return items;
         }
 
         public async Task<AccountsDirectEntryDTO?> GetByIdAsync(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            var accountsDirectEntry = q.Where(x => x.AccountsDirectEntryID == id).FirstOrDefault();
+            // FIXED: Use FirstOrDefaultAsync for proper async execution
+            var accountsDirectEntry = await q.Where(x => x.AccountsDirectEntryID == id).FirstOrDefaultAsync();
             return accountsDirectEntry;
         }
 
@@ -47,6 +50,7 @@ namespace Cbeua.Bussiness.Services
         {
             await _repo.AddAsync(accountsDirect);
             await _repo.SaveChangesAsync();
+
             await this._auditRepository.LogAuditAsync<AccountsDirectEntry>(
                tableName: AuditTableName,
                action: "create",
@@ -67,6 +71,7 @@ namespace Cbeua.Bussiness.Services
             _repo.Detach(oldentity);
             _repo.Update(accountsDirect);
             await _repo.SaveChangesAsync();
+
             await _auditRepository.LogAuditAsync<AccountsDirectEntry>(
                tableName: AuditTableName,
                action: "update",
@@ -75,6 +80,7 @@ namespace Cbeua.Bussiness.Services
                newEntity: accountsDirect,
                changedBy: "System"
             );
+
             return true;
         }
 
@@ -82,7 +88,9 @@ namespace Cbeua.Bussiness.Services
         {
             var accountsDirectEntry = await _repo.GetByIdAsync(id);
             if (accountsDirectEntry == null) return false;
+
             _repo.Delete(accountsDirectEntry);
+
             await _auditRepository.LogAuditAsync<AccountsDirectEntry>(
                tableName: AuditTableName,
                action: "Delete",
@@ -91,6 +99,7 @@ namespace Cbeua.Bussiness.Services
                newEntity: accountsDirectEntry,
                changedBy: "System"
             );
+
             await _repo.SaveChangesAsync();
             return true;
         }
