@@ -26,20 +26,20 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<AccountsDirectEntryDTO>> GetAllAsync()
         {
-            return await _repo.GetQueryableListAccountDirect().ToListAsync();
+            return _repo.GetQueryableListAccountDirect().ToList();
         }
 
         public async Task<List<AccountsDirectEntryDTO>> GetByMemberId(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            var items = await q.Where(x => x.MemberId == id).ToListAsync();
+            var items = q.Where(x => x.MemberId == id).ToList();
             return items;
         }
 
         public async Task<AccountsDirectEntryDTO?> GetByIdAsync(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            var accountsDirectEntry = await q.FirstOrDefaultAsync(x => x.AccountsDirectEntryID == id);
+            var accountsDirectEntry = q.Where(x => x.AccountsDirectEntryID == id).FirstOrDefault();
             return accountsDirectEntry;
         }
 
