@@ -23,7 +23,7 @@ namespace Cbeua.Domain.Entities
         public string F11 { get; set; } = "";
         public string status { get; set; } = "";
         public Boolean isApproved { get; set; }
-        public String ApprovedBy { get; set; } = "";
+        public String? ApprovedBy { get; set; } = "";
         public DateTime? ApprovedDate { get; set; }
     }
 }
