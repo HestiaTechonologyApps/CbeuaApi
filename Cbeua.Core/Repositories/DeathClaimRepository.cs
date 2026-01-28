@@ -26,6 +26,7 @@ namespace Cbeua.Core.Repositories
                     from s in stateJoin.DefaultIfEmpty()
                     join d in _context.Designations on dc.DesignationId equals d.DesignationId into designationJoin
                     from d in designationJoin.DefaultIfEmpty()
+                    join year in _context.YearMasters on dc.YearOF equals year.YearOf
                     select new DeathClaimDTO
                     {
                         DeathClaimId = dc.DeathClaimId,
@@ -44,7 +45,8 @@ namespace Cbeua.Core.Repositories
                         DDDATE = dc.DDDATE,
                         Amount = dc.Amount,
                         LastContribution = dc.LastContribution,
-                        YearOF = dc.YearOF
+                        YearOF = dc.YearOF,
+                        YearName = year.YearName,
                     };
             return q;
         }
