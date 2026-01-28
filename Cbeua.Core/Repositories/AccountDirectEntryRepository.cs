@@ -36,7 +36,7 @@ namespace Cbeua.Core.Repositories
                     {
                         AccountsDirectEntryID = ade.AccountsDirectEntryID,
                         MemberId = ade.MemberId,
-                        Name = ade.Name,
+                        Name = m != null ? m.Name : "",
                         MemberName = m != null ? m.Name : "",
                         BranchName = b != null ? b.Name : "",
                         MonthName = month != null ? month.MonthName : "",

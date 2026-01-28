@@ -17,6 +17,7 @@ namespace Cbeua.Api.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
         public async Task<CustomApiResponse> GetAll()
         {
@@ -36,6 +37,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpGet("{id}")]
         public async Task<CustomApiResponse> GetById(int id)
         {
@@ -55,7 +57,6 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-
 
         [HttpGet("GetByMemberId{MemberId}")]
         public async Task<CustomApiResponse> GetByMemberId(int MemberId)
@@ -77,11 +78,11 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-
-
         [HttpPost]
         public async Task<CustomApiResponse> Create([FromBody] AccountsDirectEntry accountsDirectEntry)
         {
+            // NOTE: Name field is NOT required in the request body
+            // It will be automatically populated from the Members table using MemberId
             var response = new CustomApiResponse();
             try
             {
@@ -98,9 +99,12 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] AccountsDirectEntry accountsDirectEntry)
         {
+            // NOTE: Name field is NOT required in the request body
+            // It will be automatically populated from the Members table using MemberId
             var response = new CustomApiResponse();
 
             if (id != accountsDirectEntry.AccountsDirectEntryID)
@@ -125,9 +129,8 @@ namespace Cbeua.Api.Controllers
                 response.StatusCode = 200;
             }
             return response;
-
-
         }
+
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {
@@ -147,7 +150,5 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-
-
     }
 }
