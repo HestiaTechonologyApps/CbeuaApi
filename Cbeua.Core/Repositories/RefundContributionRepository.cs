@@ -13,7 +13,6 @@ namespace Cbeua.Core.Repositories
     public class RefundContributionRepository : GenericRepository<RefundContribution>, IRefundContributionRepository
     {
         private readonly AppDbContext _context;
-
         public RefundContributionRepository(AppDbContext context) : base(context)
         {
             _context = context;
@@ -27,6 +26,7 @@ namespace Cbeua.Core.Repositories
                     from s in stateJoin.DefaultIfEmpty()
                     join d in _context.Designations on rc.DesignationId equals d.DesignationId into designationJoin
                     from d in designationJoin.DefaultIfEmpty()
+                    join y in _context.YearMasters on rc.YearOF equals y.YearOf
                     select new RefundContributionDTO
                     {
                         RefundContributionId = rc.RefundContributionId,
@@ -46,7 +46,8 @@ namespace Cbeua.Core.Repositories
                         DDDATE = rc.DDDATE,
                         Amount = rc.Amount,
                         LastContribution = rc.LastContribution,
-                        YearOF = rc.YearOF
+                        YearOF = rc.YearOF,
+                        YearName = y.YearName
                     };
             return q;
         }

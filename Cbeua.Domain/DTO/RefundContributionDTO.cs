@@ -16,8 +16,6 @@ namespace Cbeua.Domain.DTO
         public string StateName { get; set; } = "";
         public int? DesignationId { get; set; }
         public string DesignationName { get; set; } = "";
-        public DateTime? DeathDate { get; set; }
-        public string DeathDateString => DeathDate.HasValue ? DeathDate.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
         public string RefundNO { get; set; } = "";
         public string BranchNameOFTime { get; set; } = "";
         public string DPCODEOfTime { get; set; } = "";
@@ -25,10 +23,10 @@ namespace Cbeua.Domain.DTO
         public string Remark { get; set; } = "";
         public string DDNO { get; set; } = "";
         public DateTime? DDDATE { get; set; }
-        public string DDDATEString => DDDATE.HasValue ? DDDATE.Value.ToString("yyyy-MM-dd HH:mm:ss") : "";
         public decimal Amount { get; set; }
         public float LastContribution { get; set; }
         public int YearOF { get; set; }
+        public int YearName { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }
