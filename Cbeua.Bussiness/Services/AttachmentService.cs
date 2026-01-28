@@ -4,6 +4,7 @@ using Cbeua.Domain.DTO;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
 using Cbeua.Domain.Entities.Common;
+
 public class AttachmentService : IAttachmentService
 {
     private readonly IAttachmentRepository _repo;
@@ -14,7 +15,10 @@ public class AttachmentService : IAttachmentService
 
     public async Task<List<Attachment>> GetAllAsync() => (List<Attachment>)await _repo.GetAllAsync();
 
-
+    public async Task<Attachment?> GetByIdAsync(int id)
+    {
+        return await _repo.GetByIdAsync(id);
+    }
 
     public async Task<Attachment> CreateAsync(Attachment category)
     {
@@ -23,9 +27,9 @@ public class AttachmentService : IAttachmentService
         return category;
     }
 
-    public async Task<bool> UpdateAsync(Attachment category)
+    public async Task<bool> UpdateAsync(Attachment attachment)
     {
-        _repo.Update(category);
+        _repo.Update(attachment);
         await _repo.SaveChangesAsync();
         return true;
     }
@@ -37,11 +41,6 @@ public class AttachmentService : IAttachmentService
         _repo.Delete(category);
         await _repo.SaveChangesAsync();
         return true;
-    }
-
-     Task<Attachment?> IAttachmentService.GetByIdAsync(int id)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<(Stream? FileStream, string? FileName, string? ContentType, string? ErrorMessage)> DownloadAttachmentAsync(int attachmentId)
@@ -65,12 +64,11 @@ public class AttachmentService : IAttachmentService
             contentType = "application/octet-stream";
         return contentType;
     }
+
     public async Task<CustomApiResponse> UploadFileAsync(IFormFile file, string uploadPath, string tableName, int recordId, string description)
     {
         if (file == null || file.Length == 0)
             return ApiResponseFactory.Fail("File is null or empty", System.Net.HttpStatusCode.BadRequest);
-        // return new CustomApiResponse { Success = false, Message = "File is empty" };
-
 
         if (!Directory.Exists(uploadPath))
             Directory.CreateDirectory(uploadPath);
@@ -100,18 +98,14 @@ public class AttachmentService : IAttachmentService
         };
 
         await _repo.AddAsync(attachment);
-
         await _repo.SaveChangesAsync();
         return ApiResponseFactory.Success(attachment, "File uploaded successfully", System.Net.HttpStatusCode.OK);
-        // return new CustomApiResponse { Success = true, Message = "File uploaded successfully", Data = attachment };
     }
 
     public async Task<CustomApiResponse> GetAttachmentsAsync(string tableName, int recordId)
     {
-        var attachments = await _repo.FindAsync (a => a.TableName == tableName && a.RecordID == recordId && !a.IsDeleted);
-         return ApiResponseFactory.Success(attachments, string.Empty, System.Net.HttpStatusCode.OK);
-
-        
+        var attachments = await _repo.FindAsync(a => a.TableName == tableName && a.RecordID == recordId && !a.IsDeleted);
+        return ApiResponseFactory.Success(attachments, string.Empty, System.Net.HttpStatusCode.OK);
     }
 
     public async Task<CustomApiResponse> DeleteAttachmentAsync(int attachmentId, string deletedBy)
@@ -119,15 +113,13 @@ public class AttachmentService : IAttachmentService
         var attachment = await _repo.GetByIdAsync(attachmentId);
         if (attachment == null)
             return ApiResponseFactory.Fail("Attachment not found", System.Net.HttpStatusCode.NotFound);
-       
 
         attachment.IsDeleted = true;
         attachment.DeletedOn = DateTime.UtcNow;
         attachment.DeletedBy = deletedBy;
 
-         _repo.Update(attachment);
+        _repo.Update(attachment);
         await _repo.SaveChangesAsync();
-        return  ApiResponseFactory.Success(null, "Attachment deleted successfully", System.Net.HttpStatusCode.OK);
-       
+        return ApiResponseFactory.Success(null, "Attachment deleted successfully", System.Net.HttpStatusCode.OK);
     }
 }
