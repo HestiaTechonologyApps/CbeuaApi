@@ -224,6 +224,61 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.PrivacyLine4 = publicPage.PrivacyLine4;
             publicPageDTO.PrivacyLine5 = publicPage.PrivacyLine5;
             publicPageDTO.PrivacyLine6 = publicPage.PrivacyLine6;
+            publicPageDTO.PrivacyHeading3Para1 = publicPage.PrivacyHeading3Para1;
+            publicPageDTO.PrivacyHeading4 = publicPage.PrivacyHeading4;
+            publicPageDTO.PrivacySubHeading4 = publicPage.PrivacySubHeading4;
+            publicPageDTO.PrivacyLine7 = publicPage.PrivacyLine7;
+            publicPageDTO.PrivacyHeading5 = publicPage.PrivacyHeading5;
+            publicPageDTO.PrivacyHeading5Para1 = publicPage.PrivacyHeading5Para1;
+            publicPageDTO.PrivacyHeading6 = publicPage.PrivacyHeading6;
+            publicPageDTO.PrivacyHeading6Para1 = publicPage.PrivacyHeading6Para1;
+            publicPageDTO.PrivacyHeading7 = publicPage.PrivacyHeading7;
+            publicPageDTO.PrivacyHeading7Para1 = publicPage.PrivacyHeading7Para1;
+            publicPageDTO.PrivacyHeading8 = publicPage.PrivacyHeading8;
+            publicPageDTO.PrivacySubHeading8 = publicPage.PrivacySubHeading8;
+            publicPageDTO.PrivacyHeading8Para1 = publicPage.PrivacyHeading8Para1;
+            publicPageDTO.PrivacyHeading8Para2 = publicPage.PrivacyHeading8Para2;
+            publicPageDTO.PrivacyHeading8Para3 = publicPage.PrivacyHeading8Para3;
+            publicPageDTO.PrivacyHeading8Para4 = publicPage.PrivacyHeading8Para4;
+            publicPageDTO.PrivacyHeading9 = publicPage.PrivacyHeading9;
+            publicPageDTO.PrivacySubHeading9 = publicPage.PrivacySubHeading9;
+            publicPageDTO.PrivacyHeading9Para1 = publicPage.PrivacyHeading9Para1;
+            publicPageDTO.PrivacyHeading9Para2 = publicPage.PrivacyHeading9Para2;
+            publicPageDTO.PrivacyHeading9Para3 = publicPage.PrivacyHeading9Para3;
+            publicPageDTO.PrivacyHeading9Para4 = publicPage.PrivacyHeading9Para4;
+            publicPageDTO.PrivacyHeading9Para5 = publicPage.PrivacyHeading9Para5;
+            publicPageDTO.PrivacyHeading9Para6 = publicPage.PrivacyHeading9Para6;
+            publicPageDTO.PrivacyHeading9Para7 = publicPage.PrivacyHeading9Para7;
+            publicPageDTO.PrivacyHeading10 = publicPage.PrivacyHeading10;
+            publicPageDTO.PrivacyHeading10Para1 = publicPage.PrivacyHeading10Para1;
+            publicPageDTO.PrivacyHeading10Para2 = publicPage.PrivacyHeading10Para2;
+            publicPageDTO.PrivacyHeading11 = publicPage.PrivacyHeading11;
+            publicPageDTO.PrivacyHeading11Para1 = publicPage.PrivacyHeading11Para1;
+            publicPageDTO.PrivacyHeading11Para2 = publicPage.PrivacyHeading11Para2;
+            publicPageDTO.PrivacyHeading12 = publicPage.PrivacyHeading12;
+            publicPageDTO.PrivacyHeading12Para1 = publicPage.PrivacyHeading12Para1;
+
+            /* ========== CONTACT FORM PLACEHOLDERS ========== */
+            publicPageDTO.ContactFullNamePlaceholder = publicPage.ContactFullNamePlaceholder;
+            publicPageDTO.ContactPhoneNumberPlaceholder = publicPage.ContactPhoneNumberPlaceholder;
+            publicPageDTO.ContactEmailPlaceholder = publicPage.ContactEmailPlaceholder;
+            publicPageDTO.ContactSubjectPlaceholder = publicPage.ContactSubjectPlaceholder;
+            publicPageDTO.ContactMessagePlaceholder = publicPage.ContactMessagePlaceholder;
+            publicPageDTO.ContactMessageRowNo = publicPage.ContactMessageRowNo;
+            publicPageDTO.ContactSubmitButtonIconClass = publicPage.ContactSubmitButtonIconClass;
+
+            /* ========== CONTACT OFFICE DETAILS ========== */
+            publicPageDTO.ContactOfficeTitleLabel = publicPage.ContactOfficeTitleLabel;
+            publicPageDTO.ContactOfficeTitleIconClass = publicPage.ContactOfficeTitleIconClass;
+            publicPageDTO.ContactOfficePhoneLabel = publicPage.ContactOfficePhoneLabel;
+            publicPageDTO.ContactOfficePhoneIconClass = publicPage.ContactOfficePhoneIconClass;
+            publicPageDTO.ContactOfficeEmailLabel = publicPage.ContactOfficeEmailLabel;
+            publicPageDTO.ContactOfficeEmailIconClass = publicPage.ContactOfficeEmailIconClass;
+            publicPageDTO.ContactOfficeAddress2 = publicPage.ContactOfficeAddress2;
+            publicPageDTO.ContactOfficeAddress3 = publicPage.ContactOfficeAddress3;
+            publicPageDTO.ContactOfficeDay1 = publicPage.ContactOfficeDay1;
+            publicPageDTO.ContactOfficeDay2 = publicPage.ContactOfficeDay2;
+            publicPageDTO.ContactOfficeDay3 = publicPage.ContactOfficeDay3;
 
             publicPageDTO.IsActive = publicPage.IsActive;
 

@@ -18,7 +18,7 @@ namespace Cbeua.Domain.Entities
         public string NavBrandSubTitle { get; set; } = "";
         public string NavLogoUrl { get; set; } = "";
         public string NavLogoAlt { get; set; } = "";
-        public bool NavMenuHead { get; set; }
+        public string NavMenuHead { get; set; } = "";
 
         public string NavHomeLabel { get; set; } = "";
         public string NavAboutLabel { get; set; } = "";
@@ -212,6 +212,62 @@ namespace Cbeua.Domain.Entities
         public string PrivacyLine4 { get; set; } = "";
         public string PrivacyLine5 { get; set; } = "";
         public string PrivacyLine6 { get; set; } = "";
+
+        public string PrivacyHeading3Para1 { get; set; } = "";
+        public string PrivacyHeading4 { get; set; } = "";
+        public string PrivacySubHeading4 { get; set; } = "";
+        public string PrivacyLine7 { get; set; } = "";
+        public string PrivacyHeading5 { get; set; } = "";
+        public string PrivacyHeading5Para1 { get; set; } = "";
+        public string PrivacyHeading6 { get; set; } = "";
+        public string PrivacyHeading6Para1 { get; set; } = "";
+        public string PrivacyHeading7 { get; set; } = "";
+        public string PrivacyHeading7Para1 { get; set; } = "";
+        public string PrivacyHeading8 { get; set; } = "";
+        public string PrivacySubHeading8 { get; set; } = "";
+        public string PrivacyHeading8Para1 { get; set; } = "";
+        public string PrivacyHeading8Para2 { get; set; } = "";
+        public string PrivacyHeading8Para3 { get; set; } = "";
+        public string PrivacyHeading8Para4 { get; set; } = "";
+        public string PrivacyHeading9 { get; set; } = "";
+        public string PrivacySubHeading9 { get; set; } = "";
+        public string PrivacyHeading9Para1 { get; set; } = "";
+        public string PrivacyHeading9Para2 { get; set; } = "";
+        public string PrivacyHeading9Para3 { get; set; } = "";
+        public string PrivacyHeading9Para4 { get; set; } = "";
+        public string PrivacyHeading9Para5 { get; set; } = "";
+        public string PrivacyHeading9Para6 { get; set; } = "";
+        public string PrivacyHeading9Para7 { get; set; } = "";
+        public string PrivacyHeading10 { get; set; } = "";
+        public string PrivacyHeading10Para1 { get; set; } = "";
+        public string PrivacyHeading10Para2 { get; set; } = "";
+        public string PrivacyHeading11 { get; set; } = "";
+        public string PrivacyHeading11Para1 { get; set; } = "";
+        public string PrivacyHeading11Para2 { get; set; } = "";
+        public string PrivacyHeading12 { get; set; } = "";
+        public string PrivacyHeading12Para1 { get; set; } = "";
+
+        /* ================= CONTACT FORM PLACEHOLDERS ================= */
+        public string ContactFullNamePlaceholder { get; set; } = "";
+        public string ContactPhoneNumberPlaceholder { get; set; } = "";
+        public string ContactEmailPlaceholder { get; set; } = "";
+        public string ContactSubjectPlaceholder { get; set; } = "";
+        public string ContactMessagePlaceholder { get; set; } = "";
+        public int ContactMessageRowNo { get; set; }
+        public string ContactSubmitButtonIconClass { get; set; } = "";
+
+        /* ================= CONTACT OFFICE DETAILS ================= */
+        public string ContactOfficeTitleLabel { get; set; } = "";
+        public string ContactOfficeTitleIconClass { get; set; } = "";
+        public string ContactOfficePhoneLabel { get; set; } = "";
+        public string ContactOfficePhoneIconClass { get; set; } = "";
+        public string ContactOfficeEmailLabel { get; set; } = "";
+        public string ContactOfficeEmailIconClass { get; set; } = "";
+        public string ContactOfficeAddress2 { get; set; } = "";
+        public string ContactOfficeAddress3 { get; set; } = "";
+        public string ContactOfficeDay1 { get; set; } = "";
+        public string ContactOfficeDay2 { get; set; } = "";
+        public string ContactOfficeDay3 { get; set; } = "";
 
         public bool IsActive { get; set; } = true;
     }
