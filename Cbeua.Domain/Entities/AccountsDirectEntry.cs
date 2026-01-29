@@ -9,7 +9,7 @@ namespace Cbeua.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AccountsDirectEntryID { get; set; }
         public int MemberId { get; set; }
-        //public string Name { get; set; } = "";
+        public string Name { get; set; } = "";
         public int BranchId { get; set; }
         public int MonthCode { get; set; }
         public int YearOf { get; set; }
