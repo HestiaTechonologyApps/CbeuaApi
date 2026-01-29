@@ -13,6 +13,7 @@ namespace Cbeua.Business.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMemberRepository _memberRepository;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
 
@@ -21,10 +22,12 @@ namespace Cbeua.Business.Services
 
         public AuthService(
             IUserRepository userRepository,
+            IMemberRepository memberRepository,
             IJwtService jwtService,
             ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
+            _memberRepository = memberRepository;
             _jwtService = jwtService;
             _logger = logger;
         }
@@ -35,13 +38,19 @@ namespace Cbeua.Business.Services
             return users.FirstOrDefault();
         }
 
+        private async Task<User?> GetUserByUserNameAsync(string username)
+        {
+            var users = await _userRepository.FindAsync(u => u.UserName == username);
+            return users.FirstOrDefault();
+        }
+
         public async Task<CustomApiResponse> LoginAsync(LoginRequestDTO request)
         {
             try
             {
-                var user = await GetUserByEmailAsync(request.Email);
+                var user = await GetUserByUserNameAsync(request.UserName);
                 if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
-                    return ApiResponseFactory.Fail("Invalid email or password");
+                    return ApiResponseFactory.Fail("Invalid username or password");
 
                 if (user.Islocked)
                     return ApiResponseFactory.Fail("Account is locked. Please contact support.");
@@ -51,6 +60,7 @@ namespace Cbeua.Business.Services
 
                 user.Lastlogin = DateTime.UtcNow;
                 _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
 
                 var token = _jwtService.GenerateToken(MapToUserDto(user));
 
@@ -75,7 +85,7 @@ namespace Cbeua.Business.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during login for {Email}", request.Email);
+                _logger.LogError(ex, "Error during login for {UserName}", request.UserName);
                 return ApiResponseFactory.Exception(ex);
             }
         }
@@ -93,6 +103,7 @@ namespace Cbeua.Business.Services
 
                 user.PasswordHash = PasswordHelper.HashPassword(request.NewPassword);
                 _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
 
                 return ApiResponseFactory.Success(null, "Password changed successfully");
             }
@@ -146,11 +157,21 @@ namespace Cbeua.Business.Services
         {
             try
             {
+                // Check if StaffNo exists in Member table
+                var members = await _memberRepository.FindAsync(m => m.StaffNo == request.StaffNo);
+                var member = members.FirstOrDefault();
+
+                if (member == null)
+                    return ApiResponseFactory.Fail("StaffNo does not exist. Please use a valid StaffNo.");
+
                 if (await _userRepository.AnyAsync(u => u.UserEmail == request.UserEmail))
                     return ApiResponseFactory.Fail("Email already registered");
 
                 if (await _userRepository.AnyAsync(u => u.UserName == request.UserName))
                     return ApiResponseFactory.Fail("Username already taken");
+
+                if (await _userRepository.AnyAsync(u => u.StaffNo == request.StaffNo))
+                    return ApiResponseFactory.Fail("StaffNo already registered");
 
                 var user = new User
                 {
@@ -161,10 +182,15 @@ namespace Cbeua.Business.Services
                     PasswordHash = PasswordHelper.HashPassword(request.Password),
                     IsActive = true,
                     Islocked = false,
-                    CreateAt = DateTime.UtcNow
+                    CreateAt = DateTime.UtcNow,
+                    CompanyId = 0,      // Default company - update as needed
+                    StaffNo = request.StaffNo,
+                    MemberId = member.MemberId,  // Auto-link to Member record
+                    Role = "Staff"      // Default role for new registrations
                 };
 
                 await _userRepository.AddAsync(user);
+                await _userRepository.SaveChangesAsync();
 
                 var createdUser = await GetUserByEmailAsync(request.UserEmail);
                 if (createdUser == null)
@@ -201,6 +227,7 @@ namespace Cbeua.Business.Services
 
                 user.PasswordHash = PasswordHelper.HashPassword(request.NewPassword);
                 _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
 
                 _resetTokens.Remove(request.Token);
 
@@ -225,7 +252,7 @@ namespace Cbeua.Business.Services
                 IsActive = user.IsActive,
                 CreateAt = user.CreateAt,
                 Lastlogin = user.Lastlogin,
-                CompanyId=user.CompanyId,
+                CompanyId = user.CompanyId,
                 Role = user.Role,
                 StaffNo = user.StaffNo,
                 MemberId = user.MemberId
@@ -233,5 +260,5 @@ namespace Cbeua.Business.Services
         }
     }
 
-    
+
 }
