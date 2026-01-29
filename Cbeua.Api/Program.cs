@@ -1,14 +1,15 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Serilog;
-using System.Text;
 using Cbeua.Bussiness;
 using Cbeua.Domain.Configurations;
+using Cbeua.InfraCore;
+using Cbeua.InfraCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Cbeua.InfraCore;
-using Cbeua.InfraCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Reflection;
+using System.Text;
 
 
 
@@ -111,7 +112,21 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
-app.UseStaticFiles();
+
+var wellKnownPath = Path.Combine(Directory.GetCurrentDirectory(), ".well-known");
+
+// Create the directory if it doesn't exist
+if (!Directory.Exists(wellKnownPath))
+{
+    Directory.CreateDirectory(wellKnownPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(wellKnownPath),
+    RequestPath = "/.well-known",
+    ServeUnknownFileTypes = true
+});
 app.UseMiddleware<ExceptionLoggingMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();
