@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cbeua.Domain.DTO;
-
 namespace Cbeua.Domain.DTO
 {
     public class UserDTO
     {
-
         public int UserId { get; set; } // Primary Key
         public string UserName { get; set; } = "";
         public string UserEmail { get; set; } = "";
@@ -20,7 +18,7 @@ namespace Cbeua.Domain.DTO
         public string PasswordHash { get; set; } = "";
         public bool IsActive { get; set; } = true;
         public bool Islocked { get; set; } = false;
-        public int CompanyId { get; set; } =0;
+        public int CompanyId { get; set; } = 0;
         public string ComapanyName { get; set; } = "";
         public DateTime? CreateAt { get; set; } = DateTime.UtcNow;
         public string CreateAtString { get; set; } = "";
@@ -31,19 +29,18 @@ namespace Cbeua.Domain.DTO
         public string Role { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
-
     public class UserListDTO
     {
         public int UserId { get; set; }
         public string UserName { get; set; } = "";
         public string UserEmail { get; set; } = "";
+        public int StaffNo { get; set; } = 0;  // Added StaffNo
+        public int? MemberId { get; set; } = null;  // Added MemberId
         public string PhoneNumber { get; set; } = "";
         public string CompanyName { get; set; } = "";
+        public string Role { get; set; } = "";  // Added Role
         public bool IsActive { get; set; }
     }
-
-
-
     public class PasswordChangeRequest
     {
         public int UserId { get; set; }

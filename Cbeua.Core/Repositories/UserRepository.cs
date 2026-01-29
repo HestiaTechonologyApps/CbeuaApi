@@ -10,7 +10,6 @@ using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
 using Cbeua.InfraCore.Data;
-
 namespace Cbeua.Core.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
@@ -20,7 +19,6 @@ namespace Cbeua.Core.Repositories
         {
             _context = context;
         }
-
         public IQueryable<UserListDTO> QueryableUserList()
         {
             return from usr in _context.Users.AsNoTracking()
@@ -31,22 +29,21 @@ namespace Cbeua.Core.Repositories
                        UserId = usr.UserId,
                        UserName = usr.UserName,
                        UserEmail = usr.UserEmail,
+                       StaffNo = usr.StaffNo,  // Added StaffNo
+                       MemberId = usr.MemberId,  // Added MemberId
                        PhoneNumber = usr.PhoneNumber,
                        CompanyName = cmp.ComapanyName,
+                       Role = usr.Role,  // Added Role
                        IsActive = usr.IsActive
-                       
-                       
+
+
                    };
         }
-
         //public async Task<List<UserListDTO>> GetUserListAsync()
         //{
         //    IQueryable<UserListDTO> q = QueryableUserList();
         //    return await q.ToListAsync();
         //}
-
-
-
         public async Task<UserDTO> GetUserDetailsAsync(int userId)
         {
             var q = (from user in _context.Users
@@ -70,29 +67,22 @@ namespace Cbeua.Core.Repositories
                          ComapanyName = comp.ComapanyName,
                          Role = user.Role,
                          CreateAtString = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt"),
-
                          LastloginString = user.Lastlogin.HasValue
                              ? user.Lastlogin.Value.ToString("dd MMMM yyyy hh:mm tt")
                              : ""
                      }).FirstAsync();
-
             return await q;
         }
-
         public async Task<List<UserListDTO>> GetUsersAsync()
         {
             IQueryable<UserListDTO> q = QueryableUserList();
-
             return await q.ToListAsync();
         }
-
         public async Task AddLoginLogAsync(UserLoginLog log)
         {
             await _context.UserLoginLogs.AddAsync(log);
             await _context.SaveChangesAsync();
         }
-
-
         public async Task<List<UserLoginLogDTO>> GetUserLogsAsync(int userId)
         {
             return await _context.UserLoginLogs
