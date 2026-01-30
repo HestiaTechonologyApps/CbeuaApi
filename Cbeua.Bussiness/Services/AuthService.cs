@@ -183,7 +183,7 @@ namespace Cbeua.Business.Services
                     IsActive = true,
                     Islocked = false,
                     CreateAt = DateTime.UtcNow,
-                    CompanyId = 0,      // Default company - update as needed
+                    CompanyId = 1,      // Default company - update as needed
                     StaffNo = request.StaffNo,
                     MemberId = member.MemberId,  // Auto-link to Member record
                     Role = "Staff"      // Default role for new registrations
