@@ -121,6 +121,9 @@ if (!Directory.Exists(wellKnownPath))
     Directory.CreateDirectory(wellKnownPath);
 }
 
+// ADD THIS LINE - Serves files from wwwroot (including /profilepics)
+app.UseStaticFiles();
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(wellKnownPath),
