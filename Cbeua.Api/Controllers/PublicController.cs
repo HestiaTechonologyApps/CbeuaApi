@@ -193,7 +193,7 @@ namespace Cbeua.Api.Controllers
             {
                 var attachments = await _attachmentService.GetAllAsync ();
 
-                attachments = attachments.Where(u => u.TableName == "public").ToList();
+                attachments = attachments.Where(u => u.TableName == "public" && !u.IsDeleted).ToList();
                 response.IsSucess = true;
                 response.Value = attachments;
                 response.StatusCode = 200;
