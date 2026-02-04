@@ -139,6 +139,8 @@ namespace Cbeua.Core.Repositories
                     CommitteeHeaderTitle = wc.CommitteeHeaderTitle,
                     CommitteeHeaderSubTitle = wc.CommitteeHeaderSubTitle,
                     CommitteeMembersJson = wc.CommitteeMembersJson,
+                    ManagingCommitteeHeaderTitle = wc.ManagingCommitteeHeaderTitle,
+                    ManagingCommitteeHeaderSubTitle = wc.ManagingCommitteeHeaderSubTitle,
 
                     /* ========== CLAIMS PAGE ========== */
                     ClaimsHeroTitle = wc.ClaimsHeroTitle,
@@ -186,6 +188,7 @@ namespace Cbeua.Core.Repositories
                     FooterEmailValue = wc.FooterEmailValue,
                     FooterQuickLinksJson = wc.FooterQuickLinksJson,
                     FooterOfficeHoursJson = wc.FooterOfficeHoursJson,
+                    FooterQuickHead = wc.FooterQuickHead,
                     FooterCopyrightText = wc.FooterCopyrightText,
 
                     /* ========== PRIVACY POLICY ========== */

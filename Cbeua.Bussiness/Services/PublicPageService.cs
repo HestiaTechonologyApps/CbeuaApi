@@ -158,6 +158,8 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.CommitteeHeaderTitle = publicPage.CommitteeHeaderTitle;
             publicPageDTO.CommitteeHeaderSubTitle = publicPage.CommitteeHeaderSubTitle;
             publicPageDTO.CommitteeMembersJson = publicPage.CommitteeMembersJson;
+            publicPageDTO.ManagingCommitteeHeaderTitle = publicPage.ManagingCommitteeHeaderTitle;
+            publicPageDTO.ManagingCommitteeHeaderSubTitle = publicPage.ManagingCommitteeHeaderSubTitle;
 
             /* ========== CLAIMS PAGE ========== */
             publicPageDTO.ClaimsHeroTitle = publicPage.ClaimsHeroTitle;
@@ -205,6 +207,7 @@ namespace Cbeua.Bussiness.Services
             publicPageDTO.FooterEmailValue = publicPage.FooterEmailValue;
             publicPageDTO.FooterQuickLinksJson = publicPage.FooterQuickLinksJson;
             publicPageDTO.FooterOfficeHoursJson = publicPage.FooterOfficeHoursJson;
+            publicPageDTO.FooterQuickHead = publicPage.FooterQuickHead;
             publicPageDTO.FooterCopyrightText = publicPage.FooterCopyrightText;
 
             /* ========== PRIVACY POLICY ========== */

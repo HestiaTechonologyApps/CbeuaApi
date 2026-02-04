@@ -131,6 +131,8 @@ namespace Cbeua.Domain.Entities
         public string CommitteeHeaderTitle { get; set; } = "";
         public string CommitteeHeaderSubTitle { get; set; } = "";
         public string CommitteeMembersJson { get; set; } = "";
+        public string ManagingCommitteeHeaderTitle { get; set; } = "";
+        public string ManagingCommitteeHeaderSubTitle { get; set; } = "";
 
         /* ================= CLAIMS PAGE ================= */
         public string ClaimsHeroTitle { get; set; } = "";
@@ -189,6 +191,7 @@ namespace Cbeua.Domain.Entities
 
         public string FooterQuickLinksJson { get; set; } = "";
         public string FooterOfficeHoursJson { get; set; } = "";
+        public string FooterQuickHead { get; set; } = "";
 
         public string FooterCopyrightText { get; set; } = "";
 
