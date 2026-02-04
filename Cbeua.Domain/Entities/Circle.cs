@@ -18,8 +18,6 @@ namespace Cbeua.Domain.Entities
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }    
 
-       
-        public  State? State { get; set; }
     }
 }
 
