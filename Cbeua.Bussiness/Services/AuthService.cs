@@ -3,10 +3,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Cbeua.Bussiness.Helpers;
-using Cbeua.Core.Helpers; // ApiResponseFactory lives here
+using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
+using Cbeua.Domain.Interfaces.IServices;
 
 namespace Cbeua.Business.Services
 {
@@ -62,13 +63,21 @@ namespace Cbeua.Business.Services
                 _userRepository.Update(user);
                 await _userRepository.SaveChangesAsync();
 
-                var token = _jwtService.GenerateToken(MapToUserDto(user));
+                // Fetch profile image from Member table
+                string profileImageSrc = "";
+                if (user.MemberId.HasValue)
+                {
+                    var member = await _memberRepository.GetByIdAsync(user.MemberId.Value);
+                    profileImageSrc = member?.ProfileImageSrc ?? "";
+                }
+
+                var token = _jwtService.GenerateToken(MapToUserDto(user, profileImageSrc));
 
                 var data = new
                 {
                     Token = token,
                     ExpiresAt = DateTime.UtcNow.AddHours(24),
-                    User = MapToUserDto(user)
+                    User = MapToUserDto(user, profileImageSrc)
                 };
 
                 var log = new UserLoginLog
@@ -77,7 +86,6 @@ namespace Cbeua.Business.Services
                     UserLoginLogId = 0,
                     ActionType = "Login",
                     ActionTime = DateTime.UtcNow
-
                 };
                 await _userRepository.AddLoginLogAsync(log);
 
@@ -86,69 +94,6 @@ namespace Cbeua.Business.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during login for {UserName}", request.UserName);
-                return ApiResponseFactory.Exception(ex);
-            }
-        }
-
-        public async Task<CustomApiResponse> ChangePasswordAsync(int userId, ChangePasswordRequestDTO request)
-        {
-            try
-            {
-                var user = await _userRepository.GetByIdAsync(userId);
-                if (user == null)
-                    return ApiResponseFactory.Fail("User not found");
-
-                if (!PasswordHelper.VerifyPassword(request.CurrentPassword, user.PasswordHash))
-                    return ApiResponseFactory.Fail("Current password is incorrect");
-
-                user.PasswordHash = PasswordHelper.HashPassword(request.NewPassword);
-                _userRepository.Update(user);
-                await _userRepository.SaveChangesAsync();
-
-                return ApiResponseFactory.Success(null, "Password changed successfully");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error changing password for user {UserId}", userId);
-                return ApiResponseFactory.Exception(ex);
-            }
-        }
-
-        public async Task<CustomApiResponse> ForgotPasswordAsync(string email)
-        {
-            try
-            {
-                var user = await GetUserByEmailAsync(email);
-                if (user == null)
-                    return ApiResponseFactory.Success(null, "If the email exists, a reset link has been sent.");
-
-                var resetToken = PasswordHelper.GenerateResetToken();
-                _resetTokens[resetToken] = email;
-
-                _logger.LogInformation("Reset token for {Email}: {Token}", email, resetToken);
-
-                return ApiResponseFactory.Success(resetToken, "If the email exists, a reset link has been sent.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in forgot password for {Email}", email);
-                return ApiResponseFactory.Exception(ex);
-            }
-        }
-
-        public async Task<CustomApiResponse> GetCurrentUserAsync(int userId)
-        {
-            try
-            {
-                var user = await _userRepository.GetByIdAsync(userId);
-                if (user == null)
-                    return ApiResponseFactory.Fail("User not found");
-
-                return ApiResponseFactory.Success(MapToUserDto(user), "User retrieved successfully");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting user {UserId}", userId);
                 return ApiResponseFactory.Exception(ex);
             }
         }
@@ -183,10 +128,10 @@ namespace Cbeua.Business.Services
                     IsActive = true,
                     Islocked = false,
                     CreateAt = DateTime.UtcNow,
-                    CompanyId = 1,      // Default company - update as needed
+                    CompanyId = 1,
                     StaffNo = request.StaffNo,
-                    MemberId = member.MemberId,  // Auto-link to Member record
-                    Role = "Staff"      // Default role for new registrations
+                    MemberId = member.MemberId,
+                    Role = "Staff"
                 };
 
                 await _userRepository.AddAsync(user);
@@ -196,13 +141,15 @@ namespace Cbeua.Business.Services
                 if (createdUser == null)
                     return ApiResponseFactory.Fail("Failed to create user. Please try again.");
 
-                var token = _jwtService.GenerateToken(MapToUserDto(createdUser));
+                // Get profile image from member
+                var profileImageSrc = member.ProfileImageSrc ?? "";
+                var token = _jwtService.GenerateToken(MapToUserDto(createdUser, profileImageSrc));
 
                 var data = new
                 {
                     Token = token,
                     ExpiresAt = DateTime.UtcNow.AddHours(24),
-                    User = MapToUserDto(createdUser)
+                    User = MapToUserDto(createdUser, profileImageSrc)
                 };
 
                 return ApiResponseFactory.Success(data, "Registration successful");
@@ -210,6 +157,28 @@ namespace Cbeua.Business.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during registration for {Email}", request.UserEmail);
+                return ApiResponseFactory.Exception(ex);
+            }
+        }
+
+        public async Task<CustomApiResponse> ForgotPasswordAsync(string email)
+        {
+            try
+            {
+                var user = await GetUserByEmailAsync(email);
+                if (user == null)
+                    return ApiResponseFactory.Success(null, "If the email exists, a reset link has been sent.");
+
+                var resetToken = PasswordHelper.GenerateResetToken();
+                _resetTokens[resetToken] = email;
+
+                _logger.LogInformation("Reset token for {Email}: {Token}", email, resetToken);
+
+                return ApiResponseFactory.Success(resetToken, "If the email exists, a reset link has been sent.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in forgot password for {Email}", email);
                 return ApiResponseFactory.Exception(ex);
             }
         }
@@ -240,7 +209,56 @@ namespace Cbeua.Business.Services
             }
         }
 
-        private UserDTO MapToUserDto(User user)
+        public async Task<CustomApiResponse> ChangePasswordAsync(int userId, ChangePasswordRequestDTO request)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return ApiResponseFactory.Fail("User not found");
+
+                if (!PasswordHelper.VerifyPassword(request.CurrentPassword, user.PasswordHash))
+                    return ApiResponseFactory.Fail("Current password is incorrect");
+
+                user.PasswordHash = PasswordHelper.HashPassword(request.NewPassword);
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
+
+                return ApiResponseFactory.Success(null, "Password changed successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error changing password for user {UserId}", userId);
+                return ApiResponseFactory.Exception(ex);
+            }
+        }
+
+        public async Task<CustomApiResponse> GetCurrentUserAsync(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return ApiResponseFactory.Fail("User not found");
+
+                // Fetch profile image from Member table
+                string profileImageSrc = "";
+                if (user.MemberId.HasValue)
+                {
+                    var member = await _memberRepository.GetByIdAsync(user.MemberId.Value);
+                    profileImageSrc = member?.ProfileImageSrc ?? "";
+                }
+
+                return ApiResponseFactory.Success(MapToUserDto(user, profileImageSrc), "User retrieved successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user {UserId}", userId);
+                return ApiResponseFactory.Exception(ex);
+            }
+        }
+
+        private UserDTO MapToUserDto(User user, string profileImageSrc = "")
         {
             return new UserDTO
             {
@@ -255,10 +273,9 @@ namespace Cbeua.Business.Services
                 CompanyId = user.CompanyId,
                 Role = user.Role,
                 StaffNo = user.StaffNo,
-                MemberId = user.MemberId
+                MemberId = user.MemberId,
+                ProfileImageSrc = profileImageSrc
             };
         }
     }
-
-
 }

@@ -49,6 +49,9 @@ namespace Cbeua.Core.Repositories
             var q = (from user in _context.Users
                      join comp in _context.Companies
                          on user.CompanyId equals comp.CompanyId
+                     join mem in _context.Members
+                         on user.MemberId equals mem.MemberId into memberGroup
+                     from member in memberGroup.DefaultIfEmpty()
                      where user.UserId == userId
                      select new UserDTO
                      {
@@ -66,6 +69,7 @@ namespace Cbeua.Core.Repositories
                          CompanyId = user.CompanyId,
                          ComapanyName = comp.ComapanyName,
                          Role = user.Role,
+                         ProfileImageSrc = member != null ? member.ProfileImageSrc : "",
                          CreateAtString = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt"),
                          LastloginString = user.Lastlogin.HasValue
                              ? user.Lastlogin.Value.ToString("dd MMMM yyyy hh:mm tt")

@@ -27,6 +27,7 @@ namespace Cbeua.Domain.DTO
         public string CreateAtSyring { get; set; } = "";
         public bool IsDeleted { get; set; } = false;
         public string Role { get; set; }
+        public string ProfileImageSrc { get; set; } = "";
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
     public class UserListDTO
