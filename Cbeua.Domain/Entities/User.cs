@@ -22,6 +22,7 @@ namespace Cbeua.Domain.Entities
         public string PasswordHash { get; set; } = "";
         public bool IsActive { get; set; } = true;
         public bool Islocked { get; set; } = false;
+        public bool IsDeleted { get; set; } = false; 
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;
         public DateTime? Lastlogin { get; set; }
         public string Role { get; set; }

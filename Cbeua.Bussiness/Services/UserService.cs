@@ -8,7 +8,6 @@ using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
 
-
 namespace Cbeua.Bussiness.Services
 {
     public class UserService : IUserService
@@ -24,9 +23,11 @@ namespace Cbeua.Bussiness.Services
             _auditRepository = auditRepository;
             _currentUser = currentUser;
         }
+
         public async Task<UserDTO> CreateAsync(User user)
         {
             user.CompanyId = int.Parse(_currentUser.CompanyId);
+            user.IsDeleted = false; // ✅ ENSURE NOT DELETED
             await _repo.AddAsync(user);
             await _repo.SaveChangesAsync();
             await this._auditRepository.LogAuditAsync<User>(
@@ -35,7 +36,7 @@ namespace Cbeua.Bussiness.Services
                recordId: user.UserId,
                oldEntity: null,
                newEntity: user,
-               changedBy: _currentUser.Email.ToString() // Replace with actual user info
+               changedBy: _currentUser.Email.ToString()
            );
             return await ConvertUserToDTO(user);
         }
@@ -43,15 +44,21 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var user = await _repo.GetByIdAsync(id);
-            if (user == null) return false;
-            _repo.Delete(user);
+            if (user == null || user.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
+
+            var oldEntity = CloneUser(user); // ✅ CLONE FOR AUDIT
+
+            // ✅ SOFT DELETE
+            user.IsDeleted = true;
+            _repo.Update(user);
+
             await _auditRepository.LogAuditAsync<User>(
                tableName: AuditTableName,
-               action: "Delete",
+               action: "delete",
                recordId: user.UserId,
-               oldEntity: user,
+               oldEntity: oldEntity,
                newEntity: user,
-               changedBy: _currentUser.Email.ToString() // Replace with actual user info
+               changedBy: _currentUser.Email.ToString()
            );
             await _repo.SaveChangesAsync();
             return true;
@@ -59,20 +66,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<UserListDTO>> GetAllAsync()
         {
-
-
-          //  List<UserDTO> userdtos = new List<UserDTO>();
-
             var users = await _repo.GetUsersAsync();
-
-            //foreach (var user in users)
-            //{
-            //    UserDTO userDTO = await ConvertUserToDTO(user);
-            //    userdtos.Add(userDTO);
-
-
-            //}
-
             return users;
         }
 
@@ -90,27 +84,47 @@ namespace Cbeua.Bussiness.Services
             userDTO.CompanyId = user.CompanyId;
             userDTO.StaffNo = user.StaffNo;
             userDTO.MemberId = user.MemberId;
+            userDTO.IsDeleted = user.IsDeleted; // ✅ ADDED
             userDTO.LastloginString = user.Lastlogin.HasValue ? user.Lastlogin.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
             userDTO.CreateAtSyring = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt");
             userDTO.Role = user.Role;
             userDTO.IsActive = user.IsActive;
-           // userDTO.AuditLogs = await _auditRepository.GetAuditLogsForEntityAsync("User", user.UserId);
             return userDTO;
+        }
+
+        // ✅ ADDED CLONE METHOD
+        private User CloneUser(User user)
+        {
+            return new User
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                UserEmail = user.UserEmail,
+                StaffNo = user.StaffNo,
+                MemberId = user.MemberId,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+                PasswordHash = user.PasswordHash,
+                IsActive = user.IsActive,
+                Islocked = user.Islocked,
+                IsDeleted = user.IsDeleted,
+                CreateAt = user.CreateAt,
+                Lastlogin = user.Lastlogin,
+                Role = user.Role,
+                CompanyId = user.CompanyId
+            };
         }
 
         public async Task<UserDTO?> GetByIdAsync(int id)
         {
             var q = await _repo.GetUserDetailsAsync(id);
-            //if (q == null) return null;
-            //var userdto = await ConvertUserToDTO(q);
-           // userdto.AuditLogs = await _auditRepository.GetAuditLogsForEntityAsync("Users", userdto.UserId);
             return q;
         }
 
         public async Task<bool> UpdateAsync(User user)
         {
             var oldentity = await _repo.GetByIdAsync(user.UserId);
-            if (oldentity == null) return false;
+            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
 
             // Only update allowed fields
             oldentity.UserName = user.UserName;
@@ -118,10 +132,10 @@ namespace Cbeua.Bussiness.Services
             oldentity.Address = user.Address;
             oldentity.PhoneNumber = user.PhoneNumber;
             oldentity.IsActive = user.IsActive;
-            oldentity.Role = user.Role;      
+            oldentity.Role = user.Role;
             oldentity.StaffNo = user.StaffNo;
             oldentity.MemberId = user.MemberId;
-            oldentity.Islocked = user.Islocked; 
+            oldentity.Islocked = user.Islocked;
             oldentity.CompanyId = int.Parse(_currentUser.CompanyId);
 
             await _repo.SaveChangesAsync();
@@ -144,11 +158,10 @@ namespace Cbeua.Bussiness.Services
             try
             {
                 var user = await _repo.GetByIdAsync(passwordChangeRequest.UserId);
-                if (user == null)
+                if (user == null || user.IsDeleted) // ✅ CHECK IF DELETED
                 {
                     response.IsSucess = false;
                     response.Error = "User not found";
-
                 }
                 else
                 {
@@ -166,7 +179,6 @@ namespace Cbeua.Bussiness.Services
                         response.Value = "Password changed successfully";
                     }
                 }
-               
             }
             catch (Exception ex)
             {
@@ -175,19 +187,6 @@ namespace Cbeua.Bussiness.Services
                 response.StatusCode = 500;
             }
             return response;
-
         }
-
-       
-
-        //public Task<List<UserLoginLog>> GetUserLogsAsync(int userId)
-        //{
-        //    return _repo.GetLogsByUserAsync(userId);
-        //}
-
-        //Task<List<UserDTO>> IUserService.GetAllAsync()
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

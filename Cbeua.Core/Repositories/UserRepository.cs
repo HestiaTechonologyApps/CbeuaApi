@@ -10,6 +10,7 @@ using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
 using Cbeua.InfraCore.Data;
+
 namespace Cbeua.Core.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
@@ -19,31 +20,27 @@ namespace Cbeua.Core.Repositories
         {
             _context = context;
         }
+
         public IQueryable<UserListDTO> QueryableUserList()
         {
             return from usr in _context.Users.AsNoTracking()
                    join cmp in _context.Companies.AsNoTracking()
                    on usr.CompanyId equals cmp.CompanyId
+                   where !usr.IsDeleted 
                    select new UserListDTO
                    {
                        UserId = usr.UserId,
                        UserName = usr.UserName,
                        UserEmail = usr.UserEmail,
-                       StaffNo = usr.StaffNo,  // Added StaffNo
-                       MemberId = usr.MemberId,  // Added MemberId
+                       StaffNo = usr.StaffNo,
+                       MemberId = usr.MemberId,
                        PhoneNumber = usr.PhoneNumber,
                        CompanyName = cmp.ComapanyName,
-                       Role = usr.Role,  // Added Role
+                       Role = usr.Role,
                        IsActive = usr.IsActive
-
-
                    };
         }
-        //public async Task<List<UserListDTO>> GetUserListAsync()
-        //{
-        //    IQueryable<UserListDTO> q = QueryableUserList();
-        //    return await q.ToListAsync();
-        //}
+
         public async Task<UserDTO> GetUserDetailsAsync(int userId)
         {
             var q = (from user in _context.Users
@@ -52,7 +49,7 @@ namespace Cbeua.Core.Repositories
                      join mem in _context.Members
                          on user.MemberId equals mem.MemberId into memberGroup
                      from member in memberGroup.DefaultIfEmpty()
-                     where user.UserId == userId
+                     where user.UserId == userId && !user.IsDeleted 
                      select new UserDTO
                      {
                          UserId = user.UserId,
@@ -69,6 +66,7 @@ namespace Cbeua.Core.Repositories
                          CompanyId = user.CompanyId,
                          ComapanyName = comp.ComapanyName,
                          Role = user.Role,
+                         IsDeleted = user.IsDeleted, // ✅ ADDED
                          ProfileImageSrc = member != null ? member.ProfileImageSrc : "",
                          CreateAtString = user.CreateAt.ToString("dd MMMM yyyy hh:mm tt"),
                          LastloginString = user.Lastlogin.HasValue
@@ -77,29 +75,32 @@ namespace Cbeua.Core.Repositories
                      }).FirstAsync();
             return await q;
         }
+
         public async Task<List<UserListDTO>> GetUsersAsync()
         {
             IQueryable<UserListDTO> q = QueryableUserList();
             return await q.ToListAsync();
         }
+
         public async Task AddLoginLogAsync(UserLoginLog log)
         {
             await _context.UserLoginLogs.AddAsync(log);
             await _context.SaveChangesAsync();
         }
+
         public async Task<List<UserLoginLogDTO>> GetUserLogsAsync(int userId)
         {
             return await _context.UserLoginLogs
-       .Where(x => x.UserId == userId)
-       .OrderByDescending(x => x.ActionTime)
-       .Select(x => new UserLoginLogDTO
-       {
-           UserLoginLogId = x.UserLoginLogId,
-           UserId = x.UserId,
-           ActionType = x.ActionType,
-           ActionTimeString = x.ActionTime.ToString("dd MMM yyyy HH:mm:ss")
-       })
-       .ToListAsync();
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.ActionTime)
+                .Select(x => new UserLoginLogDTO
+                {
+                    UserLoginLogId = x.UserLoginLogId,
+                    UserId = x.UserId,
+                    ActionType = x.ActionType,
+                    ActionTimeString = x.ActionTime.ToString("dd MMM yyyy HH:mm:ss")
+                })
+                .ToListAsync();
         }
     }
 }
