@@ -1,1 +1,30 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cbeua.Domain.Entities
+{
+    public partial class Report
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ReportId { get; set; }
+
+        public string ReportType { get; set; } = "";
+
+        public int YearOf { get; set; }
+
+        public int MonthCode { get; set; }
+
+        public int CircleId { get; set; }
+
+        public int BranchId { get; set; }
+
+        public int MemberId { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+
+        public DateTime? ModifiedDate { get; set; }
+
+        public bool IsActive { get; set; }
+    }
+}

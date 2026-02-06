@@ -67,6 +67,8 @@ namespace Cbeua.InfraCore
             services.AddScoped<IPublicPageRepository, PublicPageRepository>();
             services.AddScoped<IMonthlyContributionRepository, MonthlyContributionRepository>();
             services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
+            services.AddScoped<IReportRepository, ReportRepository>();
+
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 
             //// Add helpers or utilities
