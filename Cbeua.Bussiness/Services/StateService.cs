@@ -27,7 +27,7 @@ namespace Cbeua.Bussiness.Services
             List<StateDTO> stateDTOs = new List<StateDTO>();
             var states = await _repo.GetAllAsync();
 
-            foreach (var state in states.Where(s => s.IsActive)) 
+            foreach (var state in states)
             {
                 StateDTO stateDTO = await ConvertStateToDTO(state);
                 stateDTOs.Add(stateDTO);
