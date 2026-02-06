@@ -187,5 +187,27 @@ namespace Cbeua.Api.Controllers
 
             return result;
         }
+
+        [HttpGet("paged")]
+        public async Task<CustomApiResponse> GetPagedMembers([FromQuery] MemberPaginationParams parameters)
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var pagedResult = await _service.GetPagedMembersAsync(parameters);
+                response.IsSucess = true;
+                response.Value = pagedResult;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
     }
+
+
 }

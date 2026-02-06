@@ -2,6 +2,8 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using Cbeua.Core.Helpers;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Rewrite;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,7 @@ namespace Cbeua.Bussiness.Services
         private readonly IMemberRepository _repo;
         private readonly IAuditRepository _auditRepository;
         public String AuditTableName { get; set; } = "MEMBER";
+
         public MemberService(IMemberRepository repo, IAuditRepository auditRepository)
         {
             _repo = repo;
@@ -24,17 +27,13 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<MemberDTO>> GetAllAsync()
         {
-            return  _repo.GetQueryableMember ().ToList();
-
-           
+            return _repo.GetQueryableMember().ToList();
         }
 
         public async Task<MemberDTO?> GetByIdAsync(int id)
         {
-            var q =  _repo.GetQueryableMember();
-             var memeber =q.Where(u=>u.MemberId == id).FirstOrDefault ();
-
-         
+            var q = _repo.GetQueryableMember();
+            var memeber = q.Where(u => u.MemberId == id).FirstOrDefault();
             return memeber;
         }
 
@@ -63,9 +62,9 @@ namespace Cbeua.Bussiness.Services
             memberDTO.BranchId = member.BranchId;
             memberDTO.Name = member.Name;
             memberDTO.GenderId = member.GenderId;
-            
+
             memberDTO.Dob = member.Dob;
-            memberDTO.Doj = member.Doj; 
+            memberDTO.Doj = member.Doj;
             memberDTO.DojtoScheme = member.DojtoScheme;
             memberDTO.StatusId = member.StatusId;
             memberDTO.IsRegCompleted = member.IsRegCompleted;
@@ -73,13 +72,12 @@ namespace Cbeua.Bussiness.Services
             memberDTO.CreatedDate = member.CreatedDate;
             memberDTO.ModifiedByUserId = member.ModifiedByUserId;
             memberDTO.ModifiedDate = member.ModifiedDate;
-            memberDTO.Nominee=member.Nominee;
+            memberDTO.Nominee = member.Nominee;
             memberDTO.ProfileImageSrc = member.ProfileImageSrc;
             memberDTO.NomineeRelation = member.NomineeRelation;
             memberDTO.UnionMember = member.UnionMember;
             memberDTO.TotalRefund = member.TotalRefund;
             return memberDTO;
-
         }
 
         public async Task<bool> UpdateAsync(Member member)
@@ -127,6 +125,63 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
 
             return new CustomApiResponse { IsSucess = true, Value = ProfileImageSrc, StatusCode = 200 };
+        }
+
+        // NEW METHOD - Pagination Implementation
+        public async Task<PagedResult<MemberDTO>> GetPagedMembersAsync(MemberPaginationParams parameters)
+        {
+            var query = _repo.GetQueryableMember();
+
+            // Apply filters
+            if (parameters.BranchId.HasValue)
+                query = query.Where(m => m.BranchId == parameters.BranchId.Value);
+
+            if (parameters.CategoryId.HasValue)
+                query = query.Where(m => m.CategoryId == parameters.CategoryId.Value);
+
+            if (parameters.DesignationId.HasValue)
+                query = query.Where(m => m.DesignationId == parameters.DesignationId.Value);
+
+            if (parameters.StatusId.HasValue)
+                query = query.Where(m => m.StatusId == parameters.StatusId.Value);
+
+            if (parameters.GenderId.HasValue)
+                query = query.Where(m => m.GenderId == parameters.GenderId.Value);
+
+            // Apply search
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                query = query.ApplySearch(
+                    parameters.SearchTerm,
+                    m => m.Name,
+                    m => m.StaffNo.ToString(),
+                    m => m.BranchName,
+                    m => m.Categoryname,
+                    m => m.DesignationName,
+                    m => m.Nominee
+                );
+            }
+
+            // Apply sorting
+            var sortMappings = new Dictionary<string, Expression<Func<MemberDTO, object>>>
+            {
+                { "name", m => m.Name },
+                { "staffno", m => m.StaffNo },
+                { "branch", m => m.BranchName },
+                { "category", m => m.Categoryname },
+                { "designation", m => m.DesignationName },
+                { "doj", m => m.Doj ?? DateTime.MinValue },
+                { "status", m => m.Status }
+            };
+
+            query = query.ApplySort(
+                parameters.SortBy ?? "name",
+                parameters.SortDescending,
+                sortMappings
+            );
+
+            // Apply pagination and return result
+            return await query.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
         }
     }
 }

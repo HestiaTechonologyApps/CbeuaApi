@@ -16,5 +16,8 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<bool> UpdateAsync(Member member);
         Task<bool> DeleteAsync(int id);
         Task<CustomApiResponse> UpdateProfilePicAsync(int MemberId, string ProfileImageSrc);
+
+        // Add this new method for pagination
+        Task<PagedResult<MemberDTO>> GetPagedMembersAsync(MemberPaginationParams parameters);
     }
 }
