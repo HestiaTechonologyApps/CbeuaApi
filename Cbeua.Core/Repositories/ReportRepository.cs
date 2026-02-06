@@ -22,6 +22,7 @@ namespace Cbeua.Core.Repositories
         public IQueryable<ReportDTO> QueryableReports()
         {
             var query = from r in _context.Set<Report>()
+                        join rt in _context.Set<ReportType>() on r.ReportTypeId equals rt.ReportTypeId
                         join y in _context.YearMasters on r.YearOf equals y.YearOf
                         join m in _context.Months on r.MonthCode equals m.MonthCode
                         join c in _context.Circles on r.CircleId equals c.CircleId
@@ -30,7 +31,8 @@ namespace Cbeua.Core.Repositories
                         select new ReportDTO
                         {
                             ReportId = r.ReportId,
-                            ReportType = r.ReportType,
+                            ReportTypeId = r.ReportTypeId,
+                            ReportTypeName = rt.ReportTypeName,
                             YearOf = r.YearOf,
                             YearName = y.YearName.ToString(),
                             MonthCode = r.MonthCode,

@@ -56,7 +56,7 @@ namespace Cbeua.Bussiness.Services
         {
             ReportDTO reportDTO = new ReportDTO();
             reportDTO.ReportId = report.ReportId;
-            reportDTO.ReportType = report.ReportType;
+            reportDTO.ReportTypeId = report.ReportTypeId;
             reportDTO.YearOf = report.YearOf;
             reportDTO.MonthCode = report.MonthCode;
             reportDTO.CircleId = report.CircleId;

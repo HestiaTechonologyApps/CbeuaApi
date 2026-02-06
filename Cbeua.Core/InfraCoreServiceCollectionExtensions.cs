@@ -68,6 +68,7 @@ namespace Cbeua.InfraCore
             services.AddScoped<IMonthlyContributionRepository, MonthlyContributionRepository>();
             services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<IReportTypeRepository, ReportTypeRepository>();
 
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 

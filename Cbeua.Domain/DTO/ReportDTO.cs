@@ -7,7 +7,8 @@ namespace Cbeua.Domain.DTO
     {
         public int ReportId { get; set; }
 
-        public string ReportType { get; set; } = "";
+        public int ReportTypeId { get; set; }
+        public string ReportTypeName { get; set; } = "";
 
         public int YearOf { get; set; }
         public string YearName { get; set; } = "";

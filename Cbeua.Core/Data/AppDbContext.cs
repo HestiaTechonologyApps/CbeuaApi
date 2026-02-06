@@ -63,6 +63,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<MonthlyContribution> MonthlyContributions { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<ReportType> ReportTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

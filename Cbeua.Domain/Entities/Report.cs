@@ -9,7 +9,7 @@ namespace Cbeua.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReportId { get; set; }
 
-        public string ReportType { get; set; } = "";
+        public int ReportTypeId { get; set; }
 
         public int YearOf { get; set; }
 

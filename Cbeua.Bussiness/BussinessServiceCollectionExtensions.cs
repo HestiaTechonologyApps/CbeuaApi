@@ -71,6 +71,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IContactMessageService, ContactMessageService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IReportTypeService, ReportTypeService>();
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 
