@@ -28,6 +28,7 @@ namespace Cbeua.Domain.DTO
         public string F10 { get; set; } = "";
         public string F11 { get; set; } = "";
         public string status { get; set; } = "";
+        public bool IsDeleted { get; set; } = false;
         public Boolean isApproved { get; set; }
         public String? ApprovedBy { get; set; } = "";
         public DateTime? ApprovedDate { get; set; }

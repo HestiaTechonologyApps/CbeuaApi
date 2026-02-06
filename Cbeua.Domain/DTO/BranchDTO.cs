@@ -21,6 +21,7 @@ namespace Cbeua.Domain.DTO
         public int? StateId { get; set; }
         public string StateName { get; set; } = "";
         public bool IsRegCompleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

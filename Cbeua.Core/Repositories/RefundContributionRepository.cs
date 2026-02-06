@@ -27,6 +27,7 @@ namespace Cbeua.Core.Repositories
                     join d in _context.Designations on rc.DesignationId equals d.DesignationId into designationJoin
                     from d in designationJoin.DefaultIfEmpty()
                     join y in _context.YearMasters on rc.YearOF equals y.YearOf
+                    where !rc.IsDeleted
                     select new RefundContributionDTO
                     {
                         RefundContributionId = rc.RefundContributionId,
@@ -47,7 +48,8 @@ namespace Cbeua.Core.Repositories
                         Amount = rc.Amount,
                         LastContribution = rc.LastContribution,
                         YearOF = rc.YearOF,
-                        YearName = y.YearName
+                        YearName = y.YearName,
+                        IsDeleted = rc.IsDeleted
                     };
             return q;
         }

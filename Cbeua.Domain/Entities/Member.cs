@@ -54,7 +54,7 @@ namespace Cbeua.Domain.Entities
 
         public string NomineeIDentity { get; set; } = "";
 
-
+        public bool IsDeleted { get; set; } = false;
         public string UnionMember { get; set; } = "";
 
         public string TotalRefund { get; set; } = "";

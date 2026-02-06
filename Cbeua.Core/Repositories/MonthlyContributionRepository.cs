@@ -20,6 +20,7 @@ namespace Cbeua.Core.Repositories
             var q = from mc in _context.MonthlyContributions
                     join m in _context.Months on mc.MonthCode equals m.MonthCode
                     join y in _context.YearMasters on mc.YearOf equals y.YearOf
+                    where !mc.IsDeleted
                     select new MonthlyContributionDTO
                     {
                         MonthlyContributionId = mc.MonthlyContributionId,
@@ -32,7 +33,8 @@ namespace Cbeua.Core.Repositories
                         MonthName = m.MonthName,
                         YearOf = mc.YearOf,
                         YearName = y.YearName,
-                        
+                        IsDeleted = mc.IsDeleted
+
                     };
             return q;
         }

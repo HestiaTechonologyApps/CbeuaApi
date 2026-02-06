@@ -32,6 +32,7 @@ namespace Cbeua.Core.Repositories
                     from month in monthGroup.DefaultIfEmpty()
                     join year in _context.YearMasters on ade.YearOf equals year.YearOf into yearGroup
                     from year in yearGroup.DefaultIfEmpty()
+                    where !ade.IsDeleted
                     select new AccountsDirectEntryDTO
                     {
                         AccountsDirectEntryID = ade.AccountsDirectEntryID,
@@ -55,7 +56,8 @@ namespace Cbeua.Core.Repositories
                         status = ade.status,
                         isApproved = ade.isApproved,
                         ApprovedBy = ade.ApprovedBy,
-                        ApprovedDate = ade.ApprovedDate
+                        ApprovedDate = ade.ApprovedDate,
+                        IsDeleted = ade.IsDeleted
                     };
             return q;
         }

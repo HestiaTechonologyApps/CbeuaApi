@@ -22,12 +22,7 @@ namespace Cbeua.Domain.Entities
         public int? StateId { get; set; }
 
          public bool IsRegCompleted { get; set; }
-
-       
-
-
-
-
+        public bool IsDeleted { get; set; } = false;
 
 
     }

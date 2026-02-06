@@ -25,6 +25,7 @@ namespace Cbeua.Core.Repositories
             var q = from c in _context.Circles
                     join s in _context.States on c.StateId equals s.StateId into stateJoin
                     from s in stateJoin.DefaultIfEmpty()
+                    where !c.IsDeleted
                     select new CircleDTO
                     {
                         CircleId = c.CircleId,
@@ -35,7 +36,8 @@ namespace Cbeua.Core.Repositories
                         StateId = c.StateId,
                         StateName = s.Name ?? "",
                         DateFrom = c.DateFrom,
-                        DateTo = c.DateTo
+                        DateTo = c.DateTo,
+                        IsDeleted = c.IsDeleted
                     };
             return q;
         }

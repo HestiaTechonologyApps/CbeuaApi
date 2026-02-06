@@ -31,14 +31,15 @@ namespace Cbeua.Bussiness.Services
         {
             var q = _repo.QueryableRefundContributions();
             var refundContribution = q.Where(rc => rc.RefundContributionId == id).FirstOrDefault();
-
             return refundContribution;
         }
 
         public async Task<RefundContributionDTO> CreateAsync(RefundContribution refundContribution)
         {
+            refundContribution.IsDeleted = false; // ✅ ENSURE NOT DELETED
             await _repo.AddAsync(refundContribution);
             await _repo.SaveChangesAsync();
+
             await this._auditRepository.LogAuditAsync<RefundContribution>(
                tableName: AuditTableName,
                action: "create",
@@ -47,6 +48,7 @@ namespace Cbeua.Bussiness.Services
                newEntity: refundContribution,
                changedBy: "System" // Replace with actual user info
             );
+
             return await ConvertRefundContributionToDTO(refundContribution);
         }
 
@@ -67,6 +69,7 @@ namespace Cbeua.Bussiness.Services
             refundContributionDTO.Amount = refundContribution.Amount;
             refundContributionDTO.LastContribution = refundContribution.LastContribution;
             refundContributionDTO.YearOF = refundContribution.YearOF;
+            refundContributionDTO.IsDeleted = refundContribution.IsDeleted; // ✅ ADDED
             // Note: MemberName, StaffNo, StateName, and DesignationName won't be populated here
             // They will only be populated when using QueryableRefundContributions()
             return refundContributionDTO;
@@ -75,9 +78,12 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(RefundContribution refundContribution)
         {
             var oldentity = await _repo.GetByIdAsync(refundContribution.RefundContributionId);
+            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+
             _repo.Detach(oldentity);
             _repo.Update(refundContribution);
             await _repo.SaveChangesAsync();
+
             await _auditRepository.LogAuditAsync<RefundContribution>(
                tableName: AuditTableName,
                action: "update",
@@ -86,24 +92,55 @@ namespace Cbeua.Bussiness.Services
                newEntity: refundContribution,
                changedBy: "System" // Replace with actual user info
             );
+
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var refund = await _repo.GetByIdAsync(id);
-            if (refund == null) return false;
-            _repo.Delete(refund);
+            if (refund == null || refund.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
+
+            var oldEntity = CloneRefundContribution(refund); // ✅ CLONE FOR AUDIT
+
+            // ✅ SOFT DELETE
+            refund.IsDeleted = true;
+            _repo.Update(refund);
+
             await _auditRepository.LogAuditAsync<RefundContribution>(
                tableName: AuditTableName,
-               action: "Delete",
+               action: "delete",
                recordId: refund.RefundContributionId,
-               oldEntity: refund,
+               oldEntity: oldEntity,
                newEntity: refund,
                changedBy: "System" // Replace with actual user info
             );
+
             await _repo.SaveChangesAsync();
             return true;
+        }
+
+        // ✅ ADDED CLONE METHOD FOR AUDIT
+        private RefundContribution CloneRefundContribution(RefundContribution refund)
+        {
+            return new RefundContribution
+            {
+                RefundContributionId = refund.RefundContributionId,
+                StateId = refund.StateId,
+                MemberId = refund.MemberId,
+                DesignationId = refund.DesignationId,
+                RefundNO = refund.RefundNO,
+                BranchNameOFTime = refund.BranchNameOFTime,
+                DPCODEOfTime = refund.DPCODEOfTime,
+                Type = refund.Type,
+                Remark = refund.Remark,
+                DDNO = refund.DDNO,
+                DDDATE = refund.DDDATE,
+                Amount = refund.Amount,
+                LastContribution = refund.LastContribution,
+                YearOF = refund.YearOF,
+                IsDeleted = refund.IsDeleted
+            };
         }
     }
 }

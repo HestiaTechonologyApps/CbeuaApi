@@ -16,6 +16,7 @@ namespace Cbeua.Domain.DTO
         public bool IsActive { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = "";
+        public bool IsDeleted { get; set; } = false;
         public DateTime? DateFrom { get; set; }
         public string DateFromString => DateFrom.HasValue ? DateFrom.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
         public DateTime? DateTo { get; set; }

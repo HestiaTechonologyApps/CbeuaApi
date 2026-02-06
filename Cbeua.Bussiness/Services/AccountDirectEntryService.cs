@@ -26,14 +26,13 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<AccountsDirectEntryDTO>> GetAllAsync()
         {
-            // FIXED: Use ToListAsync for proper async execution
+            // Only return non-deleted entries
             return await _repo.GetQueryableListAccountDirect().ToListAsync();
         }
 
         public async Task<List<AccountsDirectEntryDTO>> GetByMemberId(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            // FIXED: Use ToListAsync for proper async execution
             var items = await q.Where(x => x.MemberId == id).ToListAsync();
             return items;
         }
@@ -41,13 +40,13 @@ namespace Cbeua.Bussiness.Services
         public async Task<AccountsDirectEntryDTO?> GetByIdAsync(int id)
         {
             var q = _repo.GetQueryableListAccountDirect();
-            // FIXED: Use FirstOrDefaultAsync for proper async execution
             var accountsDirectEntry = await q.Where(x => x.AccountsDirectEntryID == id).FirstOrDefaultAsync();
             return accountsDirectEntry;
         }
 
         public async Task<AccountsDirectEntryDTO> CreateAsync(AccountsDirectEntry accountsDirect)
         {
+            accountsDirect.IsDeleted = false; // ✅ ENSURE NOT DELETED
             await _repo.AddAsync(accountsDirect);
             await _repo.SaveChangesAsync();
 
@@ -68,6 +67,8 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(AccountsDirectEntry accountsDirect)
         {
             var oldentity = await _repo.GetByIdAsync(accountsDirect.AccountsDirectEntryID);
+            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+
             _repo.Detach(oldentity);
             _repo.Update(accountsDirect);
             await _repo.SaveChangesAsync();
@@ -87,21 +88,52 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var accountsDirectEntry = await _repo.GetByIdAsync(id);
-            if (accountsDirectEntry == null) return false;
+            if (accountsDirectEntry == null || accountsDirectEntry.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
 
-            _repo.Delete(accountsDirectEntry);
+            var oldEntity = CloneAccountsDirectEntry(accountsDirectEntry); // ✅ CLONE FOR AUDIT
+
+            // ✅ SOFT DELETE
+            accountsDirectEntry.IsDeleted = true;
+            _repo.Update(accountsDirectEntry);
 
             await _auditRepository.LogAuditAsync<AccountsDirectEntry>(
                tableName: AuditTableName,
-               action: "Delete",
+               action: "delete",
                recordId: accountsDirectEntry.AccountsDirectEntryID,
-               oldEntity: accountsDirectEntry,
+               oldEntity: oldEntity,
                newEntity: accountsDirectEntry,
                changedBy: "System"
             );
 
             await _repo.SaveChangesAsync();
             return true;
+        }
+
+        // ✅ ADDED CLONE METHOD FOR AUDIT
+        private AccountsDirectEntry CloneAccountsDirectEntry(AccountsDirectEntry entry)
+        {
+            return new AccountsDirectEntry
+            {
+                AccountsDirectEntryID = entry.AccountsDirectEntryID,
+                MemberId = entry.MemberId,
+                Name = entry.Name,
+                BranchId = entry.BranchId,
+                MonthCode = entry.MonthCode,
+                YearOf = entry.YearOf,
+                DdIba = entry.DdIba,
+                DdIbaDate = entry.DdIbaDate,
+                Amt = entry.Amt,
+                Enrl = entry.Enrl,
+                Fine = entry.Fine,
+                F9 = entry.F9,
+                F10 = entry.F10,
+                F11 = entry.F11,
+                status = entry.status,
+                IsDeleted = entry.IsDeleted,
+                isApproved = entry.isApproved,
+                ApprovedBy = entry.ApprovedBy,
+                ApprovedDate = entry.ApprovedDate
+            };
         }
     }
 }

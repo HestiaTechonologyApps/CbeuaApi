@@ -25,6 +25,7 @@ namespace Cbeua.Core.Repositories
                     join c in _context.Circles on b.CircleId equals c.CircleId
                     join s in _context.States on b.StateId equals s.StateId into stateJoin
                     from s in stateJoin.DefaultIfEmpty()
+                    where !b.IsDeleted
                     select new BranchDTO
                     {
                         BranchId = b.BranchId,
@@ -39,7 +40,8 @@ namespace Cbeua.Core.Repositories
                         CircleName = c.Name,
                         StateId = b.StateId,
                         StateName = s.Name ?? "",
-                        IsRegCompleted = b.IsRegCompleted
+                        IsRegCompleted = b.IsRegCompleted,
+                        IsDeleted = b.IsDeleted
                     };
             return q;
         }

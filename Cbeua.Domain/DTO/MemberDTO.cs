@@ -48,6 +48,7 @@ namespace Cbeua.Domain.DTO
         public string NomineeIDentity { get; set; } = "";
         public string UnionMember { get; set; } = "";
         public string TotalRefund { get; set; } = "";
+        public bool IsDeleted { get; set; } = false;
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

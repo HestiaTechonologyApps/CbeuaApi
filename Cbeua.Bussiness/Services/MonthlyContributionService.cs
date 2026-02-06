@@ -35,6 +35,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MonthlyContributionDTO> CreateAsync(MonthlyContribution monthlyContribution)
         {
+            monthlyContribution.IsDeleted = false; // ✅ ENSURE NOT DELETED
             await _repo.AddAsync(monthlyContribution);
             await _repo.SaveChangesAsync();
             await _auditRepository.LogAuditAsync<MonthlyContribution>(
@@ -59,13 +60,34 @@ namespace Cbeua.Bussiness.Services
             dto.FileSize = monthlyContribution.FileSize;
             dto.MonthCode = monthlyContribution.MonthCode;
             dto.YearOf = monthlyContribution.YearOf;
-           
+            dto.IsDeleted = monthlyContribution.IsDeleted; // ✅ ADDED
             return dto;
+        }
+
+        // ✅ ADDED CLONE METHOD
+        private MonthlyContribution CloneMonthlyContribution(MonthlyContribution monthlyContribution)
+        {
+            return new MonthlyContribution
+            {
+                MonthlyContributionId = monthlyContribution.MonthlyContributionId,
+                FileName = monthlyContribution.FileName,
+                FileLocation = monthlyContribution.FileLocation,
+                FileType = monthlyContribution.FileType,
+                FileExtension = monthlyContribution.FileExtension,
+                FileSize = monthlyContribution.FileSize,
+                MonthCode = monthlyContribution.MonthCode,
+                YearOf = monthlyContribution.YearOf,
+                CreatedDate = monthlyContribution.CreatedDate,
+                ModifiedDate = monthlyContribution.ModifiedDate,
+                IsDeleted = monthlyContribution.IsDeleted
+            };
         }
 
         public async Task<bool> UpdateAsync(MonthlyContribution monthlyContribution)
         {
             var oldEntity = await _repo.GetByIdAsync(monthlyContribution.MonthlyContributionId);
+            if (oldEntity == null || oldEntity.IsDeleted) return false; // ✅ CHECK IF DELETED
+
             _repo.Detach(oldEntity);
             _repo.Update(monthlyContribution);
             await _repo.SaveChangesAsync();
@@ -83,14 +105,19 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> DeleteAsync(long id)
         {
             var monthlyContribution = await _repo.GetByIdAsync(id);
-            if (monthlyContribution == null) return false;
+            if (monthlyContribution == null || monthlyContribution.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
 
-            _repo.Delete(monthlyContribution);
+            var oldEntity = CloneMonthlyContribution(monthlyContribution); // ✅ CLONE FOR AUDIT
+
+            // ✅ SOFT DELETE
+            monthlyContribution.IsDeleted = true;
+            _repo.Update(monthlyContribution);
+
             await _auditRepository.LogAuditAsync<MonthlyContribution>(
                 tableName: AuditTableName,
-                action: "Delete",
+                action: "delete",
                 recordId: (int)monthlyContribution.MonthlyContributionId,
-                oldEntity: monthlyContribution,
+                oldEntity: oldEntity,
                 newEntity: monthlyContribution,
                 changedBy: "System"
             );
@@ -100,11 +127,12 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<CustomApiResponse> UploadContributionFileAsync(int monthCode, int yearOf, string fileName, string fileLocation, string fileType, string fileExtension, decimal fileSize)
         {
-            // Check if contribution already exists for this month/year
+            // Check if contribution already exists for this month/year (excluding deleted ones)
             var existing = _repo.GetQueryableMonthlyContributions()
-    .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
-    .Select(dto => _repo.GetByIdAsync(dto.MonthlyContributionId).Result)
-    .FirstOrDefault();
+                .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
+                .Select(dto => _repo.GetByIdAsync(dto.MonthlyContributionId).Result)
+                .FirstOrDefault();
+
             if (existing != null)
             {
                 // Delete old file if exists
@@ -138,7 +166,8 @@ namespace Cbeua.Bussiness.Services
                     FileType = fileType,
                     FileExtension = fileExtension,
                     FileSize = fileSize,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.Now,
+                    IsDeleted = false // ✅ ENSURE NOT DELETED
                 };
 
                 await _repo.AddAsync(monthlyContribution);

@@ -18,6 +18,7 @@ namespace Cbeua.Domain.DTO
 
         public int YearOf { get; set; }
         public int YearName { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }

@@ -40,6 +40,7 @@ namespace Cbeua.Domain.DTO
 
         public int YearOF { get; set; }
         public int YearName { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
     }
 }

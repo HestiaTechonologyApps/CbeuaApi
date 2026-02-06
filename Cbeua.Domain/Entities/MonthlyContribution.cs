@@ -19,6 +19,7 @@ namespace Cbeua.Domain.Entities
 
         public int MonthCode { get; set; }
         public int YearOf { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         public DateTime? CreatedDate { get; set; }
         public int CreatedByUserId { get; set; }

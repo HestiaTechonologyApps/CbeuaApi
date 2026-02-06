@@ -33,12 +33,13 @@ namespace Cbeua.Bussiness.Services
         public async Task<MemberDTO?> GetByIdAsync(int id)
         {
             var q = _repo.GetQueryableMember();
-            var memeber = q.Where(u => u.MemberId == id).FirstOrDefault();
-            return memeber;
+            var member = q.Where(u => u.MemberId == id).FirstOrDefault();
+            return member;
         }
 
         public async Task<MemberDTO> CreateAsync(Member member)
         {
+            member.IsDeleted = false; // ✅ ENSURE NOT DELETED
             await _repo.AddAsync(member);
             await _repo.SaveChangesAsync();
             await this._auditRepository.LogAuditAsync<Member>(
@@ -47,8 +48,8 @@ namespace Cbeua.Bussiness.Services
                recordId: member.MemberId,
                oldEntity: null,
                newEntity: member,
-               changedBy: "System" // Replace with actual user info
-               );
+               changedBy: "System"
+            );
             return await ConvertMemberToDTO(member);
         }
 
@@ -62,7 +63,6 @@ namespace Cbeua.Bussiness.Services
             memberDTO.BranchId = member.BranchId;
             memberDTO.Name = member.Name;
             memberDTO.GenderId = member.GenderId;
-
             memberDTO.Dob = member.Dob;
             memberDTO.Doj = member.Doj;
             memberDTO.DojtoScheme = member.DojtoScheme;
@@ -77,12 +77,46 @@ namespace Cbeua.Bussiness.Services
             memberDTO.NomineeRelation = member.NomineeRelation;
             memberDTO.UnionMember = member.UnionMember;
             memberDTO.TotalRefund = member.TotalRefund;
+            memberDTO.IsDeleted = member.IsDeleted; // ✅ ADDED
             return memberDTO;
+        }
+
+        // ✅ ADDED CLONE METHOD
+        private Member CloneMember(Member member)
+        {
+            return new Member
+            {
+                MemberId = member.MemberId,
+                StaffNo = member.StaffNo,
+                DesignationId = member.DesignationId,
+                CategoryId = member.CategoryId,
+                BranchId = member.BranchId,
+                Name = member.Name,
+                GenderId = member.GenderId,
+                Dob = member.Dob,
+                Doj = member.Doj,
+                DojtoScheme = member.DojtoScheme,
+                StatusId = member.StatusId,
+                IsRegCompleted = member.IsRegCompleted,
+                CreatedByUserId = member.CreatedByUserId,
+                CreatedDate = member.CreatedDate,
+                ModifiedByUserId = member.ModifiedByUserId,
+                ModifiedDate = member.ModifiedDate,
+                Nominee = member.Nominee,
+                ProfileImageSrc = member.ProfileImageSrc,
+                NomineeRelation = member.NomineeRelation,
+                NomineeIDentity = member.NomineeIDentity,
+                UnionMember = member.UnionMember,
+                TotalRefund = member.TotalRefund,
+                IsDeleted = member.IsDeleted
+            };
         }
 
         public async Task<bool> UpdateAsync(Member member)
         {
             var oldentity = await _repo.GetByIdAsync(member.MemberId);
+            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+
             _repo.Detach(oldentity);
             _repo.Update(member);
             await _repo.SaveChangesAsync();
@@ -92,24 +126,30 @@ namespace Cbeua.Bussiness.Services
                recordId: member.MemberId,
                oldEntity: oldentity,
                newEntity: member,
-               changedBy: "System" // Replace with actual user info
-           );
+               changedBy: "System"
+            );
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var member = await _repo.GetByIdAsync(id);
-            if (member == null) return false;
-            _repo.Delete(member);
+            if (member == null || member.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
+
+            var oldEntity = CloneMember(member); // ✅ CLONE FOR AUDIT
+
+            // ✅ SOFT DELETE
+            member.IsDeleted = true;
+            _repo.Update(member);
+
             await _auditRepository.LogAuditAsync<Member>(
                tableName: AuditTableName,
-               action: "Delete",
+               action: "delete",
                recordId: member.MemberId,
-               oldEntity: member,
+               oldEntity: oldEntity,
                newEntity: member,
-               changedBy: "System" // Replace with actual user info
-           );
+               changedBy: "System"
+            );
             await _repo.SaveChangesAsync();
             return true;
         }
@@ -117,7 +157,7 @@ namespace Cbeua.Bussiness.Services
         public async Task<CustomApiResponse> UpdateProfilePicAsync(int MemberId, string ProfileImageSrc)
         {
             var member = await _repo.GetByIdAsync(MemberId);
-            if (member == null)
+            if (member == null || member.IsDeleted) // ✅ CHECK IF DELETED
                 return new CustomApiResponse { IsSucess = false, Error = "Member not found", StatusCode = 404 };
 
             member.ProfileImageSrc = ProfileImageSrc;
@@ -127,7 +167,6 @@ namespace Cbeua.Bussiness.Services
             return new CustomApiResponse { IsSucess = true, Value = ProfileImageSrc, StatusCode = 200 };
         }
 
-        // NEW METHOD - Pagination Implementation
         public async Task<PagedResult<MemberDTO>> GetPagedMembersAsync(MemberPaginationParams parameters)
         {
             var query = _repo.GetQueryableMember();

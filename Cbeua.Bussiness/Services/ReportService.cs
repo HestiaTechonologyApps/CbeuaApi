@@ -37,6 +37,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<ReportDTO> CreateAsync(Report report)
         {
+            report.IsDeleted = false; // ✅ ENSURE NOT DELETED
             await _repo.AddAsync(report);
             await _repo.SaveChangesAsync();
 
@@ -65,12 +66,15 @@ namespace Cbeua.Bussiness.Services
             reportDTO.CreatedDate = report.CreatedDate;
             reportDTO.ModifiedDate = report.ModifiedDate;
             reportDTO.IsActive = report.IsActive;
+            reportDTO.IsDeleted = report.IsDeleted; // ✅ ADDED
             return reportDTO;
         }
 
         public async Task<bool> UpdateAsync(Report report)
         {
             var oldentity = await _repo.GetByIdAsync(report.ReportId);
+            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+
             _repo.Detach(oldentity);
             _repo.Update(report);
             await _repo.SaveChangesAsync();
@@ -90,21 +94,44 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var report = await _repo.GetByIdAsync(id);
-            if (report == null) return false;
+            if (report == null || report.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
 
-            _repo.Delete(report);
+            var oldEntity = CloneReport(report); // ✅ CLONE FOR AUDIT
+
+            // ✅ SOFT DELETE
+            report.IsDeleted = true;
+            _repo.Update(report);
 
             await _auditRepository.LogAuditAsync<Report>(
                tableName: AuditTableName,
-               action: "Delete",
+               action: "delete",
                recordId: report.ReportId,
-               oldEntity: report,
+               oldEntity: oldEntity,
                newEntity: report,
                changedBy: "System" // Replace with actual user info
             );
 
             await _repo.SaveChangesAsync();
             return true;
+        }
+
+        // ✅ ADDED CLONE METHOD FOR AUDIT
+        private Report CloneReport(Report report)
+        {
+            return new Report
+            {
+                ReportId = report.ReportId,
+                ReportTypeId = report.ReportTypeId,
+                YearOf = report.YearOf,
+                MonthCode = report.MonthCode,
+                CircleId = report.CircleId,
+                BranchId = report.BranchId,
+                MemberId = report.MemberId,
+                IsDeleted = report.IsDeleted,
+                CreatedDate = report.CreatedDate,
+                ModifiedDate = report.ModifiedDate,
+                IsActive = report.IsActive
+            };
         }
     }
 }

@@ -23,7 +23,8 @@ namespace Cbeua.Core.Repositories
                     join c in _context.Categories on m.CategoryId equals c.CategoryId
                     join d in _context.Designations on m.DesignationId equals d.DesignationId 
                     join b in _context.Branches on m.BranchId equals b.BranchId
-                    join s in _context.statuses on m.StatusId equals s.StatusId 
+                    join s in _context.statuses on m.StatusId equals s.StatusId
+                    where !m.IsDeleted
                     select new MemberDTO
                     {
                         MemberId = m.MemberId,
@@ -50,7 +51,8 @@ namespace Cbeua.Core.Repositories
                         NomineeIDentity = m.NomineeIDentity,
                         UnionMember = m.UnionMember,
                         TotalRefund = m.TotalRefund,
-                        DpCode=b.DpCode.ToString (),
+                        IsDeleted = m.IsDeleted,
+                        DpCode =b.DpCode.ToString (),
                         BranchName=b.Name , 
                         Status=s.Name,
                         Categoryname = c.Name,

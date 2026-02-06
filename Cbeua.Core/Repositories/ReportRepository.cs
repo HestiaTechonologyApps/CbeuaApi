@@ -28,6 +28,7 @@ namespace Cbeua.Core.Repositories
                         join c in _context.Circles on r.CircleId equals c.CircleId
                         join b in _context.Branches on r.BranchId equals b.BranchId
                         join mem in _context.Members on r.MemberId equals mem.MemberId
+                        where !r.IsDeleted
                         select new ReportDTO
                         {
                             ReportId = r.ReportId,
@@ -47,6 +48,7 @@ namespace Cbeua.Core.Repositories
                             StaffNo = mem.StaffNo,
                             CreatedDate = r.CreatedDate,
                             ModifiedDate = r.ModifiedDate,
+                            IsDeleted = r.IsDeleted,
                             IsActive = r.IsActive
                         };
 

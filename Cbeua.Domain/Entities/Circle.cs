@@ -15,6 +15,7 @@ namespace Cbeua.Domain.Entities
         public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
         public int? StateId { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }    
 

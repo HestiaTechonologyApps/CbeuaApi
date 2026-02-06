@@ -20,6 +20,7 @@ namespace Cbeua.Domain.Entities
         public int BranchId { get; set; }
 
         public int MemberId { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         public DateTime? CreatedDate { get; set; }
 
