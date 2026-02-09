@@ -39,7 +39,7 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MemberDTO> CreateAsync(Member member)
         {
-            member.IsDeleted = false; // ✅ ENSURE NOT DELETED
+            member.IsDeleted = false;
             await _repo.AddAsync(member);
             await _repo.SaveChangesAsync();
             await this._auditRepository.LogAuditAsync<Member>(
@@ -77,11 +77,10 @@ namespace Cbeua.Bussiness.Services
             memberDTO.NomineeRelation = member.NomineeRelation;
             memberDTO.UnionMember = member.UnionMember;
             memberDTO.TotalRefund = member.TotalRefund;
-            memberDTO.IsDeleted = member.IsDeleted; // ✅ ADDED
+            memberDTO.IsDeleted = member.IsDeleted;
             return memberDTO;
         }
 
-        // ✅ ADDED CLONE METHOD
         private Member CloneMember(Member member)
         {
             return new Member
@@ -115,7 +114,7 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(Member member)
         {
             var oldentity = await _repo.GetByIdAsync(member.MemberId);
-            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+            if (oldentity == null || oldentity.IsDeleted) return false;
 
             _repo.Detach(oldentity);
             _repo.Update(member);
@@ -134,11 +133,10 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var member = await _repo.GetByIdAsync(id);
-            if (member == null || member.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
+            if (member == null || member.IsDeleted) return false;
 
-            var oldEntity = CloneMember(member); // ✅ CLONE FOR AUDIT
+            var oldEntity = CloneMember(member);
 
-            // ✅ SOFT DELETE
             member.IsDeleted = true;
             _repo.Update(member);
 
@@ -157,7 +155,7 @@ namespace Cbeua.Bussiness.Services
         public async Task<CustomApiResponse> UpdateProfilePicAsync(int MemberId, string ProfileImageSrc)
         {
             var member = await _repo.GetByIdAsync(MemberId);
-            if (member == null || member.IsDeleted) // ✅ CHECK IF DELETED
+            if (member == null || member.IsDeleted)
                 return new CustomApiResponse { IsSucess = false, Error = "Member not found", StatusCode = 404 };
 
             member.ProfileImageSrc = ProfileImageSrc;
@@ -167,60 +165,128 @@ namespace Cbeua.Bussiness.Services
             return new CustomApiResponse { IsSucess = true, Value = ProfileImageSrc, StatusCode = 200 };
         }
 
+        /// <summary>
+        /// ✅ FIXED PAGINATION METHOD - Search happens in-memory after projection
+        /// This is the SAME pattern as TripOrderService to avoid LINQ translation errors
+        /// </summary>
         public async Task<PagedResult<MemberDTO>> GetPagedMembersAsync(MemberPaginationParams parameters)
         {
+            // Start with queryable - this is IQueryable<MemberDTO>
             var query = _repo.GetQueryableMember();
 
-            // Apply filters
-            if (parameters.BranchId.HasValue)
+            // ✅ Apply SQL-compatible filters BEFORE converting to list
+            if (parameters.BranchId.HasValue && parameters.BranchId.Value > 0)
                 query = query.Where(m => m.BranchId == parameters.BranchId.Value);
 
-            if (parameters.CategoryId.HasValue)
+            if (parameters.CategoryId.HasValue && parameters.CategoryId.Value > 0)
                 query = query.Where(m => m.CategoryId == parameters.CategoryId.Value);
 
-            if (parameters.DesignationId.HasValue)
+            if (parameters.DesignationId.HasValue && parameters.DesignationId.Value > 0)
                 query = query.Where(m => m.DesignationId == parameters.DesignationId.Value);
 
-            if (parameters.StatusId.HasValue)
+            if (parameters.StatusId.HasValue && parameters.StatusId.Value > 0)
                 query = query.Where(m => m.StatusId == parameters.StatusId.Value);
 
-            if (parameters.GenderId.HasValue)
+            if (parameters.GenderId.HasValue && parameters.GenderId.Value >= 0)
                 query = query.Where(m => m.GenderId == parameters.GenderId.Value);
 
-            // Apply search
+            // ✅ Execute query and bring data to memory BEFORE searching
+            var allMembers = query.ToList();
+
+            // ✅ Apply search in-memory (after data is materialized)
+            IEnumerable<MemberDTO> filteredMembers = allMembers;
+
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
             {
-                query = query.ApplySearch(
-                    parameters.SearchTerm,
-                    m => m.Name,
-                    m => m.StaffNo.ToString(),
-                    m => m.BranchName,
-                    m => m.Categoryname,
-                    m => m.DesignationName,
-                    m => m.Nominee
+                var searchLower = parameters.SearchTerm.ToLower().Trim();
+
+                filteredMembers = allMembers.Where(m =>
+                    (!string.IsNullOrEmpty(m.Name) && m.Name.ToLower().Contains(searchLower)) ||
+                    (m.StaffNo.ToString().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.BranchName) && m.BranchName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.Categoryname) && m.Categoryname.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.DesignationName) && m.DesignationName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.Nominee) && m.Nominee.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.Status) && m.Status.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.Gender) && m.Gender.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.DpCode) && m.DpCode.ToLower().Contains(searchLower))
                 );
             }
 
-            // Apply sorting
-            var sortMappings = new Dictionary<string, Expression<Func<MemberDTO, object>>>
+            // ✅ Apply sorting in-memory
+            if (!string.IsNullOrWhiteSpace(parameters.SortBy))
             {
-                { "name", m => m.Name },
-                { "staffno", m => m.StaffNo },
-                { "branch", m => m.BranchName },
-                { "category", m => m.Categoryname },
-                { "designation", m => m.DesignationName },
-                { "doj", m => m.Doj ?? DateTime.MinValue },
-                { "status", m => m.Status }
+                var sortBy = parameters.SortBy.ToLower();
+
+                filteredMembers = sortBy switch
+                {
+                    "name" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Name)
+                        : filteredMembers.OrderBy(m => m.Name),
+                    "staffno" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.StaffNo)
+                        : filteredMembers.OrderBy(m => m.StaffNo),
+                    "branch" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.BranchName)
+                        : filteredMembers.OrderBy(m => m.BranchName),
+                    "branchname" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.BranchName)
+                        : filteredMembers.OrderBy(m => m.BranchName),
+                    "category" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Categoryname)
+                        : filteredMembers.OrderBy(m => m.Categoryname),
+                    "categoryname" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Categoryname)
+                        : filteredMembers.OrderBy(m => m.Categoryname),
+                    "designation" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.DesignationName)
+                        : filteredMembers.OrderBy(m => m.DesignationName),
+                    "designationname" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.DesignationName)
+                        : filteredMembers.OrderBy(m => m.DesignationName),
+                    "doj" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Doj ?? DateTime.MinValue)
+                        : filteredMembers.OrderBy(m => m.Doj ?? DateTime.MinValue),
+                    "dob" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Dob ?? DateTime.MinValue)
+                        : filteredMembers.OrderBy(m => m.Dob ?? DateTime.MinValue),
+                    "status" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Status)
+                        : filteredMembers.OrderBy(m => m.Status),
+                    "gender" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Gender)
+                        : filteredMembers.OrderBy(m => m.Gender),
+                    _ => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.Name)
+                        : filteredMembers.OrderBy(m => m.Name)
+                };
+            }
+            else
+            {
+                // Default sort by Name ascending
+                filteredMembers = filteredMembers.OrderBy(m => m.Name);
+            }
+
+            // ✅ Get total count before pagination
+            var totalRecords = filteredMembers.Count();
+
+            // ✅ Apply pagination
+            var pageNumber = parameters.PageNumber;
+            var pageSize = parameters.PageSize;
+
+            var pagedData = filteredMembers
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // ✅ Return paginated result
+            return new PagedResult<MemberDTO>
+            {
+                Data = pagedData,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
             };
-
-            query = query.ApplySort(
-                parameters.SortBy ?? "name",
-                parameters.SortDescending,
-                sortMappings
-            );
-
-            // Apply pagination and return result
-            return await query.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
         }
     }
 }
