@@ -64,6 +64,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<MonthlyContribution> MonthlyContributions { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<ReportType> ReportTypes { get; set; }
+        public DbSet<ReportEngine> ReportEngines { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
