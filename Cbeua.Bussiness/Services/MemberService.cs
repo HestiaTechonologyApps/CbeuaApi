@@ -166,15 +166,14 @@ namespace Cbeua.Bussiness.Services
         }
 
         /// <summary>
-        /// ✅ FIXED PAGINATION METHOD - Search happens in-memory after projection
-        /// This is the SAME pattern as TripOrderService to avoid LINQ translation errors
+        /// ✅ FIXED PAGINATION - Latest members first + In-memory search
         /// </summary>
         public async Task<PagedResult<MemberDTO>> GetPagedMembersAsync(MemberPaginationParams parameters)
         {
-            // Start with queryable - this is IQueryable<MemberDTO>
+            // Start with queryable
             var query = _repo.GetQueryableMember();
 
-            // ✅ Apply SQL-compatible filters BEFORE converting to list
+            // ✅ Apply SQL-compatible filters BEFORE .ToList()
             if (parameters.BranchId.HasValue && parameters.BranchId.Value > 0)
                 query = query.Where(m => m.BranchId == parameters.BranchId.Value);
 
@@ -190,10 +189,10 @@ namespace Cbeua.Bussiness.Services
             if (parameters.GenderId.HasValue && parameters.GenderId.Value >= 0)
                 query = query.Where(m => m.GenderId == parameters.GenderId.Value);
 
-            // ✅ Execute query and bring data to memory BEFORE searching
+            // ✅ Execute query and bring to memory
             var allMembers = query.ToList();
 
-            // ✅ Apply search in-memory (after data is materialized)
+            // ✅ Apply search in-memory
             IEnumerable<MemberDTO> filteredMembers = allMembers;
 
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
@@ -201,8 +200,9 @@ namespace Cbeua.Bussiness.Services
                 var searchLower = parameters.SearchTerm.ToLower().Trim();
 
                 filteredMembers = allMembers.Where(m =>
-                    (!string.IsNullOrEmpty(m.Name) && m.Name.ToLower().Contains(searchLower)) ||
+                    (m.MemberId.ToString().Contains(searchLower)) ||
                     (m.StaffNo.ToString().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(m.Name) && m.Name.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(m.BranchName) && m.BranchName.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(m.Categoryname) && m.Categoryname.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(m.DesignationName) && m.DesignationName.ToLower().Contains(searchLower)) ||
@@ -220,28 +220,22 @@ namespace Cbeua.Bussiness.Services
 
                 filteredMembers = sortBy switch
                 {
+                    "memberid" => parameters.SortDescending
+                        ? filteredMembers.OrderByDescending(m => m.MemberId)
+                        : filteredMembers.OrderBy(m => m.MemberId),
                     "name" => parameters.SortDescending
                         ? filteredMembers.OrderByDescending(m => m.Name)
                         : filteredMembers.OrderBy(m => m.Name),
                     "staffno" => parameters.SortDescending
                         ? filteredMembers.OrderByDescending(m => m.StaffNo)
                         : filteredMembers.OrderBy(m => m.StaffNo),
-                    "branch" => parameters.SortDescending
+                    "branch" or "branchname" => parameters.SortDescending
                         ? filteredMembers.OrderByDescending(m => m.BranchName)
                         : filteredMembers.OrderBy(m => m.BranchName),
-                    "branchname" => parameters.SortDescending
-                        ? filteredMembers.OrderByDescending(m => m.BranchName)
-                        : filteredMembers.OrderBy(m => m.BranchName),
-                    "category" => parameters.SortDescending
+                    "category" or "categoryname" => parameters.SortDescending
                         ? filteredMembers.OrderByDescending(m => m.Categoryname)
                         : filteredMembers.OrderBy(m => m.Categoryname),
-                    "categoryname" => parameters.SortDescending
-                        ? filteredMembers.OrderByDescending(m => m.Categoryname)
-                        : filteredMembers.OrderBy(m => m.Categoryname),
-                    "designation" => parameters.SortDescending
-                        ? filteredMembers.OrderByDescending(m => m.DesignationName)
-                        : filteredMembers.OrderBy(m => m.DesignationName),
-                    "designationname" => parameters.SortDescending
+                    "designation" or "designationname" => parameters.SortDescending
                         ? filteredMembers.OrderByDescending(m => m.DesignationName)
                         : filteredMembers.OrderBy(m => m.DesignationName),
                     "doj" => parameters.SortDescending
@@ -257,14 +251,14 @@ namespace Cbeua.Bussiness.Services
                         ? filteredMembers.OrderByDescending(m => m.Gender)
                         : filteredMembers.OrderBy(m => m.Gender),
                     _ => parameters.SortDescending
-                        ? filteredMembers.OrderByDescending(m => m.Name)
-                        : filteredMembers.OrderBy(m => m.Name)
+                        ? filteredMembers.OrderByDescending(m => m.MemberId)
+                        : filteredMembers.OrderBy(m => m.MemberId)
                 };
             }
             else
             {
-                // Default sort by Name ascending
-                filteredMembers = filteredMembers.OrderBy(m => m.Name);
+                // ✅ DEFAULT SORT: Latest members first (highest MemberId first)
+                filteredMembers = filteredMembers.OrderByDescending(m => m.MemberId);
             }
 
             // ✅ Get total count before pagination
@@ -285,7 +279,7 @@ namespace Cbeua.Bussiness.Services
                 Data = pagedData,
                 TotalRecords = totalRecords,
                 PageNumber = pageNumber,
-                PageSize = pageSize,
+                PageSize = pageSize
             };
         }
     }
