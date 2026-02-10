@@ -11,6 +11,7 @@ namespace Cbeua.Domain.Entities
         public int MonthCode { get; set; }
         public string MonthName { get; set; } = "";
         public string Abbrivation { get; set; } = "";
+        public bool IsDeleted { get; set; } = false;
 
     }
 }
