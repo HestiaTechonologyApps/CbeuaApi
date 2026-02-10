@@ -12,6 +12,7 @@ namespace Cbeua.Domain.DTO
         public string Name { get; set; } = "";
         public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

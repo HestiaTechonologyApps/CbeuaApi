@@ -12,8 +12,8 @@ namespace Cbeua.Domain.Interfaces.IServices
     {
         Task<List<StateDTO>> GetAllAsync();
         Task<StateDTO?> GetByIdAsync(int id);
-        Task<StateDTO> CreateAsync(State coupon);
-        Task<bool> UpdateAsync(State coupon);
+        Task<StateDTO> CreateAsync(State state);
+        Task<bool> UpdateAsync(State state);
         Task<bool> DeleteAsync(int id);
     }
 }

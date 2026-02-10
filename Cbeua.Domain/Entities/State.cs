@@ -12,8 +12,9 @@ namespace Cbeua.Domain.Entities
         public string Name { get; set; } = "";
         public string Abbreviation { get; set; } = "";
         public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
-        
+
     }
 }
 
