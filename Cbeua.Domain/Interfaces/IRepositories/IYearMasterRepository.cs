@@ -9,5 +9,7 @@ namespace Cbeua.Domain.Interfaces.IRepositories
 {
     public interface IYearMasterRepository : IGenericRepository<YearMaster>
     {
+        Task<bool> ExistsByYearNameAsync(int yearName, int? excludeYearOf = null);
+        Task<List<YearMaster>> GetAllActiveAsync();
     }
 }

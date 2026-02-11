@@ -13,10 +13,12 @@ namespace Cbeua.Api.Controllers
     public class YearMasterController : ControllerBase
     {
         private readonly IYearMasterService _service;
+
         public YearMasterController(IYearMasterService service)
         {
             _service = service;
         }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<CustomApiResponse> GetAll()
@@ -37,28 +39,35 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpGet("{id}")]
         public async Task<CustomApiResponse> GetById(int id)
         {
             var response = new CustomApiResponse();
-            var yearMaster = await _service.GetByIdAsync(id);
-            if (yearMaster == null)
+            try
+            {
+                var yearMaster = await _service.GetByIdAsync(id);
+                if (yearMaster == null)
+                {
+                    response.IsSucess = false;
+                    response.Error = "Year not found or has been deleted";
+                    response.StatusCode = 404;
+                }
+                else
+                {
+                    response.IsSucess = true;
+                    response.Value = yearMaster;
+                    response.StatusCode = 200;
+                }
+            }
+            catch (Exception ex)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = yearMaster;
-                response.StatusCode = 200;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
             }
             return response;
         }
-
-
-
 
         [HttpPost]
         public async Task<CustomApiResponse> Create([FromBody] YearMaster yearMaster)
@@ -71,6 +80,12 @@ namespace Cbeua.Api.Controllers
                 response.Value = created;
                 response.StatusCode = 201;
             }
+            catch (InvalidOperationException ex) // ✅ CATCH DUPLICATE/VALIDATION ERRORS
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 409; // Conflict
+            }
             catch (Exception ex)
             {
                 response.IsSucess = false;
@@ -79,56 +94,77 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] YearMaster yearMaster)
         {
             var response = new CustomApiResponse();
+            try
+            {
+                if (id != yearMaster.YearOf)
+                {
+                    response.IsSucess = false;
+                    response.Error = "Id mismatch";
+                    response.StatusCode = 400;
+                    return response;
+                }
 
-            if (id != yearMaster.YearOf)
+                var updated = await _service.UpdateAsync(yearMaster);
+                if (!updated)
+                {
+                    response.IsSucess = false;
+                    response.Error = "Year not found or has been deleted";
+                    response.StatusCode = 404;
+                }
+                else
+                {
+                    response.IsSucess = true;
+                    response.Value = yearMaster;
+                    response.StatusCode = 200;
+                }
+            }
+            catch (InvalidOperationException ex) // ✅ CATCH DUPLICATE/VALIDATION ERRORS
             {
                 response.IsSucess = false;
-                response.Error = "Id mismatch";
-                response.StatusCode = 400;
-                return response;
+                response.Error = ex.Message;
+                response.StatusCode = 409; // Conflict
             }
-
-            var updated = await _service.UpdateAsync(yearMaster);
-            if (!updated)
+            catch (Exception ex)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = yearMaster;
-                response.StatusCode = 200;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
             }
             return response;
-
-
         }
+
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {
             var response = new CustomApiResponse();
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            try
+            {
+                var deleted = await _service.DeleteAsync(id);
+                if (!deleted)
+                {
+                    response.IsSucess = false;
+                    response.Error = "Year not found or already deleted";
+                    response.StatusCode = 404;
+                }
+                else
+                {
+                    response.IsSucess = true;
+                    response.Value = "Year deleted successfully";
+                    response.StatusCode = 200;
+                }
+            }
+            catch (Exception ex)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = null;
-                response.StatusCode = 204;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
             }
             return response;
         }
-
-
     }
 }

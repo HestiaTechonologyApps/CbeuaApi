@@ -16,5 +16,6 @@ namespace Cbeua.Domain.Entities
         public int YearOf { get; set; }
 
         public int YearName { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }
