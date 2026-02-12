@@ -5,15 +5,11 @@ namespace Cbeua.Domain.Entities
 {
     public partial class Designation
     {
-       
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DesignationId { get; set; }
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
-       
-      
+        public bool IsDeleted { get; set; } = false;
     }
 }
-
-

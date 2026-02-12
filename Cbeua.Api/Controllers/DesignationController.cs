@@ -17,6 +17,7 @@ namespace Cbeua.Api.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<CustomApiResponse> GetAll()
@@ -37,6 +38,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpGet("{id}")]
         public async Task<CustomApiResponse> GetById(int id)
         {
@@ -57,9 +59,6 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-
-
-
         [HttpPost]
         public async Task<CustomApiResponse> Create([FromBody] Designation designation)
         {
@@ -79,11 +78,11 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] Designation designation)
         {
             var response = new CustomApiResponse();
-
             if (id != designation.DesignationId)
             {
                 response.IsSucess = false;
@@ -91,7 +90,6 @@ namespace Cbeua.Api.Controllers
                 response.StatusCode = 400;
                 return response;
             }
-
             var updated = await _service.UpdateAsync(designation);
             if (!updated)
             {
@@ -106,9 +104,8 @@ namespace Cbeua.Api.Controllers
                 response.StatusCode = 200;
             }
             return response;
-
-
         }
+
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {
@@ -129,5 +126,24 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
+        [HttpPost("pagination")]
+        public async Task<CustomApiResponse> GetPagedDesignations([FromBody] DesignationPaginationParams parameters)
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var pagedResult = await _service.GetPagedDesignationsAsync(parameters);
+                response.IsSucess = true;
+                response.Value = pagedResult;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
     }
 }

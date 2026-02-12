@@ -11,6 +11,8 @@ namespace Cbeua.Domain.DTO
         public int DesignationId { get; set; }
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
+        public bool IsDeleted { get; set; } = false;
+
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

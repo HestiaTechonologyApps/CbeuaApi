@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Domain.Interfaces.IServices
 {
-    public interface IDesignationsService 
+    public interface IDesignationsService
     {
         Task<List<DesignationDTO>> GetAllAsync();
         Task<DesignationDTO?> GetByIdAsync(int id);
         Task<DesignationDTO> CreateAsync(Designation coupon);
         Task<bool> UpdateAsync(Designation coupon);
         Task<bool> DeleteAsync(int id);
+        Task<PagedResult<DesignationDTO>> GetPagedDesignationsAsync(DesignationPaginationParams parameters);
     }
 }
