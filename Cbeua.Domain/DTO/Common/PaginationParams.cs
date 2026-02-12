@@ -24,6 +24,17 @@ namespace Cbeua.Domain.DTO
     }
 
     /// <summary>
+    /// Pagination parameters for Designation entity
+    /// </summary>
+    public class DesignationPaginationParams : BasePaginationParams
+    {
+        // Optional filters specific to Designation
+        public int? DesignationId { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+    }
+
+    /// <summary>
     /// Pagination parameters for Member entity
     /// </summary>
     public class MemberPaginationParams : BasePaginationParams
@@ -33,14 +44,5 @@ namespace Cbeua.Domain.DTO
         public int? DesignationId { get; set; }
         public int? StatusId { get; set; }
         public int? GenderId { get; set; }
-    }
-
-    public class DesignationPaginationParams
-    {
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-        public string? SearchTerm { get; set; }
-        public string? SortBy { get; set; }
-        public bool SortDescending { get; set; } = true;
     }
 }

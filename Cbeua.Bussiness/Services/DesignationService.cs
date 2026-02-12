@@ -129,7 +129,27 @@ namespace Cbeua.Bussiness.Services
             // Filter out deleted items
             IEnumerable<Designation> activeDesignations = allDesignations.Where(d => !d.IsDeleted);
 
-            // Apply search filter
+            // Apply specific filters if provided
+            if (parameters.DesignationId.HasValue)
+            {
+                activeDesignations = activeDesignations.Where(d => d.DesignationId == parameters.DesignationId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.Name))
+            {
+                var nameLower = parameters.Name.ToLower().Trim();
+                activeDesignations = activeDesignations.Where(d =>
+                    !string.IsNullOrEmpty(d.Name) && d.Name.ToLower().Contains(nameLower));
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.Description))
+            {
+                var descLower = parameters.Description.ToLower().Trim();
+                activeDesignations = activeDesignations.Where(d =>
+                    !string.IsNullOrEmpty(d.Description) && d.Description.ToLower().Contains(descLower));
+            }
+
+            // Apply general search filter (searches across all fields)
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
             {
                 var searchLower = parameters.SearchTerm.ToLower().Trim();
