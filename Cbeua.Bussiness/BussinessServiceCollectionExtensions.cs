@@ -1,14 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Cbeua.Business.Services;
+using Cbeua.Bussiness.Services;
+using Cbeua.Bussiness.Services.HRMS;
+using Cbeua.Domain.Configurations;
+using Cbeua.Domain.Interfaces.IServices;
+using Cbeua.Domain.Interfaces.IServices.HRMS;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cbeua.Business.Services;
-using Cbeua.Bussiness.Services;
-using Cbeua.Domain.Configurations;
-using Cbeua.Domain.Interfaces.IServices;
 
 
 
@@ -73,6 +75,14 @@ namespace Cbeua.Bussiness
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IReportTypeService, ReportTypeService>();
             services.AddScoped<IReportEngineService, ReportEngineService>();
+
+
+
+
+            //HRM
+            services.AddScoped<IHRMBranchService, HRMBranchService>();
+            services.AddScoped<IHRMDepartmentService, HRMDepartmentService>();
+
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
 

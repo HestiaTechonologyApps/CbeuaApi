@@ -1,4 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Cbeua.Core.Repositories;
+using Cbeua.Core.Repositories.HRMS;
+using Cbeua.CORE.Repositories;
+using Cbeua.Domain.Interfaces.IRepositories;
+using Cbeua.Domain.Interfaces.IRepositories.HRMS;
+using Cbeua.Domain.Interfaces.IServices;
+using Cbeua.InfraCore.Data;
+using Cbeua.InfraCore.External;
+using Cbeua.InfraCore.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -6,13 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cbeua.Domain.Interfaces.IRepositories;
-using Cbeua.Domain.Interfaces.IServices;
-using Cbeua.InfraCore.Data;
-using Cbeua.InfraCore.External;
-using Cbeua.InfraCore.Repositories;
-using Cbeua.CORE.Repositories;
-using Cbeua.Core.Repositories;
+
 
 
 namespace Cbeua.InfraCore
@@ -70,6 +73,12 @@ namespace Cbeua.InfraCore
             services.AddScoped<IReportRepository, ReportRepository>();
             services.AddScoped<IReportTypeRepository, ReportTypeRepository>();
             services.AddScoped<IReportEngineRepository, ReportEngineRepository>();
+
+
+
+            //HRM
+            services.AddScoped<IHRMBranchRepository, HRMBranchRepository>();
+            services.AddScoped<IHRMDepartmentRepository, HRMDepartmentRepository>();
 
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 
