@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Cbeua.Domain.Entities;
+using Cbeua.Domain.Entities.Common;
+using Cbeua.Domain.Entities.HRMS;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Cbeua.Domain.Entities;
-using Cbeua.Domain.Entities.Common;
 
 
 namespace Cbeua.InfraCore.Data
@@ -65,6 +66,19 @@ namespace Cbeua.InfraCore.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<ReportType> ReportTypes { get; set; }
         public DbSet<ReportEngine> ReportEngines { get; set; }
+
+
+        public DbSet<HRMBranch> HRMBranches { get; set; }
+        public DbSet<HRMDepartment> HRMDepartments { get; set; }
+        public DbSet<HRMDesignation> HRMDesignations { get; set; }
+        public DbSet<HRMDocumentType> HRMDocumentTypes { get; set; }
+        public DbSet<HRMAwardType> HRMAwardTypes { get; set; }
+        public DbSet<HRMEmployee> HRMEmployees { get; set; }
+        public DbSet<HrmEmployeeAward> HrmEmployeeAwards { get; set; }
+
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
