@@ -18,6 +18,7 @@ namespace Cbeua.Domain.Entities.HRMS
         public bool IsDeleted { get; set; } = false;
         public bool IsActive { get; set; } = false;
     }
+    [Table("HRMS_Branch")]
     public class HRMBranch : BaseEntity
     {
         public String Name { get; set; }
@@ -29,6 +30,7 @@ namespace Cbeua.Domain.Entities.HRMS
         public String Email { get; set; }
     }
 
+    [Table("HRMS_Department")]
     public class HRMDepartment : BaseEntity
     {
 
@@ -40,6 +42,7 @@ namespace Cbeua.Domain.Entities.HRMS
 
     }
 
+    [Table("HRMS_Designation")]
     public class HRMDesignation : BaseEntity
     {
         public int HRMDepartmentId { get; set; }
@@ -47,16 +50,21 @@ namespace Cbeua.Domain.Entities.HRMS
         public String Description { get; set; }
     }
 
+    [Table("HRMS_DocumentType")]
     public class HRMDocumentType : BaseEntity
     {
         public String Name { get; set; }
         public String Description { get; set; }
     }
+
+    [Table("HRMS_AwardType")]
     public class HRMAwardType : BaseEntity
     {
         public String Name { get; set; }
         public String Description { get; set; }
     }
+
+    [Table("HRMS_Employee")]
     public class HRMEmployee : BaseEntity
     {
         [Required]
@@ -157,6 +165,8 @@ namespace Cbeua.Domain.Entities.HRMS
         public string EmergencyContactRelationship { get; set; }
 
     }
+
+    [Table("HRMS_EmployeeAward")]
     public class HrmEmployeeAward : BaseEntity
     {
         public int HRMEmployeeId { get; set; }

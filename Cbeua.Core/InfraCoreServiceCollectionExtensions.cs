@@ -79,6 +79,8 @@ namespace Cbeua.InfraCore
             //HRM
             services.AddScoped<IHRMBranchRepository, HRMBranchRepository>();
             services.AddScoped<IHRMDepartmentRepository, HRMDepartmentRepository>();
+            services.AddScoped<IHRMDesignationRepository, HRMDesignationRepository>();
+            services.AddScoped<IHRMDocumentTypeRepository, HRMDocumentTypeRepository>();
 
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 

@@ -4,6 +4,7 @@ using Cbeua.InfraCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cbeua.Core.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260217102524_renamedHRMS_Branch")]
+    partial class renamedHRMS_Branch
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1050,7 +1053,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HRMS_AwardType");
+                    b.ToTable("HRMAwardTypes");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.HRMS.HRMBranch", b =>
@@ -1139,7 +1142,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HRMS_Department");
+                    b.ToTable("HRMDepartments");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.HRMS.HRMDesignation", b =>
@@ -1175,7 +1178,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HRMS_Designation");
+                    b.ToTable("HRMDesignations");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.HRMS.HRMDocumentType", b =>
@@ -1208,7 +1211,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HRMS_DocumentType");
+                    b.ToTable("HRMDocumentTypes");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.HRMS.HRMEmployee", b =>
@@ -1342,7 +1345,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HRMS_Employee");
+                    b.ToTable("HRMEmployees");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.HRMS.HrmEmployeeAward", b =>
@@ -1387,7 +1390,7 @@ namespace Cbeua.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HRMS_EmployeeAward");
+                    b.ToTable("HrmEmployeeAwards");
                 });
 
             modelBuilder.Entity("Cbeua.Domain.Entities.MainPage", b =>

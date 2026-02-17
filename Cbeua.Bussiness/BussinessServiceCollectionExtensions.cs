@@ -82,6 +82,9 @@ namespace Cbeua.Bussiness
             //HRM
             services.AddScoped<IHRMBranchService, HRMBranchService>();
             services.AddScoped<IHRMDepartmentService, HRMDepartmentService>();
+            services.AddScoped<IHRMDesignationService, HRMDesignationService>();
+            services.AddScoped<IHRMDocumentTypeService, HRMDocumentTypeService>();
+
 
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
             //services.Configure<WalletSettings>(configuration.GetSection("Wallet"));
