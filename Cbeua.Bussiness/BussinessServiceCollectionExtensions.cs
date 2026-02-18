@@ -92,7 +92,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IHRMCandidateSourceService, HRMCandidateSourceService>();
             services.AddScoped<IHRMJobService, HRMJobService>();
             services.AddScoped<IHRMInterviewTypeService, HRMInterviewTypeService>();
-
+            services.AddScoped<IHRMCandidateService, HRMCandidateService>();
 
 
             //services.Configure<OtpSettings>(configuration.GetSection("OtpSettings"));
