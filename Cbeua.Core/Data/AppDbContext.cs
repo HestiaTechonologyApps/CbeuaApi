@@ -75,6 +75,7 @@ namespace Cbeua.InfraCore.Data
         public DbSet<HRMAwardType> HRMAwardTypes { get; set; }
         public DbSet<HRMEmployee> HRMEmployees { get; set; }
         public DbSet<HrmEmployeeAward> HrmEmployeeAwards { get; set; }
+        public DbSet<HRMSJobCategory> HRMSJobCategoriess { get; set; }
 
 
 

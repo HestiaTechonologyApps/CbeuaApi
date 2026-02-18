@@ -179,5 +179,14 @@ namespace Cbeua.Domain.Entities.HRMS
 
         
     }
-   
+    [Table("HRMS_JobCategories")]
+    public class HRMSJobCategory : BaseEntity
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+       
+
+
+    }
+
 }
