@@ -13,7 +13,7 @@ namespace Cbeua.Core.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20251201145430_added migration")]
-    partial class addedmigration
+    partial class addedmigrationnew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

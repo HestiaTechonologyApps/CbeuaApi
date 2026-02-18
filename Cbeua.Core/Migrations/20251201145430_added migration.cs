@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cbeua.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class addedmigration : Migration
+    public partial class addedmigrationnew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -24,7 +24,7 @@ namespace Cbeua.Domain.Entities
          public bool IsRegCompleted { get; set; }
         public bool IsDeleted { get; set; } = false;
 
-
+        
     }
 }
 

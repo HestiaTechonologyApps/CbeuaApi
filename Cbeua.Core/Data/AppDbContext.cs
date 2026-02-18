@@ -76,6 +76,21 @@ namespace Cbeua.InfraCore.Data
         public DbSet<HRMEmployee> HRMEmployees { get; set; }
         public DbSet<HrmEmployeeAward> HrmEmployeeAwards { get; set; }
         public DbSet<HRMSJobCategory> HRMSJobCategoriess { get; set; }
+        public DbSet<HRMSCandidate> HRMSCandidates { get; set; }
+        public DbSet<HRMSInterviewType> HRMSInterviewTypes { get; set; }
+        public DbSet<HRMSJob> HRMSJobs { get; set; }
+        public DbSet<HRMSCandidateSource> HRMSCandidateSources { get; set; }
+        public DbSet<HRMSJobLocation> HRMSJobLocations { get; set; }
+        public DbSet<HRMSJobType> HRMSJobTypes { get; set; }
+        public DbSet<HRMSJobCategory> HRMSJobCategorys { get; set; }
+
+
+
+
+
+
+
+
 
 
 
