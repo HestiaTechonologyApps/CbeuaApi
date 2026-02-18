@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Cbeua.Domain.DTO.HRMS
 {
-    public class HRMJobTypeCreateUpdateDTO
+    public class HRMCandidateSourceCreateUpdateDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
@@ -12,7 +12,7 @@ namespace Cbeua.Domain.DTO.HRMS
         public bool IsDeleted { get; set; } = false;
     }
 
-    public class HRMJobTypeDTO
+    public class HRMCandidateSourceDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
@@ -24,7 +24,7 @@ namespace Cbeua.Domain.DTO.HRMS
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 
-    public class HRMJobTypePaginationParams : BasePaginationParams
+    public class HRMCandidateSourcePaginationParams : BasePaginationParams
     {
         public int? Id { get; set; }
         public string? Name { get; set; }

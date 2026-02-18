@@ -84,9 +84,9 @@ namespace Cbeua.InfraCore
             services.AddScoped<IHRMAwardTypeRepository, HRMAwardTypeRepository>();
             services.AddScoped<IHRMEmployeeRepository, HRMEmployeeRepository>();
             services.AddScoped<IHRMEmployeeAwardRepository, HRMEmployeeAwardRepository>();
-            services.AddScoped<IHRMSJobTypeRepository, HRMSJobTypeRepository>();
+            services.AddScoped<IHRMJobTypeRepository, HRMJobTypeRepository>();
             services.AddScoped<IHRMJobCategoryRepository, HRMJobCategoryRepository>();
-
+            services.AddScoped<IHRMCandidateSourceRepository, HRMCandidateSourceRepository>();
             //services.AddScoped<ICustomResponseBuilder, CustomResponseBuilder>();
 
             //// Add helpers or utilities

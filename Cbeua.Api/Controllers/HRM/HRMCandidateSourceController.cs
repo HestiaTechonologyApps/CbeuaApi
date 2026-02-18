@@ -1,4 +1,5 @@
-﻿using Cbeua.Core.Helpers;
+﻿using Cbeua.Bussiness.Services.HRMS;
+using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.DTO.HRMS;
 using Cbeua.Domain.Interfaces.IServices.HRMS;
@@ -10,11 +11,11 @@ namespace Cbeua.Api.Controllers.HRMS
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize]
-    public class HRMJobTypesController : ControllerBase
+    public class HRMCandidateSourceController : ControllerBase
     {
-        private readonly IHRMJobTypeService _service;
+        private readonly IHRMCandidateSourceService _service;
 
-        public HRMJobTypesController(IHRMJobTypeService service)
+        public HRMCandidateSourceController(IHRMCandidateSourceService service)
         {
             _service = service;
         }
@@ -70,13 +71,13 @@ namespace Cbeua.Api.Controllers.HRMS
         }
 
         [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] HRMJobTypeCreateUpdateDTO entitydto)
+        public async Task<CustomApiResponse> Create([FromBody] HRMCandidateSourceCreateUpdateDTO entitydto)
         {
             return await _service.CreateAsync(entitydto);
         }
 
         [HttpPut("{id}")]
-        public async Task<CustomApiResponse> Update(int id, [FromBody] HRMJobTypeCreateUpdateDTO entitydto)
+        public async Task<CustomApiResponse> Update(int id, [FromBody] HRMCandidateSourceCreateUpdateDTO entitydto)
         {
             try
             {
@@ -104,7 +105,7 @@ namespace Cbeua.Api.Controllers.HRMS
         }
 
         [HttpPost("getall-paginated")]
-        public async Task<CustomApiResponse> GetPaged([FromBody] HRMJobTypePaginationParams parameters)
+        public async Task<CustomApiResponse> GetPaged([FromBody] HRMCandidateSourcePaginationParams parameters)
         {
             var response = new CustomApiResponse();
             try

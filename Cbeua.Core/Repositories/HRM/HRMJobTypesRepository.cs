@@ -5,19 +5,19 @@ using Cbeua.InfraCore.Data;
 
 namespace Cbeua.Core.Repositories.HRMS
 {
-    public class HRMSJobTypeRepository : GenericRepository<HRMSJobType>, IHRMSJobTypeRepository
+    public class HRMJobTypeRepository : GenericRepository<HRMSJobType>, IHRMJobTypeRepository
     {
         private readonly AppDbContext _context;
 
-        public HRMSJobTypeRepository(AppDbContext context) : base(context)
+        public HRMJobTypeRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
 
-        public Task<IQueryable<HRMSJobTypeDTO>> GetQuerableList()
+        public Task<IQueryable<HRMJobTypeDTO>> GetQuerableList()
         {
             var q = (from jobType in _context.HRMSJobTypes
-                     select new HRMSJobTypeDTO
+                     select new HRMJobTypeDTO
                      {
                          Id = jobType.Id,
                          Name = jobType.Name,

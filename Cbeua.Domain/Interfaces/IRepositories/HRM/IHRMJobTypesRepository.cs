@@ -3,8 +3,8 @@ using Cbeua.Domain.Entities.HRMS;
 
 namespace Cbeua.Domain.Interfaces.IRepositories.HRMS
 {
-    public interface IHRMSJobTypeRepository : IGenericRepository<HRMSJobType>
+    public interface IHRMJobTypeRepository : IGenericRepository<HRMSJobType>
     {
-        Task<IQueryable<HRMSJobTypeDTO>> GetQuerableList();
+        Task<IQueryable<HRMJobTypeDTO>> GetQuerableList();
     }
 }
