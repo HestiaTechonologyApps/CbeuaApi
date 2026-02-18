@@ -10,6 +10,7 @@ namespace Cbeua.Domain.Interfaces.IServices.HRMS
         Task<CustomApiResponse> CreateAsync(HRMEmployeeCreateUpdateDTO entitydto);
         Task<CustomApiResponse> UpdateAsync(HRMEmployeeCreateUpdateDTO entitydto);
         Task<CustomApiResponse> DeleteAsync(int id);
+        Task<CustomApiResponse> UpdateProfilePicAsync(int Id, string ProfileImageSrc);
         Task<PagedResult<HRMEmployeeDTO>> GetPagedAsync(HRMEmployeePaginationParams parameters);
     }
 }

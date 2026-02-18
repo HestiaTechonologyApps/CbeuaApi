@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 
 namespace Cbeua.Domain.DTO.HRMS
@@ -83,6 +84,11 @@ namespace Cbeua.Domain.DTO.HRMS
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
+    }
+    public class EmployeeProfilePicUploadDto
+    {
+        public int Id { get; set; }
+        public IFormFile ProfilePic { get; set; }
     }
 
     public class HRMEmployeePaginationParams : BasePaginationParams

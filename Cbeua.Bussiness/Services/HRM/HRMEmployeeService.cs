@@ -339,6 +339,18 @@ namespace Cbeua.Bussiness.Services.HRMS
                 PageSize = parameters.PageSize
             };
         }
+        public async Task<CustomApiResponse> UpdateProfilePicAsync(int Id, string ProfileImageSrc)
+        {
+            var employee = await _repo.GetByIdAsync(Id);
+            if (employee == null || employee.IsDeleted)
+                return new CustomApiResponse { IsSucess = false, Error = "Employee not found", StatusCode = 404 };
+
+            employee.ProfileImagePath = ProfileImageSrc;
+            _repo.Update(employee);
+            await _repo.SaveChangesAsync();
+
+            return new CustomApiResponse { IsSucess = true, Value = ProfileImageSrc, StatusCode = 200 };
+        }
 
         private HRMEmployee CloneEntity(HRMEmployee entity) => new HRMEmployee
         {
