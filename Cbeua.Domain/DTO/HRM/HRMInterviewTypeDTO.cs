@@ -1,24 +1,20 @@
-﻿using Cbeua.Domain.Entities.HRMS;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Cbeua.Domain.DTO.HRM
+namespace Cbeua.Domain.DTO.HRMS
 {
-    public class HRMJobCategoryCreateUpdateDTO
+    public class HRMInterviewTypeCreateUpdateDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
         public bool IsActive { get; set; } = false;
         public bool IsDeleted { get; set; } = false;
-
     }
-    public class HRMJobCategoryDTO 
+
+    public class HRMInterviewTypeDTO
     {
-        public int Id { get; set; }
+       public int Id { get; set; }
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
         public bool IsActive { get; set; } = false;
@@ -26,12 +22,12 @@ namespace Cbeua.Domain.DTO.HRM
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
-
     }
-    public class HRMJobCategoryPaginationParams : BasePaginationParams
+
+    public class HRMInterviewTypePaginationParams : BasePaginationParams
     {
-        public string? Id {  get; set; }
-        public string? Name { get; set; } 
+        public int? Id { get; set; }
+        public string? Name { get; set; }
         public string? Description { get; set; }
         public bool ShowDeleted { get; set; } = false;
         public bool ShowInactive { get; set; } = true;
