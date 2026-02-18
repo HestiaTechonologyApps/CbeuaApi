@@ -105,13 +105,13 @@ namespace Cbeua.Domain.Entities.HRMS
         // ===== Employment Details =====
 
         [Required]
-        public int BranchId { get; set; }
+        public int HRMBranchId { get; set; }
 
         [Required]
-        public int DepartmentId { get; set; }
+        public int HRMDepartmentId { get; set; }
 
         [Required]
-        public int DesignationId { get; set; }
+        public int HRMDesignationId { get; set; }
 
         [Required]
         public DateTime DateOfJoining { get; set; }

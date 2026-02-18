@@ -52,9 +52,19 @@ namespace Cbeua.Bussiness.Services.HRMS
         {
             try
             {
+                // ========== AUTO-GENERATE EMPLOYEE ID ==========
+                var employees = await _repo.GetQuerableList();
+                var lastEmployee = await employees
+                    .OrderByDescending(e => e.Id)
+                    .FirstOrDefaultAsync();
+
+                int nextId = (lastEmployee?.Id ?? 0) + 1;
+                string employeeId = $"EMP{nextId:D2}"; 
+
                 var entity = new HRMEmployee
                 {
                     FullName = entitydto.FullName,
+                    EmployeeId = employeeId, 
                     EmployeeCode = entitydto.EmployeeCode,
                     Email = entitydto.Email,
                     PasswordHash = entitydto.PasswordHash,
@@ -63,9 +73,9 @@ namespace Cbeua.Bussiness.Services.HRMS
                     Gender = entitydto.Gender,
                     ProfileImagePath = entitydto.ProfileImagePath,
 
-                    BranchId = entitydto.BranchId,
-                    DepartmentId = entitydto.DepartmentId,
-                    DesignationId = entitydto.DesignationId,
+                    HRMBranchId = entitydto.HRMBranchId,
+                    HRMDepartmentId = entitydto.HRMDepartmentId,
+                    HRMDesignationId = entitydto.HRMDesignationId,
                     DateOfJoining = entitydto.DateOfJoining,
                     EmploymentType = entitydto.EmploymentType,
                     EmployeeStatus = entitydto.EmployeeStatus,
@@ -99,7 +109,19 @@ namespace Cbeua.Bussiness.Services.HRMS
                     changedBy: _currentUser?.UserId ?? "System"
                 );
 
-                return ApiResponseFactory.Success(null, "Created Successfully");
+                return ApiResponseFactory.Success(new
+                {
+                    id = entity.Id,
+                    employeeId = entity.EmployeeId
+                }, "Created Successfully");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Return detailed database error for debugging
+                var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+                return ApiResponseFactory.Fail(
+                    $"Database error: {innerMessage}",
+                    System.Net.HttpStatusCode.InternalServerError);
             }
             catch (Exception ex)
             {
@@ -120,6 +142,7 @@ namespace Cbeua.Bussiness.Services.HRMS
                 var oldEntity = CloneEntity(entity);
 
                 entity.FullName = entitydto.FullName;
+                // NOTE: EmployeeId is auto-generated and should NOT be updated
                 entity.EmployeeCode = entitydto.EmployeeCode;
                 entity.Email = entitydto.Email;
                 entity.PasswordHash = entitydto.PasswordHash;
@@ -128,9 +151,9 @@ namespace Cbeua.Bussiness.Services.HRMS
                 entity.Gender = entitydto.Gender;
                 entity.ProfileImagePath = entitydto.ProfileImagePath;
 
-                entity.BranchId = entitydto.BranchId;
-                entity.DepartmentId = entitydto.DepartmentId;
-                entity.DesignationId = entitydto.DesignationId;
+                entity.HRMBranchId = entitydto.HRMBranchId;
+                entity.HRMDepartmentId = entitydto.HRMDepartmentId;
+                entity.HRMDesignationId = entitydto.HRMDesignationId;
                 entity.DateOfJoining = entitydto.DateOfJoining;
                 entity.EmploymentType = entitydto.EmploymentType;
                 entity.EmployeeStatus = entitydto.EmployeeStatus;
@@ -164,6 +187,13 @@ namespace Cbeua.Bussiness.Services.HRMS
                 );
 
                 return ApiResponseFactory.Success(entity, "Updated Successfully");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+                return ApiResponseFactory.Fail(
+                    $"Database error: {innerMessage}",
+                    System.Net.HttpStatusCode.InternalServerError);
             }
             catch (Exception ex)
             {
@@ -217,14 +247,14 @@ namespace Cbeua.Bussiness.Services.HRMS
             if (parameters.Id.HasValue && parameters.Id.Value > 0)
                 allEntities = allEntities.Where(e => e.Id == parameters.Id.Value);
 
-            if (parameters.BranchId.HasValue && parameters.BranchId.Value > 0)
-                allEntities = allEntities.Where(e => e.BranchId == parameters.BranchId.Value);
+            if (parameters.HRMBranchId.HasValue && parameters.HRMBranchId.Value > 0)
+                allEntities = allEntities.Where(e => e.HRMBranchId == parameters.HRMBranchId.Value);
 
-            if (parameters.DepartmentId.HasValue && parameters.DepartmentId.Value > 0)
-                allEntities = allEntities.Where(e => e.DepartmentId == parameters.DepartmentId.Value);
+            if (parameters.HRMDepartmentId.HasValue && parameters.HRMDepartmentId.Value > 0)
+                allEntities = allEntities.Where(e => e.HRMDepartmentId == parameters.HRMDepartmentId.Value);
 
-            if (parameters.DesignationId.HasValue && parameters.DesignationId.Value > 0)
-                allEntities = allEntities.Where(e => e.DesignationId == parameters.DesignationId.Value);
+            if (parameters.HRMDesignationId.HasValue && parameters.HRMDesignationId.Value > 0)
+                allEntities = allEntities.Where(e => e.HRMDesignationId == parameters.HRMDesignationId.Value);
 
             if (!string.IsNullOrWhiteSpace(parameters.FullName))
                 allEntities = allEntities.Where(e => e.FullName.ToLower().Contains(parameters.FullName.ToLower()));
@@ -322,9 +352,9 @@ namespace Cbeua.Bussiness.Services.HRMS
             DateOfBirth = entity.DateOfBirth,
             Gender = entity.Gender,
             ProfileImagePath = entity.ProfileImagePath,
-            BranchId = entity.BranchId,
-            DepartmentId = entity.DepartmentId,
-            DesignationId = entity.DesignationId,
+            HRMBranchId = entity.HRMBranchId,
+            HRMDepartmentId = entity.HRMDepartmentId,
+            HRMDesignationId = entity.HRMDesignationId,
             DateOfJoining = entity.DateOfJoining,
             EmploymentType = entity.EmploymentType,
             EmployeeStatus = entity.EmployeeStatus,

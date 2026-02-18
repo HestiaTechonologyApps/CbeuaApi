@@ -16,9 +16,9 @@ namespace Cbeua.Domain.DTO.HRMS
         public string ProfileImagePath { get; set; } = "";
 
         // Employment
-        public int BranchId { get; set; }
-        public int DepartmentId { get; set; }
-        public int DesignationId { get; set; }
+        public int HRMBranchId { get; set; }
+        public int HRMDepartmentId { get; set; }
+        public int HRMDesignationId { get; set; }
         public DateTime DateOfJoining { get; set; }
         public string EmploymentType { get; set; } = "";
         public string EmployeeStatus { get; set; } = "";
@@ -54,11 +54,11 @@ namespace Cbeua.Domain.DTO.HRMS
         public string ProfileImagePath { get; set; } = "";
 
         // Employment
-        public int BranchId { get; set; }
+        public int HRMBranchId { get; set; }
         public string BranchName { get; set; } = "";
-        public int DepartmentId { get; set; }
+        public int HRMDepartmentId { get; set; }
         public string DepartmentName { get; set; } = "";
-        public int DesignationId { get; set; }
+        public int HRMDesignationId { get; set; }
         public string DesignationName { get; set; } = "";
         public DateTime DateOfJoining { get; set; }
         public string EmploymentType { get; set; } = "";
@@ -88,9 +88,9 @@ namespace Cbeua.Domain.DTO.HRMS
     public class HRMEmployeePaginationParams : BasePaginationParams
     {
         public int? Id { get; set; }
-        public int? BranchId { get; set; }
-        public int? DepartmentId { get; set; }
-        public int? DesignationId { get; set; }
+        public int? HRMBranchId { get; set; }
+        public int? HRMDepartmentId { get; set; }
+        public int? HRMDesignationId { get; set; }
         public string? FullName { get; set; }
         public string? EmployeeCode { get; set; }
         public string? Email { get; set; }

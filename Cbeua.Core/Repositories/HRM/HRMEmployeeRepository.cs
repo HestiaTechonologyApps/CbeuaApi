@@ -17,9 +17,9 @@ namespace Cbeua.Core.Repositories.HRMS
         public Task<IQueryable<HRMEmployeeDTO>> GetQuerableList()
         {
             var q = (from emp in _context.HRMEmployees
-                     join branch in _context.HRMBranches on emp.BranchId equals branch.Id
-                     join dept in _context.HRMDepartments on emp.DepartmentId equals dept.Id
-                     join desig in _context.HRMDesignations on emp.DesignationId equals desig.Id
+                     join branch in _context.HRMBranches on emp.HRMBranchId equals branch.Id
+                     join dept in _context.HRMDepartments on emp.HRMDepartmentId equals dept.Id
+                     join desig in _context.HRMDesignations on emp.HRMDesignationId equals desig.Id
                      select new HRMEmployeeDTO
                      {
                          Id = emp.Id,
@@ -32,11 +32,11 @@ namespace Cbeua.Core.Repositories.HRMS
                          Gender = emp.Gender,
                          ProfileImagePath = emp.ProfileImagePath,
 
-                         BranchId = emp.BranchId,
+                         HRMBranchId = emp.HRMBranchId,
                          BranchName = branch.Name,
-                         DepartmentId = emp.DepartmentId,
+                         HRMDepartmentId = emp.HRMDepartmentId,
                          DepartmentName = dept.Name,
-                         DesignationId = emp.DesignationId,
+                         HRMDesignationId = emp.HRMDesignationId,
                          DesignationName = desig.Name,
                          DateOfJoining = emp.DateOfJoining,
                          EmploymentType = emp.EmploymentType,
