@@ -10,11 +10,11 @@ namespace Cbeua.Api.Controllers.HRMS
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class HRMDesignationController : ControllerBase
+    public class HRMEmployeeController : ControllerBase
     {
-        private readonly IHRMDesignationService _service;
+        private readonly IHRMEmployeeService _service;
 
-        public HRMDesignationController(IHRMDesignationService service)
+        public HRMEmployeeController(IHRMEmployeeService service)
         {
             _service = service;
         }
@@ -70,13 +70,13 @@ namespace Cbeua.Api.Controllers.HRMS
         }
 
         [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] HRMDesignationCreateUpdateDTO entitydto)
+        public async Task<CustomApiResponse> Create([FromBody] HRMEmployeeCreateUpdateDTO entitydto)
         {
             return await _service.CreateAsync(entitydto);
         }
 
         [HttpPut("{id}")]
-        public async Task<CustomApiResponse> Update(int id, [FromBody] HRMDesignationCreateUpdateDTO entitydto)
+        public async Task<CustomApiResponse> Update(int id, [FromBody] HRMEmployeeCreateUpdateDTO entitydto)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace Cbeua.Api.Controllers.HRMS
         }
 
         [HttpPost("getall-paginated")]
-        public async Task<CustomApiResponse> GetPaged([FromBody] HRMDesignationPaginationParams parameters)
+        public async Task<CustomApiResponse> GetPaged([FromBody] HRMEmployeePaginationParams parameters)
         {
             var response = new CustomApiResponse();
             try
