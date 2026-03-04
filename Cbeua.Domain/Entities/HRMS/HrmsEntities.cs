@@ -348,20 +348,18 @@ namespace Cbeua.Domain.Entities.HRMS
         public decimal TotalDays { get; set; }
 
         [MaxLength(20)]
-        public string DayType { get; set; } = "Full Day"; // Full Day / Half Day
+        public string DayType { get; set; } = "Full Day";
 
         [MaxLength(1000)]
         public string Reason { get; set; }
 
         [MaxLength(20)]
-        public string Status { get; set; } = "Pending"; // Pending / Approved / Rejected / Cancelled
+        public string Status { get; set; } = "Pending";
 
         public DateTime AppliedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(500)]
         public string DocumentUrl { get; set; }
-
-        public int? ReviewedBy { get; set; }       // FK to HRMEmployee (HR/Manager)
 
         public DateTime? ReviewedOn { get; set; }
 
@@ -369,5 +367,5 @@ namespace Cbeua.Domain.Entities.HRMS
         public string ReviewerRemarks { get; set; }
     }
 
-       
+
 }

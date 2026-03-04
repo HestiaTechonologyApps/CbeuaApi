@@ -64,6 +64,8 @@ namespace Cbeua.Bussiness.Services.HRMS
                     Status = "Pending",
                     AppliedOn = DateTime.UtcNow,
                     DocumentUrl = entitydto.DocumentUrl,
+                    ReviewedOn = null,
+                    ReviewerRemarks = entitydto.ReviewerRemarks,
                     IsActive = entitydto.IsActive,
                     IsDeleted = false,
                     CreatedAt = DateTime.UtcNow
@@ -110,7 +112,6 @@ namespace Cbeua.Bussiness.Services.HRMS
                 entity.Reason = entitydto.Reason;
                 entity.Status = entitydto.Status;
                 entity.DocumentUrl = entitydto.DocumentUrl;
-                entity.ReviewedBy = entitydto.ReviewedBy;
                 entity.ReviewedOn = entitydto.ReviewedOn;
                 entity.ReviewerRemarks = entitydto.ReviewerRemarks;
                 entity.IsActive = entitydto.IsActive;
@@ -270,7 +271,7 @@ namespace Cbeua.Bussiness.Services.HRMS
             Status = e.Status,
             AppliedOn = e.AppliedOn,
             DocumentUrl = e.DocumentUrl,
-            ReviewedBy = e.ReviewedBy,
+
             ReviewedOn = e.ReviewedOn,
             ReviewerRemarks = e.ReviewerRemarks,
             IsActive = e.IsActive,

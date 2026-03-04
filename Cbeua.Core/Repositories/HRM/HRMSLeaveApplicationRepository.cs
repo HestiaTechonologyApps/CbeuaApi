@@ -17,10 +17,10 @@ namespace Cbeua.Core.Repositories.HRMS
         public Task<IQueryable<HRMSLeaveApplicationDTO>> GetQuerableList()
         {
             var q = (from la in _context.HRMSLeaveApplications
-                     join emp in _context.HRMEmployees on la.HRMEmployeeId equals emp.Id
-                     join lt in _context.HRMSLeaveTypes on la.HRMSLeaveTypeId equals lt.Id
-                     join reviewer in _context.HRMEmployees on la.ReviewedBy equals reviewer.Id into reviewerGroup
-                     from reviewer in reviewerGroup.DefaultIfEmpty()
+                     join emp in _context.HRMEmployees
+                         on la.HRMEmployeeId equals emp.Id
+                     join lt in _context.HRMSLeaveTypes
+                         on la.HRMSLeaveTypeId equals lt.Id
                      select new HRMSLeaveApplicationDTO
                      {
                          Id = la.Id,
@@ -36,8 +36,8 @@ namespace Cbeua.Core.Repositories.HRMS
                          Status = la.Status,
                          AppliedOn = la.AppliedOn,
                          DocumentUrl = la.DocumentUrl,
-                         ReviewedBy = la.ReviewedBy,
-                         ReviewedByName = reviewer != null ? reviewer.FullName : "",
+                         ReviewedBy = null,        
+                         ReviewedByName = "",       
                          ReviewedOn = la.ReviewedOn,
                          ReviewerRemarks = la.ReviewerRemarks,
                          IsActive = la.IsActive,
