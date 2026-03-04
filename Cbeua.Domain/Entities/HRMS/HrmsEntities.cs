@@ -304,6 +304,70 @@ namespace Cbeua.Domain.Entities.HRMS
     }
 
 
-  
+    [Table("HRMS_LeaveType")]
+    public class HRMSLeaveType : BaseEntity
+    {
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; }           // e.g. Annual Leave, Sick Leave
+
+        [MaxLength(500)]
+        public string Description { get; set; }
+
+        public int MaxDaysAllowed { get; set; }    // Max days per year
+
+        public bool IsPaid { get; set; } = true;
+
+        public bool CarryForward { get; set; } = false;
+
+        public int CarryForwardLimit { get; set; } = 0;
+
+        [MaxLength(20)]
+        public string ApplicableGender { get; set; } = "All"; // All / Male / Female
+
+        public bool RequiresDocument { get; set; } = false;
+
+        public int NoticeDaysRequired { get; set; } = 0;
+    }
+
+    [Table("HRMS_LeaveApplication")]
+    public class HRMSLeaveApplication : BaseEntity
+    {
+        [Required]
+        public int HRMEmployeeId { get; set; }
+
+        [Required]
+        public int HRMSLeaveTypeId { get; set; }
+
+        [Required]
+        public DateTime FromDate { get; set; }
+
+        [Required]
+        public DateTime ToDate { get; set; }
+
+        public decimal TotalDays { get; set; }
+
+        [MaxLength(20)]
+        public string DayType { get; set; } = "Full Day"; // Full Day / Half Day
+
+        [MaxLength(1000)]
+        public string Reason { get; set; }
+
+        [MaxLength(20)]
+        public string Status { get; set; } = "Pending"; // Pending / Approved / Rejected / Cancelled
+
+        public DateTime AppliedOn { get; set; } = DateTime.UtcNow;
+
+        [MaxLength(500)]
+        public string DocumentUrl { get; set; }
+
+        public int? ReviewedBy { get; set; }       // FK to HRMEmployee (HR/Manager)
+
+        public DateTime? ReviewedOn { get; set; }
+
+        [MaxLength(1000)]
+        public string ReviewerRemarks { get; set; }
+    }
+
        
 }

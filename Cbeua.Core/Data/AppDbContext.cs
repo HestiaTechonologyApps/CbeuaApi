@@ -83,6 +83,8 @@ namespace Cbeua.InfraCore.Data
         public DbSet<HRMSJobLocation> HRMSJobLocations { get; set; }
         public DbSet<HRMSJobType> HRMSJobTypes { get; set; }
         public DbSet<HRMSJobCategory> HRMSJobCategorys { get; set; }
+        public DbSet<HRMSLeaveType> HRMSLeaveTypes { get; set; }
+        public DbSet<HRMSLeaveApplication> HRMSLeaveApplications { get; set; }
 
 
 
