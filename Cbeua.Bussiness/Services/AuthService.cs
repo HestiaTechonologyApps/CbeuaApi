@@ -41,8 +41,12 @@ namespace Cbeua.Business.Services
 
         private async Task<User?> GetUserByUserNameAsync(string username)
         {
-            var users = await _userRepository.FindAsync(u => u.UserName == username);
-            return users.FirstOrDefault();
+            var users = await _userRepository.FindAsync(
+                u => u.UserName == username
+            );
+            return users.FirstOrDefault(u =>
+                string.Equals(u.UserName, username, StringComparison.Ordinal)
+            );
         }
 
         public async Task<CustomApiResponse> LoginAsync(LoginRequestDTO request)
