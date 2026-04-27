@@ -12,6 +12,7 @@ namespace Cbeua.Domain.Interfaces.IServices
     {
         Task<List<BranchDTO>> GetAllAsync();
         Task<BranchDTO?> GetByIdAsync(int id);
+        Task<List<CircleFilterStateDTO>> GetCirclesByStateAsync(int stateId);
         Task<BranchDTO> CreateAsync(Branch branch);
         Task<bool> UpdateAsync(Branch branch);
         Task<bool> DeleteAsync(int id);

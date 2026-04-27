@@ -23,4 +23,10 @@ namespace Cbeua.Domain.DTO
         public string DateToString => DateTo.HasValue ? DateTo.Value.ToString("dd MMMM yyyy hh:mm tt") : "";
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
+    public class CircleFilterStateDTO
+    {
+        public int CircleId { get; set; }
+        public string Name { get; set; } = "";
+        public int? StateId { get; set; }
+    }
 }

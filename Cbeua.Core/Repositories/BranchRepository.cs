@@ -45,5 +45,19 @@ namespace Cbeua.Core.Repositories
                     };
             return q;
         }
+        
+      
+
+        public IQueryable<CircleFilterStateDTO> GetCirclesByState(int stateId)
+        {
+            return _context.Circles
+                .Where(c => c.StateId == stateId && !c.IsDeleted)
+                .Select(c => new CircleFilterStateDTO
+                {
+                    CircleId = c.CircleId,
+                    Name = c.Name,
+                    StateId = c.StateId
+                });
+        }
     }
 }

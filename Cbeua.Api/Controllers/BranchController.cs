@@ -55,6 +55,25 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [HttpGet("circles-by-state/{stateId}")]
+        public async Task<CustomApiResponse> GetCirclesByState(int stateId)
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var circles = await _service.GetCirclesByStateAsync(stateId);
+                response.IsSucess = true;
+                response.Value = circles;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
 
 
 

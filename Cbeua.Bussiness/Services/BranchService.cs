@@ -27,6 +27,10 @@ namespace Cbeua.Bussiness.Services
         {
             return _repo.GetQuerableBranch().ToList();
         }
+        public async Task<List<CircleFilterStateDTO>> GetCirclesByStateAsync(int stateId)
+        {
+            return _repo.GetCirclesByState(stateId).ToList();
+        }
 
         public async Task<BranchDTO?> GetByIdAsync(int id)
         {

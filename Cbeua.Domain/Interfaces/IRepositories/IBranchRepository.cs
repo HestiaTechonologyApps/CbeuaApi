@@ -11,5 +11,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     public interface IBranchRepository : IGenericRepository<Branch>
     {
         IQueryable<BranchDTO> GetQuerableBranch();
+        IQueryable<CircleFilterStateDTO> GetCirclesByState(int stateId);
     }
 }
