@@ -67,6 +67,8 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(ReportType reportType)
         {
             var oldentity = await _repo.GetByIdAsync(reportType.ReportTypeId);
+            reportType.CreatedDate = oldentity.CreatedDate;
+            reportType.ModifiedDate = DateTime.UtcNow;
             _repo.Detach(oldentity);
             _repo.Update(reportType);
             await _repo.SaveChangesAsync();
