@@ -20,7 +20,15 @@ namespace Cbeua.Core.Repositories
 
         public async Task<int> GetTotalMembersAsync()
         {
-            return await _context.Members.CountAsync(m => !m.IsDeleted);
+            return await (
+                from m in _context.Members
+                join c in _context.Categories on m.CategoryId equals c.CategoryId
+                join d in _context.Designations on m.DesignationId equals d.DesignationId
+                join b in _context.Branches on m.BranchId equals b.BranchId
+                join s in _context.statuses on m.StatusId equals s.StatusId
+                where !m.IsDeleted
+                select m.MemberId
+            ).CountAsync();
         }
 
         public async Task<int> GetMembersUpToYearAsync(int year)
