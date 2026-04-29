@@ -56,8 +56,12 @@ namespace Cbeua.Core.Repositories
 
         public async Task<int> GetTotalClaimsAsync(int year)
         {
-            return await _context.DeathClaims
-                .CountAsync(dc => !dc.IsDeleted && dc.YearOF == year);
+            return await (
+                from dc in _context.DeathClaims
+                join y in _context.YearMasters on dc.YearOF equals y.YearOf
+                where !dc.IsDeleted && y.YearName == year
+                select dc.DeathClaimId
+            ).CountAsync();
         }
 
         public async Task<decimal> GetTotalCollectionAsync(int year)
