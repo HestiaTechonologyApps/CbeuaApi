@@ -537,7 +537,7 @@ namespace Cbeua.Bussiness.Services
                     FileExtension = monthly.FileExtension,
                     FileSize = monthly.FileSize,
                     Month = monthly.MonthCode.ToString(),
-                    Year = monthly.YearOf.ToString(),
+                    Year = actualYear.ToString(),
                     Circle = details[0].Circle.ToString(),
                     totalamount = totalAmount.ToString(),
                     totalentry = totalEntry.ToString(),
