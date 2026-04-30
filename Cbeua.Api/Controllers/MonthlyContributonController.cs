@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Cbeua.Api.Controllers
@@ -23,15 +22,15 @@ namespace Cbeua.Api.Controllers
             _service = service;
         }
 
+        // GET: api/MonthlyContribution
         [HttpGet]
         public async Task<CustomApiResponse> GetAll()
         {
             var response = new CustomApiResponse();
             try
             {
-                var contributions = await _service.GetAllAsync();
                 response.IsSucess = true;
-                response.Value = contributions;
+                response.Value = await _service.GetAllAsync();
                 response.StatusCode = 200;
             }
             catch (Exception ex)
@@ -43,6 +42,7 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
+        // GET: api/MonthlyContribution/5
         [HttpGet("{id}")]
         public async Task<CustomApiResponse> GetById(long id)
         {
@@ -63,26 +63,7 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-        [HttpPost]
-        public async Task<CustomApiResponse> Create([FromBody] MonthlyContribution monthlyContribution)
-        {
-            var response = new CustomApiResponse();
-            try
-            {
-                var created = await _service.CreateAsync(monthlyContribution);
-                response.IsSucess = true;
-                response.Value = created;
-                response.StatusCode = 201;
-            }
-            catch (Exception ex)
-            {
-                response.IsSucess = false;
-                response.Error = ex.Message;
-                response.StatusCode = 500;
-            }
-            return response;
-        }
-
+        // PUT: api/MonthlyContribution/5
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(long id, [FromBody] MonthlyContribution monthlyContribution)
         {
@@ -98,7 +79,7 @@ namespace Cbeua.Api.Controllers
             if (!updated)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
+                response.Error = "Not found or already deleted";
                 response.StatusCode = 404;
             }
             else
@@ -110,80 +91,102 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
+        // DELETE: api/MonthlyContribution/5
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(long id)
         {
             var response = new CustomApiResponse();
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            try
+            {
+                var result = await _service.DeleteWithContributionDataAsync(id);
+                if (!result.IsSucess)
+                {
+                    response.IsSucess = false;
+                    response.Error = result.Error;
+                    response.StatusCode = result.StatusCode;
+                }
+                else
+                {
+                    response.IsSucess = true;
+                    response.StatusCode = 200;
+                }
+            }
+            catch (Exception ex)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = null;
-                response.StatusCode = 204;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
             }
             return response;
         }
 
         /// <summary>
-        /// Uploads the Monthly Contribution File
+        /// Single-shot endpoint: upload file, parse it, save master + details — mirrors the old POST behaviour.
         /// </summary>
-        [HttpPost("upload-file")]
+        [HttpPost("upload-and-save")]
         [Consumes("multipart/form-data")]
-        public async Task<CustomApiResponse> UploadFile([FromForm] MonthlyContributionFileUploadDto dto)
+        public async Task<CustomApiResponse> UploadAndSave([FromForm] MonthlyContributionFileUploadDto dto)
         {
-            var monthCode = dto.MonthCode;
-            var yearOf = dto.YearOf;
-            var file = dto.ContributionFile;
-
-            if (file == null || file.Length == 0)
+            if (dto.ContributionFile == null || dto.ContributionFile.Length == 0)
                 return new CustomApiResponse { IsSucess = false, Error = "No file uploaded", StatusCode = 400 };
 
-            // Check file size (max 10MB for contribution files)
-            const long maxFileSize = 10 * 1024 * 1024;
-            if (file.Length > maxFileSize)
-                return new CustomApiResponse { IsSucess = false, Error = "File size exceeds 10MB", StatusCode = 400 };
-
-            // Check file type (allow text files, csv, excel)
-            var allowedContentTypes = new[] { "text/plain", "text/csv", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" };
-            if (!allowedContentTypes.Contains(file.ContentType.ToLower()))
-                return new CustomApiResponse { IsSucess = false, Error = "Only text, CSV, and Excel files are allowed", StatusCode = 400 };
-
-            // Prepare file path
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "contributionfiles");
             Directory.CreateDirectory(uploadsFolder);
 
-            var fileExtension = Path.GetExtension(file.FileName);
-            var fileName = $"Contribution_{yearOf}_{monthCode}_{Guid.NewGuid()}{fileExtension}";
+            var fileExtension = Path.GetExtension(dto.ContributionFile.FileName);
+            var fileName = $"Contribution_{dto.YearOf}_{dto.MonthCode}_{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
-            // Save new file
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await file.CopyToAsync(stream);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await dto.ContributionFile.CopyToAsync(stream);
+
+                var fileSize = new FileInfo(filePath).Length;
+
+                return await _service.UploadAndSaveAsync(
+                    dto.MonthCode,
+                    dto.YearOf,
+                    fileName,
+                    filePath,
+                    "Contribution",
+                    fileExtension,
+                    fileSize
+                );
             }
+            catch (Exception ex)
+            {
+                // Clean up orphaned file on failure
+                try { System.IO.File.Delete(filePath); } catch { }
 
-            // Get file info
-            var fileInfo = new FileInfo(filePath);
-            var fileSize = fileInfo.Length;
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                };
+            }
+        }
 
-            // Save to DB
-            var result = await _service.UploadContributionFileAsync(
-                monthCode,
-                yearOf,
-                fileName,
-                filePath,
-                "Contribution",
-                fileExtension,
-                fileSize
-            );
+        // Keep the two-step endpoints if you still need them separately
+        [HttpPost("{id}/save")]
+        public async Task<CustomApiResponse> SaveContribution(long id)
+        {
+            try { return await _service.SaveContributionAsync(id); }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse { IsSucess = false, Error = ex.Message, StatusCode = 500 };
+            }
+        }
 
-            return result;
+        [HttpGet("{id}/read-file")]
+        public async Task<CustomApiResponse> ReadFile(long id)
+        {
+            try { return await _service.ReadContributionFileAsync(id); }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse { IsSucess = false, Error = ex.Message, StatusCode = 500 };
+            }
         }
     }
 }

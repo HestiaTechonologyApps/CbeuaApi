@@ -2,7 +2,10 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Cbeua.Core.Repositories
 {
@@ -34,9 +37,73 @@ namespace Cbeua.Core.Repositories
                         YearOf = mc.YearOf,
                         YearName = y.YearName,
                         IsDeleted = mc.IsDeleted
-
                     };
             return q;
+        }
+
+        public List<ContributionMaster> GetExistingContributionMasters(string month, string year)
+        {
+            return _context.ContributionMasters
+                .Where(cm => cm.Month == month && cm.Year == year)
+                .ToList();
+        }
+
+        public async Task AddContributionMasterAsync(ContributionMaster master)
+        {
+            await _context.ContributionMasters.AddAsync(master);
+        }
+
+        public async Task AddContributionDetailAsync(ContributionDetail detail)
+        {
+            await _context.ContributionDetails.AddAsync(detail);
+        }
+
+   
+        public async Task AddContributionDetailsRangeAsync(List<ContributionDetail> details)
+        {
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;
+            try
+            {
+                await _context.ContributionDetails.AddRangeAsync(details);
+            }
+            finally
+            {
+                _context.ChangeTracker.AutoDetectChangesEnabled = true;
+            }
+        }
+
+        public List<ContributionDetail> GetContributionDetailsByMasterId(long masterId)
+        {
+            return _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == masterId)
+                .ToList();
+        }
+
+       
+        public int GetContributionDetailsCountByMasterId(long masterId)
+        {
+            return _context.ContributionDetails
+                .Count(d => d.ContributionMasterId == masterId);
+        }
+
+        public void RemoveContributionDetails(List<ContributionDetail> details)
+        {
+            _context.ContributionDetails.RemoveRange(details);
+        }
+
+        public void RemoveContributionMaster(ContributionMaster master)
+        {
+            _context.ContributionMasters.Remove(master);
+        }
+
+     
+        public void DetachAll()
+        {
+            var entries = _context.ChangeTracker.Entries().ToList();
+            foreach (var entry in entries)
+            {
+                entry.State = EntityState.Detached;
+            }
         }
     }
 }
