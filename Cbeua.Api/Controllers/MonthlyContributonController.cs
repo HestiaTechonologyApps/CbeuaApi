@@ -167,6 +167,50 @@ namespace Cbeua.Api.Controllers
                 };
             }
         }
+       
+        [HttpGet("{id}/details")]
+        public async Task<CustomApiResponse> GetContributionDetails(
+            long id,
+            [FromQuery] ContributionDetailPaginationParams p)
+        {
+            try
+            {
+                var result = await _service.GetPagedContributionDetailsAsync(id, p);
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                };
+            }
+        }
+        [HttpGet("ContributionMasters")]
+        public async Task<IActionResult> GetContributionAll()
+        {
+            try
+            {
+                var result = await _service.GetAllContributionMastersAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                });
+            }
+        }
 
         // Keep the two-step endpoints if you still need them separately
         [HttpPost("{id}/save")]

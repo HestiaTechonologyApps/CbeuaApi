@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +26,14 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<List<MonthlyContributionDTO>> GetAllAsync()
         {
-            return _repo.GetQueryableMonthlyContributions().ToList();
+            return await _repo.GetQueryableMonthlyContributions().ToListAsync();
         }
 
         public async Task<MonthlyContributionDTO?> GetByIdAsync(long id)
         {
-            return _repo.GetQueryableMonthlyContributions()
-                        .Where(u => u.MonthlyContributionId == id)
-                        .FirstOrDefault();
+            return await _repo.GetQueryableMonthlyContributions()
+                              .Where(u => u.MonthlyContributionId == id)
+                              .FirstOrDefaultAsync();
         }
 
         // ─────────────────────────────────────────────
@@ -687,6 +688,83 @@ namespace Cbeua.Bussiness.Services
                     ErrorLines = errorLines
                 }
             };
+        }
+        public async Task<PagedResult<ContributionDetail>> GetPagedContributionDetailsAsync(
+       long monthlyContributionId,
+       ContributionDetailPaginationParams p)
+        {
+            var q = _repo.GetContributionDetailsQueryable(monthlyContributionId);
+
+            // ── Filters ────────────────────────────────────────────────
+            if (!string.IsNullOrWhiteSpace(p.StaffNo))
+                q = q.Where(d => d.StaffNo.ToLower().Contains(p.StaffNo.ToLower().Trim()));
+
+            if (!string.IsNullOrWhiteSpace(p.Name))
+                q = q.Where(d => d.Name.ToLower().Contains(p.Name.ToLower().Trim()));
+
+            if (!string.IsNullOrWhiteSpace(p.DpCode))
+                q = q.Where(d => d.DpCode.ToLower().Contains(p.DpCode.ToLower().Trim()));
+
+            if (p.IsParked.HasValue)
+                q = q.Where(d => d.isParked == p.IsParked.Value);
+
+            if (!string.IsNullOrWhiteSpace(p.SearchTerm))
+            {
+                var s = p.SearchTerm.ToLower().Trim();
+                q = q.Where(d =>
+                    d.StaffNo.ToLower().Contains(s) ||
+                    d.Name.ToLower().Contains(s) ||
+                    d.DpCode.ToLower().Contains(s) ||
+                    d.Designation.ToLower().Contains(s));
+            }
+
+            q = !string.IsNullOrWhiteSpace(p.SortBy)
+                ? p.SortBy.ToLower() switch
+                {
+                    "staffno" => p.SortDescending ? q.OrderByDescending(d => d.StaffNo) : q.OrderBy(d => d.StaffNo),
+                    "name" => p.SortDescending ? q.OrderByDescending(d => d.Name) : q.OrderBy(d => d.Name),
+                    "dpcode" => p.SortDescending ? q.OrderByDescending(d => d.DpCode) : q.OrderBy(d => d.DpCode),
+                    "amount" => p.SortDescending ? q.OrderByDescending(d => d.Amount) : q.OrderBy(d => d.Amount),
+                    "designation" => p.SortDescending ? q.OrderByDescending(d => d.Designation) : q.OrderBy(d => d.Designation),
+                    _ => p.SortDescending ? q.OrderByDescending(d => d.ContributionDetailId) : q.OrderBy(d => d.ContributionDetailId)
+                }
+                : q.OrderBy(d => d.ContributionDetailId);
+
+            var totalRecords = await q.CountAsync();
+
+            var pagedData = p.GetAll
+                ? await q.ToListAsync()
+                : await q.Skip((p.PageNumber - 1) * p.PageSize).Take(p.PageSize).ToListAsync();
+
+            return new PagedResult<ContributionDetail>
+            {
+                Data = pagedData,
+                TotalRecords = totalRecords,
+                PageNumber = p.PageNumber,
+                PageSize = p.GetAll ? totalRecords : p.PageSize
+            };
+        }
+        public async Task<CustomApiResponse> GetAllContributionMastersAsync()
+        {
+            try
+            {
+                var masters =await _repo.GetAllContributionMasters();
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = masters
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
         }
 
         private async Task<int> GetActualYear(int yearOf)

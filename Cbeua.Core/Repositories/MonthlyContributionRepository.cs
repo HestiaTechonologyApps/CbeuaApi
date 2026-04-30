@@ -78,8 +78,33 @@ namespace Cbeua.Core.Repositories
                 .Where(d => d.ContributionMasterId == masterId)
                 .ToList();
         }
+        public async Task<List<ContributionMasterListDTO>> GetAllContributionMasters()
+        {
+            var masters = await _context.ContributionMasters
+                .AsNoTracking()
+                .OrderByDescending(cm => cm.ContributionMasterId)
+                .ToListAsync();
 
-       
+            return masters.Select(cm => new ContributionMasterListDTO
+            {
+                ContributionMasterId = cm.ContributionMasterId,
+                FileName = cm.FileName,
+                FileLocation = cm.FileLocation,
+                FileType = cm.FileType,
+                FileExtension = cm.FileExtension,
+                FileSize = cm.FileSize,
+                Month = cm.Month,
+                Year = cm.Year,
+                Circle = cm.Circle,
+                TotalAmount = cm.totalamount,
+                TotalEntry = cm.totalentry,
+                ContributionStatus = cm.ContributionStatus,
+                NewMemberCount = cm.NewMemberCount,
+                ApprovedBy = cm.ApprovedBy,
+                ApprovedDate = cm.ApprovedDate,
+                IsApproved = cm.isApproved
+            }).ToList();
+        }
         public int GetContributionDetailsCountByMasterId(long masterId)
         {
             return _context.ContributionDetails
@@ -104,6 +129,24 @@ namespace Cbeua.Core.Repositories
             {
                 entry.State = EntityState.Detached;
             }
+        }
+        public IQueryable<ContributionDetail> GetContributionDetailsQueryable(long monthlyContributionId)
+        {
+            var monthly = _context.MonthlyContributions
+                .FirstOrDefault(mc => mc.MonthlyContributionId == monthlyContributionId && !mc.IsDeleted);
+
+            if (monthly == null)
+                return Enumerable.Empty<ContributionDetail>().AsQueryable();
+
+            var master = _context.ContributionMasters
+                .FirstOrDefault(cm => cm.Month == monthly.MonthCode.ToString()
+                                   && cm.Year == monthly.YearOf.ToString());
+
+            if (master == null)
+                return Enumerable.Empty<ContributionDetail>().AsQueryable();
+
+            return _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == master.ContributionMasterId);
         }
     }
 }
