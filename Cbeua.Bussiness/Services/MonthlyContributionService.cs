@@ -13,25 +13,21 @@ namespace Cbeua.Bussiness.Services
     {
         private readonly IMonthlyContributionRepository _repo;
         private readonly IAuditRepository _auditRepository;
+        private readonly IYearMasterRepository _yearMasterRepository;
         public string AuditTableName { get; set; } = "MONTHLYCONTRIBUTION";
 
-        public MonthlyContributionService(IMonthlyContributionRepository repo, IAuditRepository auditRepository)
+        public MonthlyContributionService(IMonthlyContributionRepository repo, IAuditRepository auditRepository, IYearMasterRepository yearMasterRepository)
         {
             _repo = repo;
             _auditRepository = auditRepository;
+            _yearMasterRepository = yearMasterRepository;
         }
 
-        // ─────────────────────────────────────────────
-        // GET ALL
-        // ─────────────────────────────────────────────
         public async Task<List<MonthlyContributionDTO>> GetAllAsync()
         {
             return _repo.GetQueryableMonthlyContributions().ToList();
         }
 
-        // ─────────────────────────────────────────────
-        // GET BY ID
-        // ─────────────────────────────────────────────
         public async Task<MonthlyContributionDTO?> GetByIdAsync(long id)
         {
             return _repo.GetQueryableMonthlyContributions()
@@ -60,9 +56,6 @@ namespace Cbeua.Bussiness.Services
             return await ConvertToDTO(monthlyContribution);
         }
 
-        // ─────────────────────────────────────────────
-        // UPDATE
-        // ─────────────────────────────────────────────
         public async Task<bool> UpdateAsync(MonthlyContribution monthlyContribution)
         {
             var oldEntity = await _repo.GetByIdAsync(monthlyContribution.MonthlyContributionId);
@@ -84,9 +77,6 @@ namespace Cbeua.Bussiness.Services
             return true;
         }
 
-        // ─────────────────────────────────────────────
-        // DELETE (soft-delete header only)
-        // ─────────────────────────────────────────────
         public async Task<bool> DeleteAsync(long id)
         {
             var monthlyContribution = await _repo.GetByIdAsync(id);
@@ -109,11 +99,6 @@ namespace Cbeua.Bussiness.Services
             return true;
         }
 
-        // ─────────────────────────────────────────────
-        // DELETE WITH CONTRIBUTION DATA
-        // Soft-deletes header + hard-deletes master & details.
-        // Blocks if ContributionStatus == "A" (approved).
-        // ─────────────────────────────────────────────
         public async Task<CustomApiResponse> DeleteWithContributionDataAsync(long monthlyContributionId)
         {
             var monthly = await _repo.GetByIdAsync(monthlyContributionId);
@@ -162,19 +147,20 @@ namespace Cbeua.Bussiness.Services
             return new CustomApiResponse { IsSucess = true, StatusCode = 200 };
         }
 
-        // ─────────────────────────────────────────────
-        // UPLOAD FILE (header record only, no parsing)
-        // ─────────────────────────────────────────────
         public async Task<CustomApiResponse> UploadContributionFileAsync(
             int monthCode, int yearOf,
             string fileName, string fileLocation,
             string fileType, string fileExtension,
             decimal fileSize)
         {
-            var existing = _repo.GetQueryableMonthlyContributions()
+            // ✅ Fix: materialize ID first, then fetch entity separately
+            var existingDto = _repo.GetQueryableMonthlyContributions()
                 .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
-                .Select(dto => _repo.GetByIdAsync(dto.MonthlyContributionId).Result)
                 .FirstOrDefault();
+
+            var existing = existingDto != null
+                ? await _repo.GetByIdAsync(existingDto.MonthlyContributionId)
+                : null;
 
             if (existing != null)
             {
@@ -218,11 +204,6 @@ namespace Cbeua.Bussiness.Services
             }
         }
 
-        // ─────────────────────────────────────────────
-        // UPLOAD AND SAVE (single-shot — mirrors old POST)
-        // Saves file record, clears old data, parses file,
-        // inserts master + details in one call.
-        // ─────────────────────────────────────────────
         public async Task<CustomApiResponse> UploadAndSaveAsync(
             int monthCode, int yearOf,
             string fileName, string fileLocation,
@@ -231,11 +212,14 @@ namespace Cbeua.Bussiness.Services
         {
             try
             {
-                // 1. Upsert MonthlyContribution header
-                var existing = _repo.GetQueryableMonthlyContributions()
+                // ✅ Fix: materialize ID first, then fetch entity separately
+                var existingDto = _repo.GetQueryableMonthlyContributions()
                     .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
-                    .Select(dto => _repo.GetByIdAsync(dto.MonthlyContributionId).Result)
                     .FirstOrDefault();
+
+                var existing = existingDto != null
+                    ? await _repo.GetByIdAsync(existingDto.MonthlyContributionId)
+                    : null;
 
                 MonthlyContribution monthly;
 
@@ -278,6 +262,9 @@ namespace Cbeua.Bussiness.Services
                     await _repo.SaveChangesAsync();
                 }
 
+                // ✅ Fix: Detach monthly before calling GetActualYear
+                _repo.Detach(monthly);
+
                 if (!System.IO.File.Exists(monthly.FileLocation))
                     return new CustomApiResponse
                     {
@@ -286,7 +273,9 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 404
                     };
 
-                // 2. Remove old ContributionMaster + details for same month/year
+                // ✅ Now safe — no open readers on the context
+                int actualYear = await GetActualYear(monthly.YearOf);
+
                 var oldMasters = _repo.GetExistingContributionMasters(
                     monthCode.ToString(),
                     yearOf.ToString()
@@ -300,7 +289,6 @@ namespace Cbeua.Bussiness.Services
                 }
                 await _repo.SaveChangesAsync();
 
-                // 3. Parse file
                 var lines = System.IO.File.ReadLines(monthly.FileLocation);
                 var details = new List<ContributionDetail>();
                 var errorLines = new List<string>();
@@ -316,7 +304,7 @@ namespace Cbeua.Bussiness.Services
                             int parsedMonth = int.Parse(line.Substring(5, 2));
                             int parsedYear = int.Parse(line.Substring(7, 4));
 
-                            if (parsedMonth == monthly.MonthCode && parsedYear == monthly.YearOf)
+                            if (parsedMonth == monthly.MonthCode && parsedYear == actualYear)
                             {
                                 int amount = int.Parse(line.Substring(68, 7)) / 100;
                                 totalEntry++;
@@ -364,7 +352,6 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                // 4. Insert ContributionMaster
                 var contributionMaster = new ContributionMaster
                 {
                     FileName = monthly.FileName,
@@ -396,7 +383,6 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 500
                     };
 
-                // 5. Bulk insert details in batches of 1000
                 foreach (var d in details)
                     d.ContributionMasterId = contributionMaster.ContributionMasterId;
 
@@ -449,9 +435,6 @@ namespace Cbeua.Bussiness.Services
             }
         }
 
-        // ─────────────────────────────────────────────
-        // SAVE CONTRIBUTION (two-step: parse already-uploaded file)
-        // ─────────────────────────────────────────────
         public async Task<CustomApiResponse> SaveContributionAsync(long monthlyContributionId)
         {
             var monthly = await _repo.GetByIdAsync(monthlyContributionId);
@@ -461,9 +444,14 @@ namespace Cbeua.Bussiness.Services
             if (!System.IO.File.Exists(monthly.FileLocation))
                 return new CustomApiResponse { IsSucess = false, Error = "File not found on disk", StatusCode = 404 };
 
+            // ✅ Fix: Detach monthly before calling GetActualYear
+            _repo.Detach(monthly);
+
+            // ✅ Now safe — no open readers on the context
+            int actualYear = await GetActualYear(monthly.YearOf);
+
             try
             {
-                // Remove existing masters and details for same month/year
                 var existingMasters = _repo.GetExistingContributionMasters(
                     monthly.MonthCode.ToString(),
                     monthly.YearOf.ToString()
@@ -477,7 +465,6 @@ namespace Cbeua.Bussiness.Services
                 }
                 await _repo.SaveChangesAsync();
 
-                // Parse file
                 var lines = System.IO.File.ReadLines(monthly.FileLocation);
                 var details = new List<ContributionDetail>();
                 var errorLines = new List<string>();
@@ -493,7 +480,7 @@ namespace Cbeua.Bussiness.Services
                             int parsedMonth = int.Parse(line.Substring(5, 2));
                             int parsedYear = int.Parse(line.Substring(7, 4));
 
-                            if (parsedMonth == monthly.MonthCode && parsedYear == monthly.YearOf)
+                            if (parsedMonth == monthly.MonthCode && parsedYear == actualYear)
                             {
                                 int amount = int.Parse(line.Substring(68, 7)) / 100;
                                 totalEntry++;
@@ -541,7 +528,6 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                // Insert master
                 var contributionMaster = new ContributionMaster
                 {
                     FileName = monthly.FileName,
@@ -573,7 +559,6 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 500
                     };
 
-                // Bulk insert details
                 foreach (var detail in details)
                     detail.ContributionMasterId = contributionMaster.ContributionMasterId;
 
@@ -624,9 +609,6 @@ namespace Cbeua.Bussiness.Services
             }
         }
 
-        // ─────────────────────────────────────────────
-        // READ FILE (preview only, no DB writes)
-        // ─────────────────────────────────────────────
         public async Task<CustomApiResponse> ReadContributionFileAsync(long monthlyContributionId)
         {
             var monthly = await _repo.GetByIdAsync(monthlyContributionId);
@@ -635,6 +617,12 @@ namespace Cbeua.Bussiness.Services
 
             if (!System.IO.File.Exists(monthly.FileLocation))
                 return new CustomApiResponse { IsSucess = false, Error = "File not found on disk", StatusCode = 404 };
+
+            // ✅ Fix: Detach monthly before calling GetActualYear
+            _repo.Detach(monthly);
+
+            // ✅ Now safe — no open readers on the context
+            int actualYear = await GetActualYear(monthly.YearOf);
 
             var lines = System.IO.File.ReadLines(monthly.FileLocation);
             var validLines = new List<ContributionDetailDTO>();
@@ -651,7 +639,7 @@ namespace Cbeua.Bussiness.Services
                         int parsedMonth = int.Parse(line.Substring(5, 2));
                         int parsedYear = int.Parse(line.Substring(7, 4));
 
-                        if (parsedMonth == monthly.MonthCode && parsedYear == monthly.YearOf)
+                        if (parsedMonth == monthly.MonthCode && parsedYear == actualYear)
                         {
                             int amount = int.Parse(line.Substring(68, 7)) / 100;
                             totalEntry++;
@@ -701,9 +689,14 @@ namespace Cbeua.Bussiness.Services
             };
         }
 
-        // ─────────────────────────────────────────────
-        // PRIVATE HELPERS
-        // ─────────────────────────────────────────────
+        private async Task<int> GetActualYear(int yearOf)
+        {
+            var yearMaster = await _yearMasterRepository.GetByIdAsync(yearOf);
+            if (yearMaster == null || yearMaster.IsDeleted)
+                throw new InvalidOperationException($"Year code {yearOf} not found.");
+            return yearMaster.YearName;
+        }
+
         private async Task<MonthlyContributionDTO> ConvertToDTO(MonthlyContribution monthlyContribution)
         {
             return new MonthlyContributionDTO
