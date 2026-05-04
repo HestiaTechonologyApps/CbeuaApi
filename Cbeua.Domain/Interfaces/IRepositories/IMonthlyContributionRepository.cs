@@ -15,9 +15,21 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         Task AddContributionDetailsRangeAsync(List<ContributionDetail> details); 
         List<ContributionDetail> GetContributionDetailsByMasterId(long masterId);
         IQueryable<ContributionDetail> GetContributionDetailsQueryable(long monthlyContributionId);
+        Task<int> GetNewMemberCountAsync(long contributionMasterId);
         int GetContributionDetailsCountByMasterId(long masterId);               
         void RemoveContributionDetails(List<ContributionDetail> details);
         void RemoveContributionMaster(ContributionMaster master);
+        Task UpdateContributionMasterAsync(ContributionMaster master);
+        Task<ContributionMaster?> GetContributionMasterByIdAsync(long contributionMasterId);
         void DetachAll();
+
+
+        //reportss
+        Task<List<ContributionDetail>> GetNewMembersAsync(long contributionMasterId);
+        Task<List<ContributionDetail>> GetWrongBranchAsync(long contributionMasterId);
+        Task<List<ContributionDetail>> GetWrongCircleAsync(long contributionMasterId);
+        Task<List<ContributionDetail>> GetParkedItemsAsync(long contributionMasterId);
+        Task<List<ContributionDetail>> GetAllDetailsAsync(long contributionMasterId);
+        Task<List<DefaulterDTO>> GetDefaultersAsync(string month, string year);
     }
 }

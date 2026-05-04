@@ -130,6 +130,22 @@ namespace Cbeua.Core.Repositories
                 entry.State = EntityState.Detached;
             }
         }
+        public async Task<int> GetNewMemberCountAsync(long contributionMasterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == contributionMasterId
+                         && !_context.Members.Any(m => m.StaffNo.ToString() == d.StaffNo))
+                .CountAsync();
+        }
+        public async Task UpdateContributionMasterAsync(ContributionMaster master)
+        {
+            _context.ContributionMasters.Update(master);
+        }
+        public async Task<ContributionMaster?> GetContributionMasterByIdAsync(long contributionMasterId)
+        {
+            return await _context.ContributionMasters
+                .FirstOrDefaultAsync(cm => cm.ContributionMasterId == contributionMasterId);
+        }
         public IQueryable<ContributionDetail> GetContributionDetailsQueryable(long monthlyContributionId)
         {
             var monthly = _context.MonthlyContributions
@@ -147,6 +163,74 @@ namespace Cbeua.Core.Repositories
 
             return _context.ContributionDetails
                 .Where(d => d.ContributionMasterId == master.ContributionMasterId);
+        }
+        //reportss
+        public async Task<List<ContributionDetail>> GetNewMembersAsync(long contributionMasterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == contributionMasterId
+                         && !_context.Members
+                             .Where(m => !m.IsDeleted)
+                             .Any(m => m.StaffNo.ToString() == d.StaffNo.Trim()))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<ContributionDetail>> GetWrongBranchAsync(long contributionMasterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == contributionMasterId
+                         && !_context.Branches
+                             .Where(b => !b.IsDeleted)
+                             .Any(b => b.DpCode.ToString() == d.DpCode.Trim()))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<ContributionDetail>> GetWrongCircleAsync(long contributionMasterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == contributionMasterId
+                         && !_context.Circles
+                             .Where(c => !c.IsDeleted)
+                             .Any(c => c.CircleCode == d.Circle))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<ContributionDetail>> GetParkedItemsAsync(long contributionMasterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == contributionMasterId && d.isParked)
+                .ToListAsync();
+        }
+
+        public async Task<List<ContributionDetail>> GetAllDetailsAsync(long contributionMasterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == contributionMasterId).AsNoTracking()
+                .ToListAsync();
+        }
+
+        // ✅ AFTER — single query with NOT EXISTS
+        public async Task<List<DefaulterDTO>> GetDefaultersAsync(string month, string year)
+        {
+            return await _context.Members
+                .Where(m => !m.IsDeleted
+                         && !_context.ContributionDetails
+                             .Any(d => d.Month == month
+                                    && d.Year == year
+                                    && !d.isParked
+                                    && d.StaffNo == m.StaffNo.ToString()))
+                .Select(m => new DefaulterDTO
+                {
+                    MemberId = m.MemberId,
+                    StaffNo = m.StaffNo,
+                    Name = m.Name,
+                    BranchId = m.BranchId
+                })
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

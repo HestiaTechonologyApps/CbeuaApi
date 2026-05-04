@@ -222,6 +222,16 @@ namespace Cbeua.Api.Controllers
                 return new CustomApiResponse { IsSucess = false, Error = ex.Message, StatusCode = 500 };
             }
         }
+        [HttpGet("{id}/report")]
+        public async Task<IActionResult> GetReport(
+     long id,
+     [FromQuery] string type,
+     [FromQuery] int pageNumber,
+     [FromQuery] int pageSize)
+        {
+            var result = await _service.GetContributionReportAsync(id, type, pageNumber, pageSize);
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
 
         [HttpGet("{id}/read-file")]
         public async Task<CustomApiResponse> ReadFile(long id)

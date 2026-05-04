@@ -27,6 +27,13 @@ namespace Cbeua.Domain.DTO
             public string? SortBy { get; set; }
             public bool SortDescending { get; set; } = false;
         }
+    public class DefaulterDTO
+    {
+        public int MemberId { get; set; }
+        public int StaffNo { get; set; }
+        public string Name { get; set; } = "";
+        public int? BranchId { get; set; }
+    }
 
     public class ContributionMasterListDTO
     {

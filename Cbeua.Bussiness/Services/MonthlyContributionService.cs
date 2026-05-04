@@ -154,7 +154,6 @@ namespace Cbeua.Bussiness.Services
             string fileType, string fileExtension,
             decimal fileSize)
         {
-            // ✅ Fix: materialize ID first, then fetch entity separately
             var existingDto = _repo.GetQueryableMonthlyContributions()
                 .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
                 .FirstOrDefault();
@@ -213,7 +212,6 @@ namespace Cbeua.Bussiness.Services
         {
             try
             {
-                // ✅ Fix: materialize ID first, then fetch entity separately
                 var existingDto = _repo.GetQueryableMonthlyContributions()
                     .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
                     .FirstOrDefault();
@@ -263,7 +261,6 @@ namespace Cbeua.Bussiness.Services
                     await _repo.SaveChangesAsync();
                 }
 
-                // ✅ Fix: Detach monthly before calling GetActualYear
                 _repo.Detach(monthly);
 
                 if (!System.IO.File.Exists(monthly.FileLocation))
@@ -274,12 +271,11 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 404
                     };
 
-                // ✅ Now safe — no open readers on the context
                 int actualYear = await GetActualYear(monthly.YearOf);
 
                 var oldMasters = _repo.GetExistingContributionMasters(
                     monthCode.ToString(),
-                    yearOf.ToString()
+                    actualYear.ToString()
                 );
 
                 foreach (var master in oldMasters)
@@ -361,7 +357,7 @@ namespace Cbeua.Bussiness.Services
                     FileExtension = monthly.FileExtension,
                     FileSize = monthly.FileSize,
                     Month = monthly.MonthCode.ToString(),
-                    Year = monthly.YearOf.ToString(),
+                    Year = actualYear.ToString(),  // ✅ store real year
                     Circle = details[0].Circle.ToString(),
                     totalamount = totalAmount.ToString(),
                     totalentry = totalEntry.ToString(),
@@ -400,6 +396,12 @@ namespace Cbeua.Bussiness.Services
                     contributionMaster.ContributionMasterId
                 );
 
+                int newMemberCount = await _repo.GetNewMemberCountAsync(contributionMaster.ContributionMasterId);
+                contributionMaster.NewMemberCount = newMemberCount.ToString();
+                await _repo.UpdateContributionMasterAsync(contributionMaster);  
+                await _repo.SaveChangesAsync();
+               
+
                 await _auditRepository.LogAuditAsync<ContributionMaster>(
                     tableName: "CONTRIBUTIONMASTER",
                     action: "create",
@@ -420,6 +422,7 @@ namespace Cbeua.Bussiness.Services
                         TotalEntry = totalEntry,
                         TotalAmount = totalAmount,
                         SavedDetails = savedCount,
+                        NewMemberCount = newMemberCount,
                         ErrorCount = errorLines.Count,
                         ErrorLines = errorLines
                     }
@@ -445,17 +448,15 @@ namespace Cbeua.Bussiness.Services
             if (!System.IO.File.Exists(monthly.FileLocation))
                 return new CustomApiResponse { IsSucess = false, Error = "File not found on disk", StatusCode = 404 };
 
-            // ✅ Fix: Detach monthly before calling GetActualYear
             _repo.Detach(monthly);
 
-            // ✅ Now safe — no open readers on the context
             int actualYear = await GetActualYear(monthly.YearOf);
 
             try
             {
                 var existingMasters = _repo.GetExistingContributionMasters(
                     monthly.MonthCode.ToString(),
-                    monthly.YearOf.ToString()
+                    actualYear.ToString()
                 );
 
                 foreach (var master in existingMasters)
@@ -537,7 +538,7 @@ namespace Cbeua.Bussiness.Services
                     FileExtension = monthly.FileExtension,
                     FileSize = monthly.FileSize,
                     Month = monthly.MonthCode.ToString(),
-                    Year = actualYear.ToString(),
+                    Year = actualYear.ToString(),  // ✅ store real year
                     Circle = details[0].Circle.ToString(),
                     totalamount = totalAmount.ToString(),
                     totalentry = totalEntry.ToString(),
@@ -584,6 +585,12 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 500
                     };
 
+              
+                int newMemberCount = await _repo.GetNewMemberCountAsync(contributionMaster.ContributionMasterId);
+                contributionMaster.NewMemberCount = newMemberCount.ToString();
+                await _repo.UpdateContributionMasterAsync(contributionMaster); 
+                await _repo.SaveChangesAsync();
+
                 return new CustomApiResponse
                 {
                     IsSucess = true,
@@ -594,6 +601,7 @@ namespace Cbeua.Bussiness.Services
                         TotalEntry = totalEntry,
                         TotalAmount = totalAmount,
                         SavedDetails = savedCount,
+                        NewMemberCount = newMemberCount,
                         ErrorCount = errorLines.Count,
                         ErrorLines = errorLines
                     }
@@ -619,10 +627,8 @@ namespace Cbeua.Bussiness.Services
             if (!System.IO.File.Exists(monthly.FileLocation))
                 return new CustomApiResponse { IsSucess = false, Error = "File not found on disk", StatusCode = 404 };
 
-            // ✅ Fix: Detach monthly before calling GetActualYear
             _repo.Detach(monthly);
 
-            // ✅ Now safe — no open readers on the context
             int actualYear = await GetActualYear(monthly.YearOf);
 
             var lines = System.IO.File.ReadLines(monthly.FileLocation);
@@ -689,13 +695,13 @@ namespace Cbeua.Bussiness.Services
                 }
             };
         }
+
         public async Task<PagedResult<ContributionDetail>> GetPagedContributionDetailsAsync(
-       long monthlyContributionId,
-       ContributionDetailPaginationParams p)
+            long monthlyContributionId,
+            ContributionDetailPaginationParams p)
         {
             var q = _repo.GetContributionDetailsQueryable(monthlyContributionId);
 
-            // ── Filters ────────────────────────────────────────────────
             if (!string.IsNullOrWhiteSpace(p.StaffNo))
                 q = q.Where(d => d.StaffNo.ToLower().Contains(p.StaffNo.ToLower().Trim()));
 
@@ -744,11 +750,12 @@ namespace Cbeua.Bussiness.Services
                 PageSize = p.GetAll ? totalRecords : p.PageSize
             };
         }
+
         public async Task<CustomApiResponse> GetAllContributionMastersAsync()
         {
             try
             {
-                var masters =await _repo.GetAllContributionMasters();
+                var masters = await _repo.GetAllContributionMasters();
                 return new CustomApiResponse
                 {
                     IsSucess = true,
@@ -766,7 +773,92 @@ namespace Cbeua.Bussiness.Services
                 };
             }
         }
+        public async Task<CustomApiResponse> GetContributionReportAsync(
+      long contributionMasterId,
+      string reportType,
+      int pageNumber,
+      int pageSize)
+        {
+            try
+            {
+                switch (reportType.Trim().ToUpper())
+                {
+                    case "NEWMEMBERS":
+                        var newMembers = await _repo.GetNewMembersAsync(contributionMasterId);
+                        return ToPagedResponse(newMembers, pageNumber, pageSize);
 
+                    case "WRONGBRANCH":
+                        var wrongBranch = await _repo.GetWrongBranchAsync(contributionMasterId);
+                        return ToPagedResponse(wrongBranch, pageNumber, pageSize);
+
+                    case "WRONGCIRCLE":
+                        var wrongCircle = await _repo.GetWrongCircleAsync(contributionMasterId);
+                        return ToPagedResponse(wrongCircle, pageNumber, pageSize);
+
+                    case "PARKEDITEMS":
+                        var parked = await _repo.GetParkedItemsAsync(contributionMasterId);
+                        return ToPagedResponse(parked, pageNumber, pageSize);
+
+                    case "ALL":
+                        var all = await _repo.GetAllDetailsAsync(contributionMasterId);
+                        return ToPagedResponse(all, pageNumber, pageSize);
+
+                    case "DEFAULTER":
+                        var master = await _repo.GetContributionMasterByIdAsync(contributionMasterId);
+                        if (master == null)
+                            return new CustomApiResponse
+                            {
+                                IsSucess = false,
+                                Error = "Contribution master not found",
+                                StatusCode = 404
+                            };
+                        var defaulters = await _repo.GetDefaultersAsync(master.Month, master.Year);
+                        return ToPagedResponse(defaulters, pageNumber, pageSize);
+
+                    default:
+                        return new CustomApiResponse
+                        {
+                            IsSucess = false,
+                            Error = $"Unknown report type: {reportType}",
+                            StatusCode = 400
+                        };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        private CustomApiResponse ToPagedResponse<T>(List<T> data, int pageNumber, int pageSize)
+        {
+            var totalRecords = data.Count;
+            var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            var paged = data
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new CustomApiResponse
+            {
+                IsSucess = true,
+                StatusCode = 200,
+                Value = new
+                {
+                    TotalRecords = totalRecords,
+                    TotalPages = totalPages,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    Data = paged
+                }
+            };
+        }
         private async Task<int> GetActualYear(int yearOf)
         {
             var yearMaster = await _yearMasterRepository.GetByIdAsync(yearOf);
