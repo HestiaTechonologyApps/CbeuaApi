@@ -74,6 +74,9 @@ namespace Cbeua.InfraCore
             services.AddScoped<IReportTypeRepository, ReportTypeRepository>();
             services.AddScoped<IReportEngineRepository, ReportEngineRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
+            services.AddScoped<IContributionDetailRepository, ContributionDetailRepository>();
+         
+
 
 
 

@@ -22,7 +22,12 @@ namespace Cbeua.Domain.DTO
 
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
-
+  
+        public class ParkItemDto
+        {
+            public string ParkReason { get; set; } = string.Empty;
+        }
+    
     // Upload DTO
     public class MonthlyContributionFileUploadDto
     {
