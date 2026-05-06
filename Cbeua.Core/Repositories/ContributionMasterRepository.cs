@@ -22,7 +22,7 @@ namespace Cbeua.Core.Repositories
         public async Task<List<ContributionMaster>> GetAllAsync()
         {
             return await _context.ContributionMasters
-               
+                .Where(m => m.ContributionStatus.Trim().ToUpper() == "FORWARD")
                 .OrderByDescending(m => m.Year)
                 .ThenByDescending(m => m.Month)
                 .ToListAsync();
