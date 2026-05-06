@@ -212,16 +212,8 @@ namespace Cbeua.Api.Controllers
             }
         }
 
-        // Keep the two-step endpoints if you still need them separately
-        [HttpPost("{id}/save")]
-        public async Task<CustomApiResponse> SaveContribution(long id)
-        {
-            try { return await _service.SaveContributionAsync(id); }
-            catch (Exception ex)
-            {
-                return new CustomApiResponse { IsSucess = false, Error = ex.Message, StatusCode = 500 };
-            }
-        }
+     
+   
         [HttpGet("{id}/report")]
         public async Task<IActionResult> GetReport(
      long id,
@@ -233,14 +225,6 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("{id}/read-file")]
-        public async Task<CustomApiResponse> ReadFile(long id)
-        {
-            try { return await _service.ReadContributionFileAsync(id); }
-            catch (Exception ex)
-            {
-                return new CustomApiResponse { IsSucess = false, Error = ex.Message, StatusCode = 500 };
-            }
-        }
+     
     }
 }
