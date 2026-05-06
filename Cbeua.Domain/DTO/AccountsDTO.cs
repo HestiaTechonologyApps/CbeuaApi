@@ -20,4 +20,18 @@ namespace Cbeua.Domain.DTO
         public string Remark { get; set; } = "";
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
+    namespace Cbeua.Domain.DTO
+    {
+        public class AccountReadyDto
+        {
+            public long ContributionDetailId { get; set; }
+            public long ContributionMasterId { get; set; }
+            public int MemberId { get; set; }
+            public int BranchId { get; set; }
+            public int CircleId { get; set; }
+            public int MonthCode { get; set; }
+            public int YearOf { get; set; }
+            public decimal Amount { get; set; }
+        }
+    }
 }

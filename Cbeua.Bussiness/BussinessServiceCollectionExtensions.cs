@@ -77,6 +77,7 @@ namespace Cbeua.Bussiness
             services.AddScoped<IReportEngineService, ReportEngineService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IContributionDetailService, ContributionDetailService>();
+            services.AddScoped<IContributionMasterService, ContributionMasterService>();
            
 
 

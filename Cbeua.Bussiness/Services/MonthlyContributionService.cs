@@ -459,14 +459,9 @@ namespace Cbeua.Bussiness.Services
                     actualYear.ToString()
                 );
 
-                foreach (var master in existingMasters)
-                {
-                    var childDetails = _repo.GetContributionDetailsByMasterId(master.ContributionMasterId);
-                    _repo.RemoveContributionDetails(childDetails);
-                    _repo.RemoveContributionMaster(master);
-                }
-                await _repo.SaveChangesAsync();
-
+                // ────────────────────────────────────────────
+                // Parse the file FIRST before touching the DB
+                // ────────────────────────────────────────────
                 var lines = System.IO.File.ReadLines(monthly.FileLocation);
                 var details = new List<ContributionDetail>();
                 var errorLines = new List<string>();
@@ -530,37 +525,75 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                var contributionMaster = new ContributionMaster
+                // ────────────────────────────────────────────
+                // Now decide: UPDATE existing master or CREATE
+                // ────────────────────────────────────────────
+                ContributionMaster contributionMaster;
+
+                if (existingMasters.Any())
                 {
-                    FileName = monthly.FileName,
-                    FileLocation = monthly.FileLocation,
-                    FileType = monthly.FileType,
-                    FileExtension = monthly.FileExtension,
-                    FileSize = monthly.FileSize,
-                    Month = monthly.MonthCode.ToString(),
-                    Year = actualYear.ToString(),  // ✅ store real year
-                    Circle = details[0].Circle.ToString(),
-                    totalamount = totalAmount.ToString(),
-                    totalentry = totalEntry.ToString(),
-                    ContributionStatus = "Uploaded",
-                    NewMemberCount = "0",
-                    ApprovedBy = "",
-                    ApprovedDate = "",
-                    isApproved = false,
-                    ContributionDetails = new List<ContributionDetail>()
-                };
+                    // ✅ Reuse existing master — ID stays the same
+                    contributionMaster = existingMasters.First();
 
-                await _repo.AddContributionMasterAsync(contributionMaster);
-                await _repo.SaveChangesAsync();
+                    // Delete only the old details
+                    var children = _repo.GetContributionDetailsByMasterId(contributionMaster.ContributionMasterId);
+                    _repo.RemoveContributionDetails(children);
+                    await _repo.SaveChangesAsync();
 
-                if (contributionMaster.ContributionMasterId <= 0)
-                    return new CustomApiResponse
+                    // Update master fields in place
+                    contributionMaster.FileName = monthly.FileName;
+                    contributionMaster.FileLocation = monthly.FileLocation;
+                    contributionMaster.FileType = monthly.FileType;
+                    contributionMaster.FileExtension = monthly.FileExtension;
+                    contributionMaster.FileSize = monthly.FileSize;
+                    contributionMaster.Circle = details[0].Circle.ToString();
+                    contributionMaster.totalamount = totalAmount.ToString();
+                    contributionMaster.totalentry = totalEntry.ToString();
+                    contributionMaster.ContributionStatus = "Uploaded";
+                    contributionMaster.NewMemberCount = "0";
+                    contributionMaster.isApproved = false;
+
+                    await _repo.UpdateContributionMasterAsync(contributionMaster);
+                    await _repo.SaveChangesAsync();
+                }
+                else
+                {
+                    // ✅ No existing master — create a fresh one
+                    contributionMaster = new ContributionMaster
                     {
-                        IsSucess = false,
-                        Error = "Master record was not saved. ContributionMasterId is 0.",
-                        StatusCode = 500
+                        FileName = monthly.FileName,
+                        FileLocation = monthly.FileLocation,
+                        FileType = monthly.FileType,
+                        FileExtension = monthly.FileExtension,
+                        FileSize = monthly.FileSize,
+                        Month = monthly.MonthCode.ToString(),
+                        Year = actualYear.ToString(),
+                        Circle = details[0].Circle.ToString(),
+                        totalamount = totalAmount.ToString(),
+                        totalentry = totalEntry.ToString(),
+                        ContributionStatus = "Uploaded",
+                        NewMemberCount = "0",
+                        ApprovedBy = "",
+                        ApprovedDate = "",
+                        isApproved = false,
+                        ContributionDetails = new List<ContributionDetail>()
                     };
 
+                    await _repo.AddContributionMasterAsync(contributionMaster);
+                    await _repo.SaveChangesAsync();
+
+                    if (contributionMaster.ContributionMasterId <= 0)
+                        return new CustomApiResponse
+                        {
+                            IsSucess = false,
+                            Error = "Master record was not saved. ContributionMasterId is 0.",
+                            StatusCode = 500
+                        };
+                }
+
+                // ────────────────────────────────────────────
+                // Save details with the stable master ID
+                // ────────────────────────────────────────────
                 foreach (var detail in details)
                     detail.ContributionMasterId = contributionMaster.ContributionMasterId;
 
@@ -585,10 +618,9 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 500
                     };
 
-              
                 int newMemberCount = await _repo.GetNewMemberCountAsync(contributionMaster.ContributionMasterId);
                 contributionMaster.NewMemberCount = newMemberCount.ToString();
-                await _repo.UpdateContributionMasterAsync(contributionMaster); 
+                await _repo.UpdateContributionMasterAsync(contributionMaster);
                 await _repo.SaveChangesAsync();
 
                 return new CustomApiResponse
@@ -658,8 +690,8 @@ namespace Cbeua.Bussiness.Services
                                 Circle = int.Parse(line.Substring(0, 5)),
                                 Month = parsedMonth.ToString(),
                                 Year = parsedYear.ToString(),
-                                DpCode = line.Substring(11, 5),
-                                StaffNo = line.Substring(16, 6),
+                                DpCode = int.Parse(line.Substring(11, 5)).ToString(),     
+                                StaffNo = int.Parse(line.Substring(16, 6)).ToString(),
                                 Name = line.Substring(22, 31).Trim(),
                                 Designation = line.Substring(53, 15).Trim(),
                                 Amount = amount
