@@ -258,5 +258,53 @@ namespace Cbeua.Bussiness.Services
                 };
             }
         }
+        public async Task<CustomApiResponse> GetParkedDetailsAsync(long masterId, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var master = await _repo.GetByIdAsync(masterId);
+                if (master == null)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Contribution master not found",
+                        StatusCode = 404
+                    };
+
+                var parked = await _repo.GetParkedDetailsAsync(masterId);
+
+                var totalCount = parked.Count;
+                var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+                var paged = parked
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = new
+                    {
+                        MasterId = masterId,
+                        TotalCount = totalCount,
+                        TotalPages = totalPages,
+                        PageNumber = pageNumber,
+                        PageSize = pageSize,
+                        Items = paged
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
     }
 }

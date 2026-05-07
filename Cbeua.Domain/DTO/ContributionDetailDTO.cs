@@ -34,7 +34,23 @@ namespace Cbeua.Domain.DTO
         public string Name { get; set; } = "";
         public int? BranchId { get; set; }
     }
-
+     public class ParkedDetailDto
+        {
+            public long ContributionDetailId { get; set; }
+            public long ContributionMasterId { get; set; }
+            public string FullString { get; set; } = "";
+            public int Circle { get; set; }
+            public string Month { get; set; } = "";
+            public string Year { get; set; } = "";
+            public string DpCode { get; set; } = "";
+            public string StaffNo { get; set; } = "";
+            public string Name { get; set; } = "";
+            public string Designation { get; set; } = "";
+            public decimal Amount { get; set; } 
+            public string Total { get; set; } = "";
+            public string ParkReason { get; set; } = "";
+    }
+ 
     public class ContributionMasterListDTO
     {
         public long ContributionMasterId { get; set; }

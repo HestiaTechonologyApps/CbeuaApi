@@ -146,23 +146,10 @@ namespace Cbeua.Core.Repositories
             return await _context.ContributionMasters
                 .FirstOrDefaultAsync(cm => cm.ContributionMasterId == contributionMasterId);
         }
-        public IQueryable<ContributionDetail> GetContributionDetailsQueryable(long monthlyContributionId)
+        public IQueryable<ContributionDetail> GetContributionDetailsByMasterIdQueryable(long contributionMasterId)
         {
-            var monthly = _context.MonthlyContributions
-                .FirstOrDefault(mc => mc.MonthlyContributionId == monthlyContributionId && !mc.IsDeleted);
-
-            if (monthly == null)
-                return Enumerable.Empty<ContributionDetail>().AsQueryable();
-
-            var master = _context.ContributionMasters
-                .FirstOrDefault(cm => cm.Month == monthly.MonthCode.ToString()
-                                   && cm.Year == monthly.YearOf.ToString());
-
-            if (master == null)
-                return Enumerable.Empty<ContributionDetail>().AsQueryable();
-
             return _context.ContributionDetails
-                .Where(d => d.ContributionMasterId == master.ContributionMasterId);
+                .Where(d => d.ContributionMasterId == contributionMasterId);
         }
         //reportss
         public async Task<List<ContributionDetail>> GetNewMembersAsync(long contributionMasterId)

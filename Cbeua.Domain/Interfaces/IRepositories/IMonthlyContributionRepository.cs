@@ -14,7 +14,7 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         Task AddContributionDetailAsync(ContributionDetail detail);
         Task AddContributionDetailsRangeAsync(List<ContributionDetail> details); 
         List<ContributionDetail> GetContributionDetailsByMasterId(long masterId);
-        IQueryable<ContributionDetail> GetContributionDetailsQueryable(long monthlyContributionId);
+        IQueryable<ContributionDetail> GetContributionDetailsByMasterIdQueryable(long contributionMasterId);
         Task<int> GetNewMemberCountAsync(long contributionMasterId);
         int GetContributionDetailsCountByMasterId(long masterId);               
         void RemoveContributionDetails(List<ContributionDetail> details);

@@ -167,5 +167,28 @@ namespace Cbeua.Core.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<List<ParkedDetailDto>> GetParkedDetailsAsync(long masterId)
+        {
+            return await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == masterId && d.isParked)
+                .Select(d => new ParkedDetailDto
+                {
+                    ContributionDetailId = d.ContributionDetailId,
+                    ContributionMasterId = d.ContributionMasterId,
+                    FullString = d.FullString,
+                    Circle = d.Circle,
+                    Month = d.Month,
+                    Year = d.Year,
+                    DpCode = d.DpCode,
+                    StaffNo = d.StaffNo,
+                    Name = d.Name,
+                    Designation = d.Designation,
+                    Amount = d.Amount,
+                    Total = d.Total,
+                    ParkReason = d.ParkReason
+                })
+                .OrderBy(d => d.StaffNo)
+                .ToListAsync();
+        }
     }
 }

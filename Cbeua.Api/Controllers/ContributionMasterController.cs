@@ -18,7 +18,7 @@ namespace Cbeua.Api.Controllers
             _service = service;
         }
 
-        // GET: api/ContributionMaster
+      
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -26,7 +26,7 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
-        // GET: api/ContributionMaster/5
+      
         [HttpGet("{masterId}")]
         public async Task<IActionResult> GetById(long masterId)
         {
@@ -34,10 +34,9 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
-        // POST: api/ContributionMaster
+     
        
 
-        // DELETE: api/ContributionMaster/5
         [HttpDelete("{masterId}")]
         public async Task<IActionResult> Delete(long masterId)
         {
@@ -45,7 +44,7 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
-        // POST: api/ContributionMaster/5/forward
+        
         [HttpPost("{masterId}/forward")]
         public async Task<IActionResult> Forward(long masterId)
         {
@@ -53,7 +52,16 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
-        // POST: api/ContributionMaster/5/approve?approve=true&currentUserId=1
+
+        [HttpGet("{masterId}/parked")]
+        public async Task<IActionResult> GetParked(long masterId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+                return BadRequest("pageNumber and pageSize must be greater than 0");
+
+            var result = await _service.GetParkedDetailsAsync(masterId, pageNumber, pageSize);
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
         [HttpPost("{masterId}/approve")]
         public async Task<IActionResult> Approve(long masterId, [FromQuery] bool approve, [FromQuery] int currentUserId)
         {

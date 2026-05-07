@@ -14,6 +14,7 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         void Update(ContributionMaster master);
         void Delete(ContributionMaster master);
         Task<List<AccountReadyDto>> GetDetailsWithLookupsAsync(long masterId);
+        Task<List<ParkedDetailDto>> GetParkedDetailsAsync(long masterId);
         Task AddAccountsRangeAsync(List<Accounts> accounts);
         Task<int> AutoParkInvalidDetailsAsync(long masterId);
         Task<bool> ContributionExistsForMonthYearAsync(string month, string year);

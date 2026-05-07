@@ -729,10 +729,10 @@ namespace Cbeua.Bussiness.Services
         }
 
         public async Task<PagedResult<ContributionDetail>> GetPagedContributionDetailsAsync(
-            long monthlyContributionId,
+            long contributionMasterId,
             ContributionDetailPaginationParams p)
         {
-            var q = _repo.GetContributionDetailsQueryable(monthlyContributionId);
+            var q = _repo.GetContributionDetailsByMasterIdQueryable(contributionMasterId);
 
             if (!string.IsNullOrWhiteSpace(p.StaffNo))
                 q = q.Where(d => d.StaffNo.ToLower().Contains(p.StaffNo.ToLower().Trim()));
