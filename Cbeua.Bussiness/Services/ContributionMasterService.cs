@@ -181,15 +181,10 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                int parkedCount = 0;
                 int approvedCount = 0;
 
                 if (approve)
                 {
-                    // ── Step 1: Auto-park new members, wrong branch, wrong circle ──
-                    parkedCount = await _repo.AutoParkInvalidDetailsAsync(masterId);
-
-                    // ── Step 2: Fetch only valid (non-parked) details ──
                     var details = await _repo.GetDetailsWithLookupsAsync(masterId);
                     approvedCount = details.Count;
 
@@ -197,11 +192,10 @@ namespace Cbeua.Bussiness.Services
                         return new CustomApiResponse
                         {
                             IsSucess = false,
-                            Error = $"No valid details found to approve. {parkedCount} records were auto-parked as invalid.",
+                            Error = "No details found to approve.",
                             StatusCode = 400
                         };
 
-                    // ── Step 3: Post valid records to Accounts ──
                     var accounts = details.Select(d => new Accounts
                     {
                         CircleId = d.CircleId,
@@ -217,7 +211,6 @@ namespace Cbeua.Bussiness.Services
 
                     await _repo.AddAccountsRangeAsync(accounts);
 
-                    // ── Step 4: Update master status ──
                     master.isApproved = true;
                     master.ContributionStatus = "A";
                     master.ApprovedDate = DateTime.UtcNow.ToString();
@@ -239,12 +232,7 @@ namespace Cbeua.Bussiness.Services
                     IsSucess = true,
                     StatusCode = 200,
                     Value = approve
-                        ? new
-                        {
-                            Message = "Contribution approved and posted to accounts successfully",
-                            ParkedCount = parkedCount,
-                            ApprovedCount = approvedCount
-                        }
+                        ? new { Message = "Contribution approved and posted to accounts successfully", ApprovedCount = approvedCount }
                         : new { Message = "Contribution rejected successfully" }
                 };
             }

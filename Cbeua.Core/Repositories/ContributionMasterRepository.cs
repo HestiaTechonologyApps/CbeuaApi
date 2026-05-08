@@ -94,69 +94,7 @@ namespace Cbeua.Core.Repositories
         {
             await _context.Accounts.AddRangeAsync(accounts);
         }
-        public async Task<int> AutoParkInvalidDetailsAsync(long masterId)
-        {
-            var now = DateTime.Now;
-
-            // Load only the 3 lookup sets — small tables, fast
-            var validStaffNos = await _context.Members
-                .Where(m => !m.IsDeleted)
-                .Select(m => m.StaffNo.ToString())
-                .ToHashSetAsync();
-
-            var validDpCodes = await _context.Branches
-                .Where(b => !b.IsDeleted)
-                .Select(b => b.DpCode.ToString())
-                .ToHashSetAsync();
-
-            var validCircleCodes = await _context.Circles
-                .Where(c => !c.IsDeleted)
-                .Select(c => c.CircleCode)
-                .ToHashSetAsync();
-
-            // Pull ONLY invalid rows — not all 100k
-            var invalidDetails = await _context.ContributionDetails
-                .Where(d => d.ContributionMasterId == masterId
-                         && !d.isParked
-                         && (
-                             !_context.Members.Any(m => !m.IsDeleted && m.StaffNo.ToString() == d.StaffNo.Trim())
-                             || !_context.Branches.Any(b => !b.IsDeleted && b.DpCode.ToString() == d.DpCode.Trim())
-                             || !_context.Circles.Any(c => !c.IsDeleted && c.CircleCode == d.Circle)
-                         ))
-                .ToListAsync();
-
-            if (!invalidDetails.Any()) return 0;
-
-            // Update in memory — instant
-            foreach (var detail in invalidDetails)
-            {
-                var reasons = new List<string>();
-
-                if (!validStaffNos.Contains(detail.StaffNo?.Trim()))
-                    reasons.Add("New member not in system");
-
-                if (!validDpCodes.Contains(detail.DpCode?.Trim()))
-                    reasons.Add("Wrong branch / DpCode not found");
-
-                if (!validCircleCodes.Contains(detail.Circle))
-                    reasons.Add("Wrong circle / CircleCode not found");
-
-                if (reasons.Any())
-                {
-                    detail.isParked = true;
-                    detail.ParkReason = string.Join("; ", reasons);
-                    detail.Parkedon = now;
-                }
-            }
-
-            // ✅ Single SaveChanges — no batching loop needed
-            // EF Core tracks all changes, commits in one transaction
-            _context.ContributionDetails.UpdateRange(invalidDetails);
-            await _context.SaveChangesAsync();
-
-            return invalidDetails.Count;
-        }
-
+       
         public async Task<bool> ContributionExistsForMonthYearAsync(string month, string year)
         {
             return await _context.ContributionMasters
