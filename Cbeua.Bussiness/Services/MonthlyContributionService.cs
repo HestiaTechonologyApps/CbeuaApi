@@ -438,7 +438,263 @@ namespace Cbeua.Bussiness.Services
                 };
             }
         }
+        public async Task<CustomApiResponse> UpdateContributionFileAsync(
+       long contributionMasterId,   
+       int monthCode, int yearOf,
+       string fileName, string fileLocation,
+       string fileType, string fileExtension,
+       decimal fileSize)
+        {
+            try
+            {
+                // ── 1. Fetch the contribution master directly ─────────────────────
+                var contributionMaster = await _repo.GetContributionMasterByIdAsync(contributionMasterId);
+                if (contributionMaster == null)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Contribution master record not found.",
+                        StatusCode = 404
+                    };
 
+                // ── 2. Block if already approved ──────────────────────────────────
+                if (!string.IsNullOrWhiteSpace(contributionMaster.ContributionStatus)
+                    && contributionMaster.ContributionStatus.Trim().ToUpper() == "APPROVED")
+                {
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "This contribution is already approved and cannot be updated.",
+                        StatusCode = 400
+                    };
+                }
+
+                // ── 3. Find the linked monthly record ─────────────────────────────
+                var existingDto = _repo.GetQueryableMonthlyContributions()
+                    .Where(mc => mc.MonthCode == monthCode && mc.YearOf == yearOf)
+                    .FirstOrDefault();
+
+                var monthly = existingDto != null
+                    ? await _repo.GetByIdAsync(existingDto.MonthlyContributionId)
+                    : null;
+
+                // ── 4. Delete old file from disk ──────────────────────────────────
+                if (monthly != null
+                    && !string.IsNullOrEmpty(monthly.FileLocation)
+                    && monthly.FileLocation != fileLocation
+                    && System.IO.File.Exists(monthly.FileLocation))
+                {
+                    try { System.IO.File.Delete(monthly.FileLocation); } catch { }
+                }
+
+                // ── 5. Update or create the monthly record ────────────────────────
+                if (monthly != null)
+                {
+                    monthly.FileName = fileName;
+                    monthly.FileLocation = fileLocation;
+                    monthly.FileType = fileType;
+                    monthly.FileExtension = fileExtension;
+                    monthly.FileSize = (decimal)fileSize;
+                    monthly.ModifiedDate = DateTime.Now;
+
+                    _repo.Update(monthly);
+                    await _repo.SaveChangesAsync();
+                    _repo.Detach(monthly);
+                }
+                else
+                {
+                    monthly = new MonthlyContribution
+                    {
+                        MonthCode = monthCode,
+                        YearOf = yearOf,
+                        FileName = fileName,
+                        FileLocation = fileLocation,
+                        FileType = fileType,
+                        FileExtension = fileExtension,
+                        FileSize = (decimal)fileSize,
+                        CreatedDate = DateTime.Now,
+                        IsDeleted = false
+                    };
+                    await _repo.AddAsync(monthly);
+                    await _repo.SaveChangesAsync();
+                    _repo.Detach(monthly);
+                }
+
+                if (!System.IO.File.Exists(fileLocation))
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Uploaded file not found on disk.",
+                        StatusCode = 404
+                    };
+
+                // ── 6. Resolve actual year ────────────────────────────────────────
+                int actualYear = await GetActualYear(yearOf);
+
+                // ── 7. Parse the new file ─────────────────────────────────────────
+                var lines = System.IO.File.ReadLines(fileLocation);
+                var details = new List<ContributionDetail>();
+                var errorLines = new List<string>();
+                int totalAmount = 0;
+                int totalEntry = 0;
+
+                foreach (var line in lines)
+                {
+                    try
+                    {
+                        if (line.Length >= 75)
+                        {
+                            int parsedMonth = int.Parse(line.Substring(5, 2));
+                            int parsedYear = int.Parse(line.Substring(7, 4));
+
+                            if (parsedMonth == monthCode && parsedYear == actualYear)
+                            {
+                                int amount = int.Parse(line.Substring(68, 7)) / 100;
+                                totalEntry++;
+                                totalAmount += amount;
+
+                                details.Add(new ContributionDetail
+                                {
+                                    FullString = line,
+                                    Circle = int.Parse(line.Substring(0, 5)),
+                                    Month = parsedMonth.ToString(),
+                                    Year = parsedYear.ToString(),
+                                    DpCode = int.Parse(line.Substring(11, 5)).ToString(),
+                                    StaffNo = int.Parse(line.Substring(16, 6)).ToString(),
+                                    Name = line.Substring(22, 31).Trim(),
+                                    Designation = line.Substring(53, 15).Trim(),
+                                    Amount = amount,
+                                    isParked = false,
+                                    ParkReason = "",
+                                    Parkedon = null,
+                                    UnParkedon = null,
+                                    Total = ""
+                                });
+                            }
+                            else
+                            {
+                                errorLines.Add(line + " ----- Wrong Period");
+                            }
+                        }
+                        else
+                        {
+                            errorLines.Add(line + " ----- Wrong Length");
+                        }
+                    }
+                    catch (Exception lineEx)
+                    {
+                        errorLines.Add(line + " ----- Parse Error: " + lineEx.Message);
+                    }
+                }
+
+                if (details.Count == 0)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = $"No valid lines found. Errors: {string.Join(" | ", errorLines)}",
+                        StatusCode = 400
+                    };
+
+                // ── 8. Clone old master state for audit ───────────────────────────
+                var oldMaster = new ContributionMaster
+                {
+                    ContributionMasterId = contributionMaster.ContributionMasterId,
+                    FileName = contributionMaster.FileName,
+                    FileLocation = contributionMaster.FileLocation,
+                    FileType = contributionMaster.FileType,
+                    FileExtension = contributionMaster.FileExtension,
+                    FileSize = contributionMaster.FileSize,
+                    Month = contributionMaster.Month,
+                    Year = contributionMaster.Year,
+                    Circle = contributionMaster.Circle,
+                    totalamount = contributionMaster.totalamount,
+                    totalentry = contributionMaster.totalentry,
+                    ContributionStatus = contributionMaster.ContributionStatus,
+                    NewMemberCount = contributionMaster.NewMemberCount,
+                    ApprovedBy = contributionMaster.ApprovedBy,
+                    ApprovedDate = contributionMaster.ApprovedDate,
+                    isApproved = contributionMaster.isApproved
+                };
+
+                // ── 9. Remove old details ─────────────────────────────────────────
+                var oldDetails = _repo.GetContributionDetailsByMasterId(contributionMaster.ContributionMasterId);
+                _repo.RemoveContributionDetails(oldDetails);
+                await _repo.SaveChangesAsync();
+
+                // ── 10. Update master fields ──────────────────────────────────────
+                contributionMaster.FileName = fileName;
+                contributionMaster.FileLocation = fileLocation;
+                contributionMaster.FileType = fileType;
+                contributionMaster.FileExtension = fileExtension;
+                contributionMaster.FileSize = (decimal)fileSize;
+                contributionMaster.Circle = details[0].Circle.ToString();
+                contributionMaster.totalamount = totalAmount.ToString();
+                contributionMaster.totalentry = totalEntry.ToString();
+                contributionMaster.ContributionStatus = "Uploaded";
+                contributionMaster.NewMemberCount = "0";
+                contributionMaster.isApproved = false;
+
+                await _repo.UpdateContributionMasterAsync(contributionMaster);
+                await _repo.SaveChangesAsync();
+
+                // ── 11. Save new details in batches ───────────────────────────────
+                foreach (var d in details)
+                    d.ContributionMasterId = contributionMaster.ContributionMasterId;
+
+                int batchSize = 1000;
+                for (int i = 0; i < details.Count; i += batchSize)
+                {
+                    var batch = details.Skip(i).Take(batchSize).ToList();
+                    await _repo.AddContributionDetailsRangeAsync(batch);
+                    await _repo.SaveChangesAsync();
+                    _repo.DetachAll();
+                }
+
+                int savedCount = _repo.GetContributionDetailsCountByMasterId(
+                    contributionMaster.ContributionMasterId);
+
+                // ── 12. Update new member count ───────────────────────────────────
+                int newMemberCount = await _repo.GetNewMemberCountAsync(contributionMaster.ContributionMasterId);
+                contributionMaster.NewMemberCount = newMemberCount.ToString();
+                await _repo.UpdateContributionMasterAsync(contributionMaster);
+                await _repo.SaveChangesAsync();
+
+                // ── 13. Audit log ─────────────────────────────────────────────────
+                await _auditRepository.LogAuditAsync<ContributionMaster>(
+                    tableName: "CONTRIBUTIONMASTER",
+                    action: "update",
+                    recordId: (int)contributionMaster.ContributionMasterId,
+                    oldEntity: oldMaster,
+                    newEntity: contributionMaster,
+                    changedBy: "System"
+                );
+
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = new
+                    {
+                        ContributionMasterId = contributionMaster.ContributionMasterId,
+                        TotalEntry = totalEntry,
+                        TotalAmount = totalAmount,
+                        SavedDetails = savedCount,
+                        NewMemberCount = newMemberCount,
+                        ErrorCount = errorLines.Count,
+                        ErrorLines = errorLines
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message} | Source: {ex.Source} | StackTrace: {ex.StackTrace}",
+                    StatusCode = 500
+                };
+            }
+        }
         public async Task<CustomApiResponse> SaveContributionAsync(long monthlyContributionId)
         {
             var monthly = await _repo.GetByIdAsync(monthlyContributionId);

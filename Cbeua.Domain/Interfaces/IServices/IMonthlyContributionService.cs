@@ -18,7 +18,8 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<CustomApiResponse> ReadContributionFileAsync(long monthlyContributionId);
         Task<CustomApiResponse> UploadContributionFileAsync(int monthCode, int yearOf, string fileName, string fileLocation, string fileType, string fileExtension, decimal fileSize);
 
-        
+        Task<CustomApiResponse> UpdateContributionFileAsync(long contributionMasterId, int monthCode, int yearOf,string fileName, string fileLocation,string fileType, string fileExtension,
+        decimal fileSize);
         Task<CustomApiResponse> UploadAndSaveAsync(int monthCode, int yearOf, string fileName, string fileLocation, string fileType, string fileExtension, decimal fileSize);
 
         Task<CustomApiResponse> DeleteWithContributionDataAsync(long monthlyContributionId);

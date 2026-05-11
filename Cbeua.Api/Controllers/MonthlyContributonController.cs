@@ -62,36 +62,55 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-
-        // PUT: api/MonthlyContribution/5
-        [HttpPut("{id}")]
-        public async Task<CustomApiResponse> Update(long id, [FromBody] MonthlyContribution monthlyContribution)
+     
+        [HttpPut("{id}/update-contribution")]
+        [Consumes("multipart/form-data")]
+        public async Task<CustomApiResponse> UpdateContribution(
+            long id,
+            [FromForm] MonthlyContributionFileUploadDto dto)
         {
-            var response = new CustomApiResponse();
-            if (id != monthlyContribution.MonthlyContributionId)
+            if (dto.ContributionFile == null || dto.ContributionFile.Length == 0)
+                return new CustomApiResponse { IsSucess = false, Error = "No file uploaded", StatusCode = 400 };
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "contributionfiles");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileExtension = Path.GetExtension(dto.ContributionFile.FileName);
+            var fileName = $"Contribution_{dto.YearOf}_{dto.MonthCode}_{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            try
             {
-                response.IsSucess = false;
-                response.Error = "Id mismatch";
-                response.StatusCode = 400;
-                return response;
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await dto.ContributionFile.CopyToAsync(stream);
+
+                var fileSize = new FileInfo(filePath).Length;
+
+                return await _service.UpdateContributionFileAsync(
+                    id,
+                    dto.MonthCode,
+                    dto.YearOf,
+                    fileName,
+                    filePath,
+                    "Contribution",
+                    fileExtension,
+                    fileSize
+                );
             }
-            var updated = await _service.UpdateAsync(monthlyContribution);
-            if (!updated)
+            catch (Exception ex)
             {
-                response.IsSucess = false;
-                response.Error = "Not found or already deleted";
-                response.StatusCode = 404;
+                try { System.IO.File.Delete(filePath); } catch { }
+
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                };
             }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = monthlyContribution;
-                response.StatusCode = 200;
-            }
-            return response;
         }
 
-        // DELETE: api/MonthlyContribution/5
+      
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(long id)
         {
