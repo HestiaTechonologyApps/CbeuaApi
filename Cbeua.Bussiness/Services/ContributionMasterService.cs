@@ -137,7 +137,7 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                master.ContributionStatus = "FORWARD";
+                master.ContributionStatus = "Forwarded";
 
                 _repo.Update(master);
                 await _repo.SaveChangesAsync();
@@ -173,7 +173,7 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 404
                     };
 
-                if (master.ContributionStatus?.Trim().ToUpper() != "FORWARD")
+                if (master.ContributionStatus?.Trim().ToUpper() != "Forwarded")
                     return new CustomApiResponse
                     {
                         IsSucess = false,
@@ -212,14 +212,14 @@ namespace Cbeua.Bussiness.Services
                     await _repo.AddAccountsRangeAsync(accounts);
 
                     master.isApproved = true;
-                    master.ContributionStatus = "A";
+                    master.ContributionStatus = "Approved";
                     master.ApprovedDate = DateTime.UtcNow.ToString();
                     master.ApprovedBy = currentUserId.ToString();
                 }
                 else
                 {
                     master.isApproved = false;
-                    master.ContributionStatus = "R";
+                    master.ContributionStatus = "Rejected";
                     master.ApprovedDate = DateTime.UtcNow.ToString();
                     master.ApprovedBy = currentUserId.ToString();
                 }

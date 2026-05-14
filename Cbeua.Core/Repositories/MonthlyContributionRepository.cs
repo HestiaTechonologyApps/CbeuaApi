@@ -74,36 +74,38 @@ namespace Cbeua.Core.Repositories
 
         public List<ContributionDetail> GetContributionDetailsByMasterId(long masterId)
         {
-            return _context.ContributionDetails
+            return _context.ContributionDetails.AsNoTracking()
                 .Where(d => d.ContributionMasterId == masterId)
                 .ToList();
         }
         public async Task<List<ContributionMasterListDTO>> GetAllContributionMasters()
         {
-            var masters = await _context.ContributionMasters
-                .AsNoTracking()
-                .OrderByDescending(cm => cm.ContributionMasterId)
-                .ToListAsync();
-
-            return masters.Select(cm => new ContributionMasterListDTO
-            {
-                ContributionMasterId = cm.ContributionMasterId,
-                FileName = cm.FileName,
-                FileLocation = cm.FileLocation,
-                FileType = cm.FileType,
-                FileExtension = cm.FileExtension,
-                FileSize = cm.FileSize,
-                Month = cm.Month,
-                Year = cm.Year,
-                Circle = cm.Circle,
-                TotalAmount = cm.totalamount,
-                TotalEntry = cm.totalentry,
-                ContributionStatus = cm.ContributionStatus,
-                NewMemberCount = cm.NewMemberCount,
-                ApprovedBy = cm.ApprovedBy,
-                ApprovedDate = cm.ApprovedDate,
-                IsApproved = cm.isApproved
-            }).ToList();
+            return await (
+                from cm in _context.ContributionMasters
+                join month in _context.Months
+                    on cm.Month equals month.MonthCode.ToString()
+                orderby cm.ContributionMasterId descending
+                select new ContributionMasterListDTO
+                {
+                    ContributionMasterId = cm.ContributionMasterId,
+                    FileName = cm.FileName,
+                    FileLocation = cm.FileLocation,
+                    FileType = cm.FileType,
+                    FileExtension = cm.FileExtension,
+                    FileSize = cm.FileSize,
+                    Month = cm.Month,
+                    MonthName = month.MonthName,  
+                    Year = cm.Year,
+                    Circle = cm.Circle,
+                    TotalAmount = cm.totalamount,
+                    TotalEntry = cm.totalentry,
+                    ContributionStatus = cm.ContributionStatus,
+                    NewMemberCount = cm.NewMemberCount,
+                    ApprovedBy = cm.ApprovedBy,
+                    ApprovedDate = cm.ApprovedDate,
+                    IsApproved = cm.isApproved
+                }
+            ).AsNoTracking().ToListAsync();
         }
         public int GetContributionDetailsCountByMasterId(long masterId)
         {
@@ -139,7 +141,7 @@ namespace Cbeua.Core.Repositories
         }
         public async Task UpdateContributionMasterAsync(ContributionMaster master)
         {
-            _context.ContributionMasters.Update(master);
+           _context.ContributionMasters.Update(master);
         }
         public async Task<ContributionMaster?> GetContributionMasterByIdAsync(long contributionMasterId)
         {

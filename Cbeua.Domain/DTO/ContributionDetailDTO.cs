@@ -41,6 +41,7 @@ namespace Cbeua.Domain.DTO
             public string FullString { get; set; } = "";
             public int Circle { get; set; }
             public string Month { get; set; } = "";
+            public string MonthName { get; set; } = "";
             public string Year { get; set; } = "";
             public string DpCode { get; set; } = "";
             public string StaffNo { get; set; } = "";
@@ -60,6 +61,8 @@ namespace Cbeua.Domain.DTO
         public string? FileExtension { get; set; }
         public decimal FileSize { get; set; }
         public string? Month { get; set; }
+        public string? MonthName { get; set; }
+
         public string? Year { get; set; }
         public string? Circle { get; set; }
         public string? TotalAmount { get; set; }
