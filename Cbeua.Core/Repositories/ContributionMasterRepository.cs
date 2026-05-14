@@ -40,7 +40,9 @@ namespace Cbeua.Core.Repositories
             return await (
                 from master in _context.ContributionMasters
                 join year in _context.YearMasters
-                    on master.Year equals year.YearName.ToString() 
+                    on master.Year equals year.YearName.ToString()
+                join month in _context.Months
+              on master.Month equals month.MonthName.ToString()
                 where master.ContributionMasterId == masterId
                 select new ContributionMasterDTO
                 {
@@ -60,7 +62,8 @@ namespace Cbeua.Core.Repositories
                     isApproved = master.isApproved,
                     ApprovedBy = master.ApprovedBy,
                     ApprovedDate = master.ApprovedDate,
-                    YearOf = year.YearOf 
+                    YearOf = year.YearOf,
+                    MonthName=month.MonthName,
                 }
             ).FirstOrDefaultAsync();
         }

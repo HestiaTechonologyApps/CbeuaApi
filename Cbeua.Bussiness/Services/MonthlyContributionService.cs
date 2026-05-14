@@ -491,6 +491,7 @@ namespace Cbeua.Bussiness.Services
                 if (monthly != null)
                 {
                     monthly.FileName = fileName;
+                    monthly.MonthCode = monthly.MonthCode;
                     monthly.FileLocation = fileLocation;
                     monthly.FileType = fileType;
                     monthly.FileExtension = fileExtension;
@@ -625,6 +626,8 @@ namespace Cbeua.Bussiness.Services
                 contributionMaster.FileName = fileName;
                 contributionMaster.FileLocation = fileLocation;
                 contributionMaster.FileType = fileType;
+                contributionMaster.Month = monthCode.ToString();
+                contributionMaster.Year=actualYear.ToString();
                 contributionMaster.FileExtension = fileExtension;
                 contributionMaster.FileSize = (decimal)fileSize;
                 contributionMaster.Circle = details[0].Circle.ToString();
@@ -800,6 +803,7 @@ namespace Cbeua.Bussiness.Services
                     contributionMaster.FileName = monthly.FileName;
                     contributionMaster.FileLocation = monthly.FileLocation;
                     contributionMaster.FileType = monthly.FileType;
+                    contributionMaster.Month = monthly.MonthCode.ToString();
                     contributionMaster.FileExtension = monthly.FileExtension;
                     contributionMaster.FileSize = monthly.FileSize;
                     contributionMaster.Circle = details[0].Circle.ToString();

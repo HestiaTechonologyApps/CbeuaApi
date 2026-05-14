@@ -24,6 +24,7 @@ namespace Cbeua.Domain.DTO
         public bool isApproved { get; set; }
         public string ApprovedBy { get; set; } = "";
         public string ApprovedDate { get; set; } = "";
+        public string MonthName { get; set; } = "";
         public int? YearOf { get; set; }  
     }
 }
