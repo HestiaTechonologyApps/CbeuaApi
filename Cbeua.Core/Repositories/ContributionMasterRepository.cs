@@ -3,6 +3,7 @@ using Cbeua.Domain.DTO.Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Cbeua.Core.Repositories
         {
             _context = context;
         }
-
+        
         public async Task<List<ContributionMaster>> GetAllAsync()
         {
             return await _context.ContributionMasters

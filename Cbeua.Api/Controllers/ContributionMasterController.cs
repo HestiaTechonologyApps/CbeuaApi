@@ -18,8 +18,8 @@ namespace Cbeua.Api.Controllers
             _service = service;
         }
 
-      
-        [HttpGet]
+
+        [HttpGet("getall-forwarded-contributions")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();

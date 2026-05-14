@@ -23,45 +23,45 @@ namespace Cbeua.Api.Controllers
         }
 
         // GET: api/MonthlyContribution
-        [HttpGet]
-        public async Task<CustomApiResponse> GetAll()
-        {
-            var response = new CustomApiResponse();
-            try
-            {
-                response.IsSucess = true;
-                response.Value = await _service.GetAllAsync();
-                response.StatusCode = 200;
-            }
-            catch (Exception ex)
-            {
-                response.IsSucess = false;
-                response.Error = ex.Message;
-                response.StatusCode = 500;
-            }
-            return response;
-        }
+        //[HttpGet]
+        //public async Task<CustomApiResponse> GetAll()
+        //{
+        //    var response = new CustomApiResponse();
+        //    try
+        //    {
+        //        response.IsSucess = true;
+        //        response.Value = await _service.GetAllAsync();
+        //        response.StatusCode = 200;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response.IsSucess = false;
+        //        response.Error = ex.Message;
+        //        response.StatusCode = 500;
+        //    }
+        //    return response;
+        //}
 
         // GET: api/MonthlyContribution/5
-        [HttpGet("{id}")]
-        public async Task<CustomApiResponse> GetById(long id)
-        {
-            var response = new CustomApiResponse();
-            var contribution = await _service.GetByIdAsync(id);
-            if (contribution == null)
-            {
-                response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = contribution;
-                response.StatusCode = 200;
-            }
-            return response;
-        }
+        //[HttpGet("{id}")]
+        //public async Task<CustomApiResponse> GetById(long id)
+        //{
+        //    var response = new CustomApiResponse();
+        //    var contribution = await _service.GetByIdAsync(id);
+        //    if (contribution == null)
+        //    {
+        //        response.IsSucess = false;
+        //        response.Error = "Not found";
+        //        response.StatusCode = 404;
+        //    }
+        //    else
+        //    {
+        //        response.IsSucess = true;
+        //        response.Value = contribution;
+        //        response.StatusCode = 200;
+        //    }
+        //    return response;
+        //}
      
         [HttpPut("{id}/update-contribution")]
         [Consumes("multipart/form-data")]
