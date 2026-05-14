@@ -42,7 +42,7 @@ namespace Cbeua.Core.Repositories
                 join year in _context.YearMasters
                     on master.Year equals year.YearName.ToString()
                 join month in _context.Months
-              on master.Month equals month.MonthName.ToString()
+              on master.Month equals month.MonthCode.ToString()
                 where master.ContributionMasterId == masterId
                 select new ContributionMasterDTO
                 {
