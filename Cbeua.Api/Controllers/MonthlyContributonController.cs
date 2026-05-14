@@ -62,7 +62,100 @@ namespace Cbeua.Api.Controllers
         //    }
         //    return response;
         //}
-     
+        [HttpGet("ContributionMasters")]
+        public async Task<IActionResult> GetContributionAll()
+        {
+            try
+            {
+                var result = await _service.GetAllContributionMastersAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                });
+            }
+        }
+
+        [HttpGet("{id}/details")]
+        public async Task<CustomApiResponse> GetContributionDetails(
+            long id,
+            [FromQuery] ContributionDetailPaginationParams p)
+        {
+            try
+            {
+                var result = await _service.GetPagedContributionDetailsAsync(id, p);
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                };
+            }
+        }
+        /// <summary>
+        /// Single-shot endpoint: upload file, parse it, save master + details — mirrors the old POST behaviour.
+        /// </summary>
+        [HttpPost("upload-and-save")]
+        [Consumes("multipart/form-data")]
+        public async Task<CustomApiResponse> UploadAndSave([FromForm] MonthlyContributionFileUploadDto dto)
+        {
+            if (dto.ContributionFile == null || dto.ContributionFile.Length == 0)
+                return new CustomApiResponse { IsSucess = false, Error = "No file uploaded", StatusCode = 400 };
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "contributionfiles");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileExtension = Path.GetExtension(dto.ContributionFile.FileName);
+            var fileName = $"Contribution_{dto.YearOf}_{dto.MonthCode}_{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await dto.ContributionFile.CopyToAsync(stream);
+
+                var fileSize = new FileInfo(filePath).Length;
+
+                return await _service.UploadAndSaveAsync(
+                    dto.MonthCode,
+                    dto.YearOf,
+                    fileName,
+                    filePath,
+                    "Contribution",
+                    fileExtension,
+                    fileSize
+                );
+            }
+            catch (Exception ex)
+            {
+                // Clean up orphaned file on failure
+                try { System.IO.File.Delete(filePath); } catch { }
+
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = ex.Message,
+                    StatusCode = 500
+                };
+            }
+        }
+
+
+
         [HttpPut("{id}/update-contribution")]
         [Consumes("multipart/form-data")]
         public async Task<CustomApiResponse> UpdateContribution(
@@ -139,99 +232,6 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-        /// <summary>
-        /// Single-shot endpoint: upload file, parse it, save master + details — mirrors the old POST behaviour.
-        /// </summary>
-        [HttpPost("upload-and-save")]
-        [Consumes("multipart/form-data")]
-        public async Task<CustomApiResponse> UploadAndSave([FromForm] MonthlyContributionFileUploadDto dto)
-        {
-            if (dto.ContributionFile == null || dto.ContributionFile.Length == 0)
-                return new CustomApiResponse { IsSucess = false, Error = "No file uploaded", StatusCode = 400 };
-
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "contributionfiles");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var fileExtension = Path.GetExtension(dto.ContributionFile.FileName);
-            var fileName = $"Contribution_{dto.YearOf}_{dto.MonthCode}_{Guid.NewGuid()}{fileExtension}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            try
-            {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                    await dto.ContributionFile.CopyToAsync(stream);
-
-                var fileSize = new FileInfo(filePath).Length;
-
-                return await _service.UploadAndSaveAsync(
-                    dto.MonthCode,
-                    dto.YearOf,
-                    fileName,
-                    filePath,
-                    "Contribution",
-                    fileExtension,
-                    fileSize
-                );
-            }
-            catch (Exception ex)
-            {
-                // Clean up orphaned file on failure
-                try { System.IO.File.Delete(filePath); } catch { }
-
-                return new CustomApiResponse
-                {
-                    IsSucess = false,
-                    Error = ex.Message,
-                    StatusCode = 500
-                };
-            }
-        }
-       
-        [HttpGet("{id}/details")]
-        public async Task<CustomApiResponse> GetContributionDetails(
-            long id,
-            [FromQuery] ContributionDetailPaginationParams p)
-        {
-            try
-            {
-                var result = await _service.GetPagedContributionDetailsAsync(id, p);
-                return new CustomApiResponse
-                {
-                    IsSucess = true,
-                    StatusCode = 200,
-                    Value = result
-                };
-            }
-            catch (Exception ex)
-            {
-                return new CustomApiResponse
-                {
-                    IsSucess = false,
-                    Error = ex.Message,
-                    StatusCode = 500
-                };
-            }
-        }
-        [HttpGet("ContributionMasters")]
-        public async Task<IActionResult> GetContributionAll()
-        {
-            try
-            {
-                var result = await _service.GetAllContributionMastersAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new CustomApiResponse
-                {
-                    IsSucess = false,
-                    Error = ex.Message,
-                    StatusCode = 500
-                });
-            }
-        }
-
-     
    
         [HttpGet("{id}/report")]
         public async Task<IActionResult> GetReport(

@@ -29,11 +29,40 @@ namespace Cbeua.Core.Repositories
                 .ThenByDescending(m => m.Month)
                 .ToListAsync();
         }
-
-        public async Task<ContributionMaster?> GetByIdAsync(long masterId)
+        public async Task<ContributionMaster?> GetById(long masterId)
         {
             return await _context.ContributionMasters
                 .FirstOrDefaultAsync(m => m.ContributionMasterId == masterId);
+        }
+
+        public async Task<ContributionMasterDTO?> GetByIdAsync(long masterId)
+        {
+            return await (
+                from master in _context.ContributionMasters
+                join year in _context.YearMasters
+                    on master.Year equals year.YearName.ToString() 
+                where master.ContributionMasterId == masterId
+                select new ContributionMasterDTO
+                {
+                    ContributionMasterId = master.ContributionMasterId,
+                    FileName = master.FileName,
+                    FileLocation = master.FileLocation,
+                    FileType = master.FileType,
+                    FileExtension = master.FileExtension,
+                    FileSize = master.FileSize,
+                    Month = master.Month,
+                    Year = master.Year,
+                    Circle = master.Circle,
+                    totalamount = master.totalamount,
+                    totalentry = master.totalentry,
+                    NewMemberCount = master.NewMemberCount,
+                    ContributionStatus = master.ContributionStatus,
+                    isApproved = master.isApproved,
+                    ApprovedBy = master.ApprovedBy,
+                    ApprovedDate = master.ApprovedDate,
+                    YearOf = year.YearOf 
+                }
+            ).FirstOrDefaultAsync();
         }
 
         public async Task AddAsync(ContributionMaster master)

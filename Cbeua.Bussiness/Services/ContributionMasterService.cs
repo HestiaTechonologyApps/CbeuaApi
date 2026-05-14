@@ -78,7 +78,7 @@ namespace Cbeua.Bussiness.Services
         {
             try
             {
-                var master = await _repo.GetByIdAsync(masterId);
+                var master = await _repo.GetById(masterId);
                 if (master == null)
                     return new CustomApiResponse
                     {
@@ -120,7 +120,7 @@ namespace Cbeua.Bussiness.Services
         {
             try
             {
-                var master = await _repo.GetByIdAsync(masterId);
+                var master = await _repo.GetById(masterId);
                 if (master == null)
                     return new CustomApiResponse
                     {
@@ -164,7 +164,7 @@ namespace Cbeua.Bussiness.Services
         {
             try
             {
-                var master = await _repo.GetByIdAsync(masterId);
+                var master = await _repo.GetById(masterId);
                 if (master == null)
                     return new CustomApiResponse
                     {
