@@ -8,7 +8,8 @@ namespace Cbeua.Domain.Interfaces.IRepositories
 {
     public interface IContributionMasterRepository
     {
-        Task<List<ContributionMaster>> GetAllAsync();
+
+        Task<List<ContributionMasterListDTO>> GetAllContributionMasters();
         Task<ContributionMaster?> GetById(long masterId);
         Task<ContributionMasterDTO?> GetByIdAsync(long masterId);
         Task AddAsync(ContributionMaster master);

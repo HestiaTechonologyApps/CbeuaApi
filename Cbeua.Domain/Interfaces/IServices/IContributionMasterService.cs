@@ -5,7 +5,7 @@ namespace Cbeua.Domain.Interfaces.IServices
 {
     public interface IContributionMasterService
     {
-        Task<CustomApiResponse> GetAllAsync();
+        Task<CustomApiResponse> GetAllContributionMastersAsync();
         Task<CustomApiResponse> GetByIdAsync(long masterId);
         Task<CustomApiResponse> GetParkedDetailsAsync(long masterId, int pageNumber, int pageSize);
         Task<CustomApiResponse> DeleteAsync(long masterId);

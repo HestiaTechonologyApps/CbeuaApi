@@ -18,11 +18,11 @@ namespace Cbeua.Bussiness.Services
             _repo = repo;
         }
 
-        public async Task<CustomApiResponse> GetAllAsync()
+        public async Task<CustomApiResponse> GetAllContributionMastersAsync()
         {
             try
             {
-                var masters = await _repo.GetAllAsync();
+                var masters = await _repo.GetAllContributionMasters();
                 return new CustomApiResponse
                 {
                     IsSucess = true,
@@ -35,7 +35,7 @@ namespace Cbeua.Bussiness.Services
                 return new CustomApiResponse
                 {
                     IsSucess = false,
-                    Error = $"Exception: {ex.Message}",
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
                     StatusCode = 500
                 };
             }

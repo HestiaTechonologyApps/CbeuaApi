@@ -22,7 +22,7 @@ namespace Cbeua.Api.Controllers
         [HttpGet("getall-forwarded-contributions")]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _service.GetAllAsync();
+            var result = await _service.GetAllContributionMastersAsync();
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 

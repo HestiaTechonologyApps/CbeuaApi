@@ -20,14 +20,37 @@ namespace Cbeua.Core.Repositories
             _context = context;
         }
         
-        public async Task<List<ContributionMaster>> GetAllAsync()
+
+        public async Task<List<ContributionMasterListDTO>> GetAllContributionMasters()
         {
-            return await _context.ContributionMasters
-                .Where(m => m.ContributionStatus.Trim().ToUpper() == "Forwarded" ||
-                            m.ContributionStatus.Trim().ToUpper() == "Approved")
-                .OrderByDescending(m => m.Year)
-                .ThenByDescending(m => m.Month)
-                .ToListAsync();
+            return await (
+                from cm in _context.ContributionMasters
+                join month in _context.Months
+                    on cm.Month equals month.MonthCode.ToString()
+                where cm.ContributionStatus.Trim().ToUpper() == "FORWARDED" ||
+                      cm.ContributionStatus.Trim().ToUpper() == "APPROVED"
+                orderby cm.ContributionMasterId descending
+                select new ContributionMasterListDTO
+                {
+                    ContributionMasterId = cm.ContributionMasterId,
+                    FileName = cm.FileName,
+                    FileLocation = cm.FileLocation,
+                    FileType = cm.FileType,
+                    FileExtension = cm.FileExtension,
+                    FileSize = cm.FileSize,
+                    Month = cm.Month,
+                    MonthName = month.MonthName,
+                    Year = cm.Year,
+                    Circle = cm.Circle,
+                    TotalAmount = cm.totalamount,
+                    TotalEntry = cm.totalentry,
+                    ContributionStatus = cm.ContributionStatus,
+                    NewMemberCount = cm.NewMemberCount,
+                    ApprovedBy = cm.ApprovedBy,
+                    ApprovedDate = cm.ApprovedDate,
+                    IsApproved = cm.isApproved
+                }
+            ).AsNoTracking().ToListAsync();
         }
         public async Task<ContributionMaster?> GetById(long masterId)
         {
