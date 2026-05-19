@@ -87,7 +87,7 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 404
                     };
 
-                if (master.ContributionStatus?.Trim().ToUpper() == "A")
+                if (master.ContributionStatus?.Trim().ToUpper() == "APPROVED")
                     return new CustomApiResponse
                     {
                         IsSucess = false,
@@ -129,7 +129,7 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 404
                     };
 
-                if (master.ContributionStatus?.Trim().ToUpper() != "UPLOADED")
+                if (master.ContributionStatus?.Trim().ToLower() != "uploaded")
                     return new CustomApiResponse
                     {
                         IsSucess = false,
@@ -173,7 +173,7 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 404
                     };
 
-                if (master.ContributionStatus?.Trim().ToUpper() != "Forwarded")
+                if (master.ContributionStatus?.Trim().ToLower() != "forwarded")
                     return new CustomApiResponse
                     {
                         IsSucess = false,
