@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,6 +61,24 @@ namespace Cbeua.Core.Repositories
                         IsDeleted = ade.IsDeleted
                     };
             return q;
+        }
+        public async Task AddAccountAsync(Accounts account)
+        {
+            await _context.Accounts.AddAsync(account);
+        }
+
+        public async Task AddAccountsRangeAsync(List<Accounts> accounts)
+        {
+            await _context.Accounts.AddRangeAsync(accounts);
+        }
+        public async Task<int> GetCircleIdByBranchIdAsync(int branchId)
+        {
+            var circleId = await _context.Branches
+                .Where(b => b.BranchId == branchId)
+                .Select(b => b.CircleId)
+                .FirstOrDefaultAsync();
+
+            return circleId; 
         }
     }
 }

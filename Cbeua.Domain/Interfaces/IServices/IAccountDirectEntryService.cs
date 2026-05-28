@@ -16,6 +16,7 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<AccountsDirectEntryDTO?> GetByIdAsync(int id);
         Task<AccountsDirectEntryDTO> CreateAsync(AccountsDirectEntry accountsDirect);
         Task<bool> UpdateAsync(AccountsDirectEntry accountsDirect);
+        Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve);
         Task<bool> DeleteAsync(int id);
     }
 }

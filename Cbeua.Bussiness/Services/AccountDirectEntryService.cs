@@ -108,6 +108,100 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
             return true;
         }
+        public async Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve)
+        {
+            try
+            {
+                var entry = await _repo.GetByIdAsync(id);
+
+                if (entry == null || entry.IsDeleted)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Direct entry not found",
+                        StatusCode = 404
+                    };
+
+                if (entry.isApproved)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Entry is already approved",
+                        StatusCode = 400
+                    };
+
+                if (approve)
+                {
+                    var circleId = await _repo.GetCircleIdByBranchIdAsync(entry.BranchId);
+
+                    if (circleId == 0)
+                        return new CustomApiResponse
+                        {
+                            IsSucess = false,
+                            Error = "Could not resolve CircleId for this branch",
+                            StatusCode = 400
+                        };
+
+                    var account = new Accounts
+                    {
+                        CircleId = circleId,       
+                        BranchId = entry.BranchId,
+                        MemeberId = entry.MemberId,
+                        MonthCode = entry.MonthCode,
+                        YearOf = entry.YearOf,
+                        Amount = (decimal)(entry.Amt ?? 0),
+                        TransMode = 9,
+                        Reference = "Direct Entry",
+                        Remark = "Account Direct Entry"
+                    };
+
+                    await _repo.AddAccountAsync(account);
+
+                    entry.isApproved = true;
+                    entry.status = "Approved";
+                    entry.ApprovedBy = currentUserId.ToString();
+                    entry.ApprovedDate = DateTime.UtcNow;
+                }
+                else
+                {
+                    entry.isApproved = false;
+                    entry.status = "Rejected";
+                    entry.ApprovedBy = currentUserId.ToString();
+                    entry.ApprovedDate = DateTime.UtcNow;
+                }
+
+                _repo.Update(entry);
+
+                await _auditRepository.LogAuditAsync<AccountsDirectEntry>(
+                    tableName: AuditTableName,
+                    action: "update",
+                    recordId: entry.AccountsDirectEntryID,
+                    oldEntity: CloneAccountsDirectEntry(entry),
+                    newEntity: entry,
+                    changedBy: currentUserId.ToString()
+                );
+
+                await _repo.SaveChangesAsync();
+
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = approve
+                        ? new { Message = "Direct entry approved and posted to accounts successfully" }
+                        : new { Message = "Direct entry rejected successfully" }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
 
         // ✅ ADDED CLONE METHOD FOR AUDIT
         private AccountsDirectEntry CloneAccountsDirectEntry(AccountsDirectEntry entry)
