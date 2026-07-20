@@ -43,4 +43,18 @@ namespace Cbeua.Domain.DTO
         public bool IsDeleted { get; set; } = false;
 
     }
+    public class DeathClaimPaginationParams
+    {
+        public int? DeathClaimId { get; set; }
+        public int? MemberId { get; set; }
+        public int? StateId { get; set; }
+        public int? DesignationId { get; set; }
+        public int? YearOF { get; set; }
+        public string SearchTerm { get; set; } = "";
+        public string SortBy { get; set; } = "";
+        public bool SortDescending { get; set; } = false;
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public bool GetAll { get; set; } = false;
+    }
 }

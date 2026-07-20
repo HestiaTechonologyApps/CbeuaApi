@@ -121,5 +121,108 @@ namespace Cbeua.Bussiness.Services
                 IsDeleted = deathClaim.IsDeleted
             };
         }
+
+        public async Task<PagedResult<DeathClaimDTO>> GetPagedDeathClaimsAsync(DeathClaimPaginationParams parameters)
+        {
+            var query = _repo.GetQueryableDeathClaims();
+
+            if (parameters.DeathClaimId.HasValue && parameters.DeathClaimId.Value > 0)
+                query = query.Where(dc => dc.DeathClaimId == parameters.DeathClaimId.Value);
+
+            if (parameters.MemberId.HasValue && parameters.MemberId.Value > 0)
+                query = query.Where(dc => dc.MemberId == parameters.MemberId.Value);
+
+            if (parameters.StateId.HasValue && parameters.StateId.Value > 0)
+                query = query.Where(dc => dc.StateId == parameters.StateId.Value);
+
+            if (parameters.DesignationId.HasValue && parameters.DesignationId.Value > 0)
+                query = query.Where(dc => dc.DesignationId == parameters.DesignationId.Value);
+
+            if (parameters.YearOF.HasValue && parameters.YearOF.Value > 0)
+                query = query.Where(dc => dc.YearOF == parameters.YearOF.Value);
+
+            var allClaims = await query.ToListAsync();
+
+            IEnumerable<DeathClaimDTO> filteredClaims = allClaims;
+
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                var searchLower = parameters.SearchTerm.ToLower().Trim();
+
+                filteredClaims = allClaims.Where(dc =>
+                    dc.DeathClaimId.ToString().Contains(searchLower) ||
+                    dc.StaffNo.ToString().Contains(searchLower) ||
+                    (!string.IsNullOrEmpty(dc.MemberName) && dc.MemberName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(dc.DesignationName) && dc.DesignationName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(dc.StateName) && dc.StateName.ToLower().Contains(searchLower)) ||
+                    dc.Amount.ToString().Contains(searchLower) ||
+                    dc.YearName.ToString().Contains(searchLower)
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.SortBy))
+            {
+                var sortBy = parameters.SortBy.ToLower();
+
+                filteredClaims = sortBy switch
+                {
+                    "deathclaimid" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.DeathClaimId)
+                        : filteredClaims.OrderBy(dc => dc.DeathClaimId),
+                    "membername" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.MemberName)
+                        : filteredClaims.OrderBy(dc => dc.MemberName),
+                    "designationname" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.DesignationName)
+                        : filteredClaims.OrderBy(dc => dc.DesignationName),
+                    "statename" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.StateName)
+                        : filteredClaims.OrderBy(dc => dc.StateName),
+                    "deathdate" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.DeathDate)
+                        : filteredClaims.OrderBy(dc => dc.DeathDate),
+                    "amount" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.Amount)
+                        : filteredClaims.OrderBy(dc => dc.Amount),
+                    "yearname" => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.YearName)
+                        : filteredClaims.OrderBy(dc => dc.YearName),
+                    _ => parameters.SortDescending
+                        ? filteredClaims.OrderByDescending(dc => dc.DeathClaimId)
+                        : filteredClaims.OrderBy(dc => dc.DeathClaimId)
+                };
+            }
+            else
+            {
+                filteredClaims = filteredClaims.OrderByDescending(dc => dc.DeathClaimId);
+            }
+
+            var totalRecords = filteredClaims.Count();
+
+            var pageNumber = parameters.PageNumber;
+            var pageSize = parameters.PageSize;
+
+            List<DeathClaimDTO> pagedData;
+
+            if (parameters.GetAll)
+            {
+                pagedData = filteredClaims.ToList();
+            }
+            else
+            {
+                pagedData = filteredClaims
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+            }
+
+            return new PagedResult<DeathClaimDTO>
+            {
+                Data = pagedData,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = parameters.GetAll ? totalRecords : pageSize
+            };
+        }
     }
 }
