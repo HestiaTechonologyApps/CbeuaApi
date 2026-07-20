@@ -44,7 +44,7 @@ namespace Cbeua.Core.Repositories
             return await _context.ContributionDetails
                 .Where(cd => cd.Year == year.ToString())
                 .Select(cd => cd.StaffNo)
-                .Distinct()
+   
                 .CountAsync();
         }
 
