@@ -16,5 +16,6 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<BranchDTO> CreateAsync(Branch branch);
         Task<bool> UpdateAsync(Branch branch);
         Task<bool> DeleteAsync(int id);
+        Task<PagedResult<BranchDTO>> GetPagedBranchesAsync(BranchPaginationParams parameters);
     }
 }
