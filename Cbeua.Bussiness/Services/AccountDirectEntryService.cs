@@ -229,5 +229,111 @@ namespace Cbeua.Bussiness.Services
                 ApprovedDate = entry.ApprovedDate
             };
         }
+
+        public async Task<PagedResult<AccountsDirectEntryDTO>> GetPagedAccountDirectEntriesAsync(AccountDirectEntryPaginationParams parameters)
+        {
+            var query = _repo.GetQueryableListAccountDirect();
+
+            if (parameters.AccountsDirectEntryID.HasValue && parameters.AccountsDirectEntryID.Value > 0)
+                query = query.Where(a => a.AccountsDirectEntryID == parameters.AccountsDirectEntryID.Value);
+
+            if (parameters.MemberId.HasValue && parameters.MemberId.Value > 0)
+                query = query.Where(a => a.MemberId == parameters.MemberId.Value);
+
+            if (parameters.BranchId.HasValue && parameters.BranchId.Value > 0)
+                query = query.Where(a => a.BranchId == parameters.BranchId.Value);
+
+            if (parameters.MonthCode.HasValue && parameters.MonthCode.Value > 0)
+                query = query.Where(a => a.MonthCode == parameters.MonthCode.Value);
+
+            if (parameters.YearOf.HasValue && parameters.YearOf.Value > 0)
+                query = query.Where(a => a.YearOf == parameters.YearOf.Value);
+
+            if (parameters.IsApproved.HasValue)
+                query = query.Where(a => a.isApproved == parameters.IsApproved.Value);
+
+            var allEntries = await query.ToListAsync();
+
+            IEnumerable<AccountsDirectEntryDTO> filteredEntries = allEntries;
+
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                var searchLower = parameters.SearchTerm.ToLower().Trim();
+
+                filteredEntries = allEntries.Where(a =>
+                    a.AccountsDirectEntryID.ToString().Contains(searchLower) ||
+                    (!string.IsNullOrEmpty(a.MemberName) && a.MemberName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(a.BranchName) && a.BranchName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(a.MonthName) && a.MonthName.ToLower().Contains(searchLower)) ||
+                    a.YearName.ToString().Contains(searchLower) ||
+                    (!string.IsNullOrEmpty(a.status) && a.status.ToLower().Contains(searchLower)) ||
+                    (a.Amt.HasValue && a.Amt.Value.ToString().Contains(searchLower))
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.SortBy))
+            {
+                var sortBy = parameters.SortBy.ToLower();
+
+                filteredEntries = sortBy switch
+                {
+                    "accountsdirectentryid" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.AccountsDirectEntryID)
+                        : filteredEntries.OrderBy(a => a.AccountsDirectEntryID),
+                    "membername" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.MemberName)
+                        : filteredEntries.OrderBy(a => a.MemberName),
+                    "branchname" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.BranchName)
+                        : filteredEntries.OrderBy(a => a.BranchName),
+                    "monthname" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.MonthName)
+                        : filteredEntries.OrderBy(a => a.MonthName),
+                    "yearname" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.YearName)
+                        : filteredEntries.OrderBy(a => a.YearName),
+                    "amt" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.Amt)
+                        : filteredEntries.OrderBy(a => a.Amt),
+                    "status" => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.status)
+                        : filteredEntries.OrderBy(a => a.status),
+                    _ => parameters.SortDescending
+                        ? filteredEntries.OrderByDescending(a => a.AccountsDirectEntryID)
+                        : filteredEntries.OrderBy(a => a.AccountsDirectEntryID)
+                };
+            }
+            else
+            {
+                filteredEntries = filteredEntries.OrderByDescending(a => a.AccountsDirectEntryID);
+            }
+
+            var totalRecords = filteredEntries.Count();
+
+            var pageNumber = parameters.PageNumber;
+            var pageSize = parameters.PageSize;
+
+            List<AccountsDirectEntryDTO> pagedData;
+
+            if (parameters.GetAll)
+            {
+                pagedData = filteredEntries.ToList();
+            }
+            else
+            {
+                pagedData = filteredEntries
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+            }
+
+            return new PagedResult<AccountsDirectEntryDTO>
+            {
+                Data = pagedData,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = parameters.GetAll ? totalRecords : pageSize
+            };
+        }
     }
 }

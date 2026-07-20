@@ -35,4 +35,20 @@ namespace Cbeua.Domain.DTO
         public string ApprovedDateString => ApprovedDate?.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
+
+    public class AccountDirectEntryPaginationParams
+    {
+        public int? AccountsDirectEntryID { get; set; }
+        public int? MemberId { get; set; }
+        public int? BranchId { get; set; }
+        public int? MonthCode { get; set; }
+        public int? YearOf { get; set; }
+        public bool? IsApproved { get; set; }
+        public string SearchTerm { get; set; } = "";
+        public string SortBy { get; set; } = "";
+        public bool SortDescending { get; set; } = false;
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public bool GetAll { get; set; } = false;
+    }
 }
