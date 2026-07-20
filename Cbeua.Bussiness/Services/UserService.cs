@@ -188,5 +188,95 @@ namespace Cbeua.Bussiness.Services
             }
             return response;
         }
+        public async Task<PagedResult<UserListDTO>> GetPagedUsersAsync(UserPaginationParams parameters)
+        {
+            var query = _repo.QueryableUserList();
+
+            if (parameters.UserId.HasValue && parameters.UserId.Value > 0)
+                query = query.Where(u => u.UserId == parameters.UserId.Value);
+
+            if (parameters.IsActive.HasValue)
+                query = query.Where(u => u.IsActive == parameters.IsActive.Value);
+
+            var allUsers = query.ToList();
+
+            IEnumerable<UserListDTO> filteredUsers = allUsers;
+
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                var searchLower = parameters.SearchTerm.ToLower().Trim();
+
+                filteredUsers = allUsers.Where(u =>
+                    u.UserId.ToString().Contains(searchLower) ||
+                    (!string.IsNullOrEmpty(u.UserName) && u.UserName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(u.UserEmail) && u.UserEmail.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(u.PhoneNumber) && u.PhoneNumber.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(u.Role) && u.Role.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(u.CompanyName) && u.CompanyName.ToLower().Contains(searchLower)) ||
+                    u.StaffNo.ToString().Contains(searchLower)
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.SortBy))
+            {
+                var sortBy = parameters.SortBy.ToLower();
+
+                filteredUsers = sortBy switch
+                {
+                    "userid" => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.UserId)
+                        : filteredUsers.OrderBy(u => u.UserId),
+                    "username" => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.UserName)
+                        : filteredUsers.OrderBy(u => u.UserName),
+                    "useremail" => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.UserEmail)
+                        : filteredUsers.OrderBy(u => u.UserEmail),
+                    "staffno" => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.StaffNo)
+                        : filteredUsers.OrderBy(u => u.StaffNo),
+                    "role" => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.Role)
+                        : filteredUsers.OrderBy(u => u.Role),
+                    "phonenumber" => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.PhoneNumber)
+                        : filteredUsers.OrderBy(u => u.PhoneNumber),
+                    _ => parameters.SortDescending
+                        ? filteredUsers.OrderByDescending(u => u.UserId)
+                        : filteredUsers.OrderBy(u => u.UserId)
+                };
+            }
+            else
+            {
+                filteredUsers = filteredUsers.OrderByDescending(u => u.UserId);
+            }
+
+            var totalRecords = filteredUsers.Count();
+
+            var pageNumber = parameters.PageNumber;
+            var pageSize = parameters.PageSize;
+
+            List<UserListDTO> pagedData;
+
+            if (parameters.GetAll)
+            {
+                pagedData = filteredUsers.ToList();
+            }
+            else
+            {
+                pagedData = filteredUsers
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+            }
+
+            return new PagedResult<UserListDTO>
+            {
+                Data = pagedData,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = parameters.GetAll ? totalRecords : pageSize
+            };
+        }
     }
 }

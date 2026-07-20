@@ -48,4 +48,16 @@ namespace Cbeua.Domain.DTO
         public string OldPassword { get; set; } = "";
         public string NewPassword { get; set; } = "";
     }
+    public class UserPaginationParams
+    {
+        public int? UserId { get; set; }
+        public int? CompanyId { get; set; }
+        public bool? IsActive { get; set; }
+        public string SearchTerm { get; set; } = "";
+        public string SortBy { get; set; } = "";
+        public bool SortDescending { get; set; } = false;
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public bool GetAll { get; set; } = false;
+    }
 }

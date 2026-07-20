@@ -138,13 +138,33 @@ namespace Cbeua.Api.Controllers
         public async Task<CustomApiResponse> ChangePassWord([FromBody] PasswordChangeRequest passwordChangeRequest)
         {
             return await _service.ChangePassWord(passwordChangeRequest);
-            
+
+        }
+
+        [HttpGet("paged")]
+        public async Task<CustomApiResponse> GetPagedUsers([FromQuery] UserPaginationParams parameters)
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var pagedResult = await _service.GetPagedUsersAsync(parameters);
+                response.IsSucess = true;
+                response.Value = pagedResult;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
         }
 
 
     }
 
 
-    
+
 }
 

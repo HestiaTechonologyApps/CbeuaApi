@@ -18,7 +18,9 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<bool> UpdateAsync(User coupon);
         Task<bool> DeleteAsync(int id);
 
-      // Task<List<UserLoginLogDTO>> GetUserLogsAsync(int userId);
+        // Task<List<UserLoginLogDTO>> GetUserLogsAsync(int userId);
         Task<CustomApiResponse> ChangePassWord(PasswordChangeRequest passwordChangeRequest);
+
+        Task<PagedResult<UserListDTO>> GetPagedUsersAsync(UserPaginationParams parameters);
     }
 }
