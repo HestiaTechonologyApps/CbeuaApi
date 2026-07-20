@@ -142,5 +142,112 @@ namespace Cbeua.Bussiness.Services
                 IsDeleted = refund.IsDeleted
             };
         }
+
+        public async Task<PagedResult<RefundContributionDTO>> GetPagedRefundContributionsAsync(RefundContributionPaginationParams parameters)
+        {
+            var query = _repo.QueryableRefundContributions();
+
+            if (parameters.RefundContributionId.HasValue && parameters.RefundContributionId.Value > 0)
+                query = query.Where(rc => rc.RefundContributionId == parameters.RefundContributionId.Value);
+
+            if (parameters.MemberId.HasValue && parameters.MemberId.Value > 0)
+                query = query.Where(rc => rc.MemberId == parameters.MemberId.Value);
+
+            if (parameters.StateId.HasValue && parameters.StateId.Value > 0)
+                query = query.Where(rc => rc.StateId == parameters.StateId.Value);
+
+            if (parameters.DesignationId.HasValue && parameters.DesignationId.Value > 0)
+                query = query.Where(rc => rc.DesignationId == parameters.DesignationId.Value);
+
+            if (parameters.YearOF.HasValue && parameters.YearOF.Value > 0)
+                query = query.Where(rc => rc.YearOF == parameters.YearOF.Value);
+
+            var allRefunds = query.ToList();
+
+            IEnumerable<RefundContributionDTO> filteredRefunds = allRefunds;
+
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                var searchLower = parameters.SearchTerm.ToLower().Trim();
+
+                filteredRefunds = allRefunds.Where(rc =>
+                    rc.RefundContributionId.ToString().Contains(searchLower) ||
+                    rc.StaffNo.ToString().Contains(searchLower) ||
+                    (!string.IsNullOrEmpty(rc.MemberName) && rc.MemberName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(rc.DesignationName) && rc.DesignationName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(rc.StateName) && rc.StateName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(rc.RefundNO) && rc.RefundNO.ToLower().Contains(searchLower)) ||
+                    rc.Amount.ToString().Contains(searchLower) ||
+                    rc.YearName.ToString().Contains(searchLower)
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.SortBy))
+            {
+                var sortBy = parameters.SortBy.ToLower();
+
+                filteredRefunds = sortBy switch
+                {
+                    "refundcontributionid" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.RefundContributionId)
+                        : filteredRefunds.OrderBy(rc => rc.RefundContributionId),
+                    "staffno" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.StaffNo)
+                        : filteredRefunds.OrderBy(rc => rc.StaffNo),
+                    "membername" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.MemberName)
+                        : filteredRefunds.OrderBy(rc => rc.MemberName),
+                    "designationname" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.DesignationName)
+                        : filteredRefunds.OrderBy(rc => rc.DesignationName),
+                    "statename" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.StateName)
+                        : filteredRefunds.OrderBy(rc => rc.StateName),
+                    "refundno" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.RefundNO)
+                        : filteredRefunds.OrderBy(rc => rc.RefundNO),
+                    "amount" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.Amount)
+                        : filteredRefunds.OrderBy(rc => rc.Amount),
+                    "yearname" => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.YearName)
+                        : filteredRefunds.OrderBy(rc => rc.YearName),
+                    _ => parameters.SortDescending
+                        ? filteredRefunds.OrderByDescending(rc => rc.RefundContributionId)
+                        : filteredRefunds.OrderBy(rc => rc.RefundContributionId)
+                };
+            }
+            else
+            {
+                filteredRefunds = filteredRefunds.OrderByDescending(rc => rc.RefundContributionId);
+            }
+
+            var totalRecords = filteredRefunds.Count();
+
+            var pageNumber = parameters.PageNumber;
+            var pageSize = parameters.PageSize;
+
+            List<RefundContributionDTO> pagedData;
+
+            if (parameters.GetAll)
+            {
+                pagedData = filteredRefunds.ToList();
+            }
+            else
+            {
+                pagedData = filteredRefunds
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+            }
+
+            return new PagedResult<RefundContributionDTO>
+            {
+                Data = pagedData,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = parameters.GetAll ? totalRecords : pageSize
+            };
+        }
     }
 }

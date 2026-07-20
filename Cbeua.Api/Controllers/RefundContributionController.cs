@@ -128,6 +128,26 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
+        [HttpGet("paged")]
+        public async Task<CustomApiResponse> GetPagedRefundContributions([FromQuery] RefundContributionPaginationParams parameters)
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                var pagedResult = await _service.GetPagedRefundContributionsAsync(parameters);
+                response.IsSucess = true;
+                response.Value = pagedResult;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
+
 
 
     }

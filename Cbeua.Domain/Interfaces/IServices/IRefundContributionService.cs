@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Domain.Interfaces.IServices
 {
-    public interface IRefundContributionService 
+    public interface IRefundContributionService
     {
         Task<List<RefundContributionDTO>> GetAllAsync();
         Task<RefundContributionDTO?> GetByIdAsync(int id);
         Task<RefundContributionDTO> CreateAsync(RefundContribution coupon);
         Task<bool> UpdateAsync(RefundContribution coupon);
         Task<bool> DeleteAsync(int id);
+        Task<PagedResult<RefundContributionDTO>> GetPagedRefundContributionsAsync(RefundContributionPaginationParams parameters);
     }
 }
