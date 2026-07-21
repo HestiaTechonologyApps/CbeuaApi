@@ -59,5 +59,17 @@ namespace Cbeua.Core.Repositories
                     StateId = c.StateId
                 });
         }
+
+        public IQueryable<BranchLookupDTO> GetBranchLookup()
+        {
+            return _context.Branches
+                .Where(b => !b.IsDeleted)
+                .Select(b => new BranchLookupDTO
+                {
+                    BranchId = b.BranchId,
+                    DpCode = b.DpCode.ToString(),
+                    BranchName = b.Name
+                });
+        }
     }
 }

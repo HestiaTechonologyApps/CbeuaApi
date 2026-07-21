@@ -79,7 +79,10 @@ namespace Cbeua.Bussiness
             services.AddScoped<IContributionDetailService, ContributionDetailService>();
             services.AddScoped<IContributionMasterService, ContributionMasterService>();
             services.AddScoped<IMemberAccountDetailsService, MemberAccountDetailsService>();
-           
+
+
+            services.AddScoped<ILookupService, LookupService>();
+
 
 
 

@@ -62,5 +62,24 @@ namespace Cbeua.Core.Repositories
                     };
             return q;
         }
+
+        public IQueryable<MemberLookupDTO> GetMemberLookup(int branchId = 0)
+        {
+            var q = from m in _context.Members
+                    join b in _context.Branches on m.BranchId equals b.BranchId
+                    where !m.IsDeleted
+                    select new { m, b };
+
+            if (branchId != 0)
+                q = q.Where(x => x.m.BranchId == branchId);
+
+            return q.Select(x => new MemberLookupDTO
+            {
+                MemberId = x.m.MemberId,
+                StaffNo = x.m.StaffNo,
+                MemberName = x.m.Name,
+                BranchName = x.b.Name
+            });
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cbeua.Domain.DTO
 {
-  
+
     public class LookUpDTO
     {
         public int Id { get; set; }
@@ -19,5 +19,23 @@ namespace Cbeua.Domain.DTO
     {
         public int Total { get; set; }
         public IEnumerable<T> Data { get; set; }
+    }
+
+ 
+    public class BranchLookupDTO
+    {
+        public int BranchId { get; set; }
+        public string DpCode { get; set; } = "";
+        public string BranchName { get; set; } = "";
+        public bool IsSelected { get; set; } = false;
+    }
+
+    public class MemberLookupDTO
+    {
+        public int MemberId { get; set; }
+        public int StaffNo { get; set; }
+        public string MemberName { get; set; } = "";
+        public string BranchName { get; set; } = "";
+        public bool IsSelected { get; set; } = false;
     }
 }

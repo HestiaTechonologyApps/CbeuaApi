@@ -12,5 +12,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     {
         IQueryable<BranchDTO> GetQuerableBranch();
         IQueryable<CircleFilterStateDTO> GetCirclesByState(int stateId);
+        IQueryable<BranchLookupDTO> GetBranchLookup();
     }
 }

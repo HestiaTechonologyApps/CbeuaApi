@@ -23,6 +23,13 @@ namespace Cbeua.Domain.DTO
         public bool SortDescending { get; set; } = false;
     }
 
+    public class LookupPaginationParams : BasePaginationParams
+    {
+        public string EntityName { get; set; } = "";
+        public int LookupMasterId { get; set; }  
+        public int? SelectedId { get; set; }
+    }
+
     /// <summary>
     /// Pagination parameters for Designation entity
     /// </summary>

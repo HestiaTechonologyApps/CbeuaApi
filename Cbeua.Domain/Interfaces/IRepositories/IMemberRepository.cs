@@ -11,5 +11,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     public interface IMemberRepository : IGenericRepository<Member>
     {
         IQueryable<MemberDTO> GetQueryableMember();
+        IQueryable<MemberLookupDTO> GetMemberLookup(int branchId = 0);
     }
 }
