@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +36,33 @@ namespace Cbeua.Core.Repositories
                             Remarks = dp.Remarks,
                             CreatedByUserId = dp.CreatedByUserId,
                             CreatedDate = dp.CreatedDate,
+                            ApprovedBy = dp.ApprovedBy ?? "",
+                            isApproved=dp.isApproved,
+                            ApprovedDate=dp.ApprovedDate,
                             IsDeleted = dp.IsDeleted
                         };
             return query;
+        }
+        public async Task<int?> GetBranchIdByMemberIdAsync(int memberId)
+        {
+            return await _context.Members
+                .Where(m => m.MemberId == memberId)
+                .Select(m => m.BranchId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetCircleIdByMemberIdAsync(int memberId)
+        {
+            return await (from m in _context.Members
+                          join b in _context.Branches on m.BranchId equals b.BranchId
+                          where m.MemberId == memberId
+                          select b.CircleId)
+                           .FirstOrDefaultAsync();
+        }
+
+        public async Task AddAccountAsync(Accounts account)
+        {
+            await _context.Accounts.AddAsync(account);
         }
     }
 }

@@ -21,6 +21,9 @@ namespace Cbeua.Domain.DTO
         public DateTime CreatedDate { get; set; }
         public string CreatedDatestring => CreatedDate.ToString("dd MMMM yyyy hh:mm tt") ?? "";
         public bool IsDeleted { get; set; }
+        public Boolean isApproved { get; set; } 
+        public String? ApprovedBy { get; set; } = "";
+        public DateTime? ApprovedDate { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 }

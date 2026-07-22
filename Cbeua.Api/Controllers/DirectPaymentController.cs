@@ -106,6 +106,11 @@ namespace Cbeua.Api.Controllers
 
 
         }
+        [HttpPut("approve/{id}")]
+        public async Task<CustomApiResponse> Approve(int id, [FromQuery] bool approve, [FromQuery] int currentUserId)
+        {
+            return await _service.ApproveAsync(id, currentUserId, approve);
+        }
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {

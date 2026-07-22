@@ -11,5 +11,8 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     public interface IDirectPaymentRepository : IGenericRepository<DirectPayment>
     {
         IQueryable<DirectPaymentDTO> QueryableDirectPayments();
+        Task<int> GetCircleIdByMemberIdAsync(int memberId);
+        Task<int?> GetBranchIdByMemberIdAsync(int memberId);
+        Task AddAccountAsync(Accounts account);
     }
 }

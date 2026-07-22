@@ -50,6 +50,104 @@ namespace Cbeua.Bussiness.Services
             );
             return await ConvertDirectPaymentToDTO(directPayment);
         }
+        public async Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve)
+        {
+            try
+            {
+                var entry = await _repo.GetByIdAsync(id);
+                if (entry == null || entry.IsDeleted)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Direct payment not found",
+                        StatusCode = 404
+                    };
+
+                if (entry.isApproved)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Payment is already approved",
+                        StatusCode = 400
+                    };
+
+                if (approve)
+                {
+                    var branchId = await _repo.GetBranchIdByMemberIdAsync(entry.MemberId);
+                    if (branchId == 0)
+                        return new CustomApiResponse
+                        {
+                            IsSucess = false,
+                            Error = "Could not resolve BranchId for this member",
+                            StatusCode = 400
+                        };
+
+                    var circleId = await _repo.GetCircleIdByMemberIdAsync(entry.MemberId);
+                    if (circleId == 0)
+                        return new CustomApiResponse
+                        {
+                            IsSucess = false,
+                            Error = "Could not resolve CircleId for this member",
+                            StatusCode = 400
+                        };
+
+                    var account = new Accounts
+                    {
+                        CircleId = circleId,
+                        BranchId = branchId ?? 0,
+                        MemeberId = entry.MemberId,
+                        MonthCode = entry.PaymentDate.Month,
+                        YearOf = entry.PaymentDate.Year,
+                        Amount = entry.Amount,
+                        TransMode = 10, 
+                        Reference = entry.ReferenceNo,
+                        Remark = string.IsNullOrWhiteSpace(entry.Remarks) ? "Direct Payment" : entry.Remarks
+                    };
+
+                    await _repo.AddAccountAsync(account);
+                    entry.isApproved = true;
+                    entry.ApprovedBy = currentUserId.ToString();
+                    entry.ApprovedDate = DateTime.Now;
+                }
+                else
+                {
+                    entry.isApproved = false;
+                    entry.ApprovedBy = currentUserId.ToString();
+                    entry.ApprovedDate = DateTime.Now;
+                }
+
+                _repo.Update(entry);
+
+                await _auditRepository.LogAuditAsync<DirectPayment>(
+                    tableName: AuditTableName,
+                    action: "update",
+                    recordId: entry.DirectPaymentId,
+                    oldEntity: CloneDirectPayment(entry),
+                    newEntity: entry,
+                    changedBy: currentUserId.ToString()
+                );
+
+                await _repo.SaveChangesAsync();
+
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = approve
+                        ? new { Message = "Direct payment approved and posted to accounts successfully" }
+                        : new { Message = "Direct payment rejected successfully" }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
 
         private async Task<DirectPaymentDTO> ConvertDirectPaymentToDTO(DirectPayment directPayment)
         {
@@ -65,6 +163,25 @@ namespace Cbeua.Bussiness.Services
             directPaymentDTO.CreatedDate = directPayment.CreatedDate;
             directPaymentDTO.IsDeleted = directPayment.IsDeleted;
             return directPaymentDTO;
+        }
+        private DirectPayment CloneDirectPayment(DirectPayment entry)
+        {
+            return new DirectPayment
+            {
+                DirectPaymentId = entry.DirectPaymentId,
+                MemberId = entry.MemberId,
+                Amount = entry.Amount,
+                PaymentDate = entry.PaymentDate,
+                PaymentMode = entry.PaymentMode,
+                ReferenceNo = entry.ReferenceNo,
+                Remarks = entry.Remarks,
+                CreatedByUserId = entry.CreatedByUserId,
+                CreatedDate = entry.CreatedDate,
+                IsDeleted = entry.IsDeleted,
+                isApproved = entry.isApproved,
+                ApprovedBy = entry.ApprovedBy,
+                ApprovedDate = entry.ApprovedDate
+            };
         }
 
         public async Task<bool> UpdateAsync(DirectPayment directPayment)
