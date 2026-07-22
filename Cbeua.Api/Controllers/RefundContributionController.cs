@@ -55,7 +55,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-        [HttpGet("RefundByMemberId{id}")]
+        [HttpGet("RefundByMemberId/{id}")]
         public async Task<CustomApiResponse> GetBymemberId(int id)
         {
             var response = new CustomApiResponse();
