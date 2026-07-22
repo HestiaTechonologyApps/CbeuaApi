@@ -12,6 +12,7 @@ namespace Cbeua.Domain.Interfaces.IServices
     {
         Task<List<DirectPaymentDTO>> GetAllAsync();
         Task<DirectPaymentDTO?> GetByIdAsync(int id);
+        Task<List<DirectPaymentDTO>> GetByMemberId(int memberid);
         Task<DirectPaymentDTO> CreateAsync(DirectPayment directPayment);
         Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve);
         Task<bool> UpdateAsync(DirectPayment directPayment);

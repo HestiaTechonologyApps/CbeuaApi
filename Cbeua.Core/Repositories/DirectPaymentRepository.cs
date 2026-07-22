@@ -43,6 +43,29 @@ namespace Cbeua.Core.Repositories
                         };
             return query;
         }
+        public IQueryable<DirectPaymentDTO> QueryableDirectPaymentsbyMemberId(int MemberId)
+        {
+            var query = from dp in _context.DirectPayments
+                        join m in _context.Members on dp.MemberId equals m.MemberId
+                        select new DirectPaymentDTO
+                        {
+                            DirectPaymentId = dp.DirectPaymentId,
+                            MemberId = dp.MemberId,
+                            MemberName = m.Name,
+                            Amount = dp.Amount,
+                            PaymentDate = dp.PaymentDate,
+                            PaymentMode = dp.PaymentMode,
+                            ReferenceNo = dp.ReferenceNo,
+                            Remarks = dp.Remarks,
+                            CreatedByUserId = dp.CreatedByUserId,
+                            CreatedDate = dp.CreatedDate,
+                            ApprovedBy = dp.ApprovedBy ?? "",
+                            isApproved = dp.isApproved,
+                            ApprovedDate = dp.ApprovedDate,
+                            IsDeleted = dp.IsDeleted
+                        };
+            return query;
+        }
         public async Task<int?> GetBranchIdByMemberIdAsync(int memberId)
         {
             return await _context.Members

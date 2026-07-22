@@ -35,6 +35,12 @@ namespace Cbeua.Bussiness.Services
 
             return directPayment;
         }
+        public async Task<List<DirectPaymentDTO>> GetByMemberId(int memberid)
+        {
+            var q = _repo.QueryableDirectPaymentsbyMemberId(memberid);
+            var items =  q.Where(x => x.MemberId == memberid).ToList();
+            return items;
+        }
 
         public async Task<DirectPaymentDTO> CreateAsync(DirectPayment directPayment)
         {

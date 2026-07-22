@@ -53,6 +53,25 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [HttpGet("member-directpayment{id}")]
+        public async Task<CustomApiResponse> GetmemberById(int id)
+        {
+            var response = new CustomApiResponse();
+            var directPayment = await _service.GetByMemberId(id);
+            if (directPayment == null)
+            {
+                response.IsSucess = false;
+                response.Error = "Not found";
+                response.StatusCode = 404;
+            }
+            else
+            {
+                response.IsSucess = true;
+                response.Value = directPayment;
+                response.StatusCode = 200;
+            }
+            return response;
+        }
 
 
 

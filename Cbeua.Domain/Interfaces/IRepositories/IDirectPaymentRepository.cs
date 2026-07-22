@@ -13,6 +13,7 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         IQueryable<DirectPaymentDTO> QueryableDirectPayments();
         Task<int> GetCircleIdByMemberIdAsync(int memberId);
         Task<int?> GetBranchIdByMemberIdAsync(int memberId);
+        IQueryable<DirectPaymentDTO> QueryableDirectPaymentsbyMemberId(int MemberId);
         Task AddAccountAsync(Accounts account);
     }
 }
