@@ -30,5 +30,8 @@ namespace Cbeua.Domain.Entities
         public DateTime CreatedDate { get; set; }
 
         public bool IsDeleted { get; set; }
+        public Boolean isApproved { get; set; } = false;
+        public String? ApprovedBy { get; set; } = "";
+        public DateTime? ApprovedDate { get; set; }
     }
 }
