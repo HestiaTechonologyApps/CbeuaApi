@@ -55,6 +55,25 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [HttpGet("RefundByMemberId{id}")]
+        public async Task<CustomApiResponse> GetBymemberId(int id)
+        {
+            var response = new CustomApiResponse();
+            var refundContribution = await _service.GetByMemberIdAsync(id);
+            if (refundContribution == null)
+            {
+                response.IsSucess = false;
+                response.Error = "Not found";
+                response.StatusCode = 404;
+            }
+            else
+            {
+                response.IsSucess = true;
+                response.Value = refundContribution;
+                response.StatusCode = 200;
+            }
+            return response;
+        }
 
 
 

@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,11 @@ namespace Cbeua.Bussiness.Services
             var q = _repo.QueryableRefundContributions();
             var refundContribution = q.Where(rc => rc.RefundContributionId == id).FirstOrDefault();
             return refundContribution;
+        }
+        public async Task<RefundContributionDTO?> GetByMemberIdAsync(int memberId)
+        {
+            var q = _repo.QueryablerefundcontributionbyMemberId(memberId);
+            return await q.FirstOrDefaultAsync();
         }
 
         public async Task<RefundContributionDTO> CreateAsync(RefundContribution refundContribution)
