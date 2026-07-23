@@ -47,6 +47,9 @@ namespace Cbeua.Core.Repositories
                         Amount = dc.Amount,
                         LastContribution = dc.LastContribution,
                         YearOF = dc.YearOF,
+                        ApprovedBy = dc.ApprovedBy ?? "",
+                        isApproved = dc.isApproved,
+                        ApprovedDate = dc.ApprovedDate,
                         YearName = year.YearName,
                         IsDeleted = dc.IsDeleted
                     };

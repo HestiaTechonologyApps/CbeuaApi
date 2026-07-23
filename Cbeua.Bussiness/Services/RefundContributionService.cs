@@ -254,6 +254,66 @@ namespace Cbeua.Bussiness.Services
                 PageNumber = pageNumber,
                 PageSize = parameters.GetAll ? totalRecords : pageSize
             };
+
+        }
+        public async Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve)
+        {
+            try
+            {
+                var entry = await _repo.GetByIdAsync(id);
+                if (entry == null || entry.IsDeleted)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Refund contribution not found",
+                        StatusCode = 404
+                    };
+
+                if (entry.isApproved)
+                    return new CustomApiResponse
+                    {
+                        IsSucess = false,
+                        Error = "Refund contribution is already approved",
+                        StatusCode = 400
+                    };
+
+                var oldEntity = CloneRefundContribution(entry); // ✅ CLONE FOR AUDIT
+
+                entry.isApproved = approve;
+                entry.ApprovedBy = currentUserId.ToString();
+                entry.ApprovedDate = DateTime.Now;
+
+                _repo.Update(entry);
+
+                await _auditRepository.LogAuditAsync<RefundContribution>(
+                    tableName: AuditTableName,
+                    action: "update",
+                    recordId: entry.RefundContributionId,
+                    oldEntity: oldEntity,
+                    newEntity: entry,
+                    changedBy: currentUserId.ToString()
+                );
+
+                await _repo.SaveChangesAsync();
+
+                return new CustomApiResponse
+                {
+                    IsSucess = true,
+                    StatusCode = 200,
+                    Value = approve
+                        ? new { Message = "Refund contribution approved successfully" }
+                        : new { Message = "Refund contribution rejected successfully" }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
         }
     }
 }

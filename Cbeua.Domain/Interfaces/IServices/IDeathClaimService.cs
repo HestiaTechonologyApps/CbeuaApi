@@ -15,6 +15,7 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<DeathClaimDTO> CreateAsync(DeathClaim deathClaim);
         Task<bool> UpdateAsync(DeathClaim deathClaim);
         Task<bool> DeleteAsync(int id);
+        Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve);
         Task<PagedResult<DeathClaimDTO>> GetPagedDeathClaimsAsync(DeathClaimPaginationParams parameters);
     }
 }

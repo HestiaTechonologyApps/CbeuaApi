@@ -5,6 +5,7 @@ using Cbeua.InfraCore.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -84,6 +85,9 @@ namespace Cbeua.Core.Repositories
                             Amount = rc.Amount,
                             LastContribution = rc.LastContribution,
                             YearOF = rc.YearOF,
+                            ApprovedBy = rc.ApprovedBy ?? "",
+                            isApproved = rc.isApproved,
+                            ApprovedDate = rc.ApprovedDate,
                             YearName = y != null ? y.YearName : 0,
                             IsDeleted = rc.IsDeleted
                         };

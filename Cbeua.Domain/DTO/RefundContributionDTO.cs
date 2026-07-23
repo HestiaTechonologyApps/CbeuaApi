@@ -27,6 +27,9 @@ namespace Cbeua.Domain.DTO
         public float LastContribution { get; set; }
         public int YearOF { get; set; }
         public int YearName { get; set; }
+        public Boolean isApproved { get; set; }
+        public String? ApprovedBy { get; set; } = "";
+        public DateTime? ApprovedDate { get; set; }
         public bool IsDeleted { get; set; } = false;
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
