@@ -1,13 +1,14 @@
-﻿using Cbeua.Domain.DTO;
+﻿using Cbeua.Core.Helpers;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
-using Cbeua.Core.Helpers;
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,9 +33,8 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MemberDTO?> GetByIdAsync(int id)
         {
-            var q = _repo.GetQueryableMember();
-            var member = q.Where(u => u.MemberId == id).FirstOrDefault();
-            return member;
+            var q = _repo.GetQueryableMemberById(id);
+            return await q.AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<MemberDTO> CreateAsync(Member member)
