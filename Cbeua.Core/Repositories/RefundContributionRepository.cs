@@ -48,6 +48,9 @@ namespace Cbeua.Core.Repositories
                         DDDATE = rc.DDDATE,
                         Amount = rc.Amount,
                         LastContribution = rc.LastContribution,
+                        ApprovedBy = rc.ApprovedBy ?? "",
+                        isApproved = rc.isApproved,
+                        ApprovedDate = rc.ApprovedDate,
                         YearOF = rc.YearOF,
                         YearName = y.YearName,
                         IsDeleted = rc.IsDeleted

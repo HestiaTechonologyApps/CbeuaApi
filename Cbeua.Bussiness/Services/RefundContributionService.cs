@@ -276,7 +276,7 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                var oldEntity = CloneRefundContribution(entry); // ✅ CLONE FOR AUDIT
+                var oldEntity = CloneRefundContribution(entry); 
 
                 entry.isApproved = approve;
                 entry.ApprovedBy = currentUserId.ToString();
