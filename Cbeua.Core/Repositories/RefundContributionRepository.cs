@@ -93,6 +93,45 @@ namespace Cbeua.Core.Repositories
                         };
             return query;
         }
+        public IQueryable<RefundContributionDTO> QueryableRefundContributionById(int refundContributionId)
+        {
+            var query = from rc in _context.RefundContributions
+                        join m in _context.Members on rc.MemberId equals m.MemberId
+                        join s in _context.States on rc.StateId equals s.StateId into stateJoin
+                        from s in stateJoin.DefaultIfEmpty()
+                        join d in _context.Designations on rc.DesignationId equals d.DesignationId into designationJoin
+                        from d in designationJoin.DefaultIfEmpty()
+                        join y in _context.YearMasters on rc.YearOF equals y.YearOf into yearJoin
+                        from y in yearJoin.DefaultIfEmpty()
+                        where !rc.IsDeleted && rc.RefundContributionId == refundContributionId
+                        select new RefundContributionDTO
+                        {
+                            RefundContributionId = rc.RefundContributionId,
+                            MemberId = rc.MemberId,
+                            MemberName = m.Name,
+                            StaffNo = m.StaffNo,
+                            StateId = rc.StateId,
+                            StateName = s != null ? s.Name : "",
+                            DesignationId = rc.DesignationId,
+                            DesignationName = d != null ? d.Name : "",
+                            RefundNO = rc.RefundNO,
+                            BranchNameOFTime = rc.BranchNameOFTime,
+                            DPCODEOfTime = rc.DPCODEOfTime,
+                            Type = rc.Type,
+                            Remark = rc.Remark,
+                            DDNO = rc.DDNO,
+                            DDDATE = rc.DDDATE,
+                            Amount = rc.Amount,
+                            LastContribution = rc.LastContribution,
+                            YearOF = rc.YearOF,
+                            ApprovedBy = rc.ApprovedBy ?? "",
+                            isApproved = rc.isApproved,
+                            ApprovedDate = rc.ApprovedDate,
+                            YearName = y != null ? y.YearName : 0,
+                            IsDeleted = rc.IsDeleted
+                        };
+            return query;
+        }
 
     }
 }

@@ -12,5 +12,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     {
         IQueryable<RefundContributionDTO> QueryableRefundContributions();
         IQueryable<RefundContributionDTO> QueryableRefundContributionByMemberId(int memberId);
+        IQueryable<RefundContributionDTO> QueryableRefundContributionById(int refundContributionId);
     }
 }
