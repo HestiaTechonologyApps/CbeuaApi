@@ -53,7 +53,7 @@ namespace Cbeua.Core.Repositories
                     };
             return q;
         }
-        public IQueryable<RefundContributionDTO> QueryablerefundcontributionbyMemberId(int MemberId)
+        public IQueryable<RefundContributionDTO> QueryableRefundContributionByMemberId(int memberId)
         {
             var query = from rc in _context.RefundContributions
                         join m in _context.Members on rc.MemberId equals m.MemberId
@@ -61,8 +61,9 @@ namespace Cbeua.Core.Repositories
                         from s in stateJoin.DefaultIfEmpty()
                         join d in _context.Designations on rc.DesignationId equals d.DesignationId into designationJoin
                         from d in designationJoin.DefaultIfEmpty()
-                        join y in _context.YearMasters on rc.YearOF equals y.YearOf
-                        where !rc.IsDeleted && rc.MemberId == MemberId
+                        join y in _context.YearMasters on rc.YearOF equals y.YearOf into yearJoin
+                        from y in yearJoin.DefaultIfEmpty()
+                        where !rc.IsDeleted && rc.MemberId == memberId
                         select new RefundContributionDTO
                         {
                             RefundContributionId = rc.RefundContributionId,
@@ -70,9 +71,9 @@ namespace Cbeua.Core.Repositories
                             MemberName = m.Name,
                             StaffNo = m.StaffNo,
                             StateId = rc.StateId,
-                            StateName = s.Name ?? "",
+                            StateName = s != null ? s.Name : "",
                             DesignationId = rc.DesignationId,
-                            DesignationName = d.Name ?? "",
+                            DesignationName = d != null ? d.Name : "",
                             RefundNO = rc.RefundNO,
                             BranchNameOFTime = rc.BranchNameOFTime,
                             DPCODEOfTime = rc.DPCODEOfTime,
@@ -83,10 +84,11 @@ namespace Cbeua.Core.Repositories
                             Amount = rc.Amount,
                             LastContribution = rc.LastContribution,
                             YearOF = rc.YearOF,
-                            YearName = y.YearName,
+                            YearName = y != null ? y.YearName : 0,
                             IsDeleted = rc.IsDeleted
                         };
             return query;
         }
+
     }
-   }
+}

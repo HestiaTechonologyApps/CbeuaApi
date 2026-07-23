@@ -13,7 +13,7 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<List<RefundContributionDTO>> GetAllAsync();
         Task<RefundContributionDTO?> GetByIdAsync(int id);
         Task<RefundContributionDTO> CreateAsync(RefundContribution coupon);
-        Task<RefundContributionDTO?> GetByMemberIdAsync(int memberId);
+        Task<List<RefundContributionDTO?>> GetByMemberIdAsync(int memberId);
         Task<bool> UpdateAsync(RefundContribution coupon);
         Task<bool> DeleteAsync(int id);
         Task<PagedResult<RefundContributionDTO>> GetPagedRefundContributionsAsync(RefundContributionPaginationParams parameters);

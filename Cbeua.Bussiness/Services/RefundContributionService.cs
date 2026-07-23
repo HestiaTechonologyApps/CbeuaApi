@@ -34,10 +34,10 @@ namespace Cbeua.Bussiness.Services
             var refundContribution = q.Where(rc => rc.RefundContributionId == id).FirstOrDefault();
             return refundContribution;
         }
-        public async Task<RefundContributionDTO?> GetByMemberIdAsync(int memberId)
+        public async Task<List<RefundContributionDTO>> GetByMemberIdAsync(int memberId)
         {
-            var q = _repo.QueryablerefundcontributionbyMemberId(memberId);
-            return await q.FirstOrDefaultAsync();
+            var q = _repo.QueryableRefundContributionByMemberId(memberId);
+            return await q.AsNoTracking().ToListAsync();
         }
 
         public async Task<RefundContributionDTO> CreateAsync(RefundContribution refundContribution)
