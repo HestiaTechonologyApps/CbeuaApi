@@ -35,6 +35,9 @@ namespace Cbeua.Domain.Entities
 
 
         public int YearOF { get; set; }
+        public Boolean isApproved { get; set; } = false;
+        public String? ApprovedBy { get; set; } = "";
+        public DateTime? ApprovedDate { get; set; }
         public bool IsDeleted { get; set; } = false;
 
 
