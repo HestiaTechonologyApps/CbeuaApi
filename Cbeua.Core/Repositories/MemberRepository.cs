@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,11 @@ namespace Cbeua.Core.Repositories
         }
         public IQueryable<MemberDTO> GetQueryableMember()
         {
-            var q = from m in _context.Members
-                    join c in _context.Categories on m.CategoryId equals c.CategoryId
-                    join d in _context.Designations on m.DesignationId equals d.DesignationId 
-                    join b in _context.Branches on m.BranchId equals b.BranchId
-                    join s in _context.statuses on m.StatusId equals s.StatusId
+            var q = from m in _context.Members.AsNoTracking()
+                    join c in _context.Categories.AsNoTracking() on m.CategoryId equals c.CategoryId
+                    join d in _context.Designations.AsNoTracking() on m.DesignationId equals d.DesignationId 
+                    join b in _context.Branches.AsNoTracking() on m.BranchId equals b.BranchId
+                    join s in _context.statuses.AsNoTracking() on m.StatusId equals s.StatusId
                     where !m.IsDeleted
                     select new MemberDTO
                     {
@@ -64,11 +65,11 @@ namespace Cbeua.Core.Repositories
         }
         public IQueryable<MemberDTO> GetQueryableMemberById(int memberId)
         {
-            var q = from m in _context.Members
-                    join c in _context.Categories on m.CategoryId equals c.CategoryId
-                    join d in _context.Designations on m.DesignationId equals d.DesignationId
-                    join b in _context.Branches on m.BranchId equals b.BranchId
-                    join s in _context.statuses on m.StatusId equals s.StatusId
+            var q = from m in _context.Members.AsNoTracking()
+                    join c in _context.Categories.AsNoTracking() on m.CategoryId equals c.CategoryId
+                    join d in _context.Designations.AsNoTracking() on m.DesignationId equals d.DesignationId
+                    join b in _context.Branches.AsNoTracking() on m.BranchId equals b.BranchId
+                    join s in _context.statuses.AsNoTracking() on m.StatusId equals s.StatusId
                     where !m.IsDeleted && m.MemberId == memberId
                     select new MemberDTO
                     {
@@ -107,8 +108,8 @@ namespace Cbeua.Core.Repositories
 
         public IQueryable<MemberLookupDTO> GetMemberLookup(int branchId = 0)
         {
-            var q = from m in _context.Members
-                    join b in _context.Branches on m.BranchId equals b.BranchId
+            var q = from m in _context.Members.AsNoTracking()
+                    join b in _context.Branches.AsNoTracking() on m.BranchId equals b.BranchId
                     where !m.IsDeleted
                     select new { m, b };
 
