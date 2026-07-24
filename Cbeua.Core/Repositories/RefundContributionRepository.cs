@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,13 +99,13 @@ namespace Cbeua.Core.Repositories
         }
         public IQueryable<RefundContributionDTO> QueryableRefundContributionById(int refundContributionId)
         {
-            var query = from rc in _context.RefundContributions
+            var query = from rc in _context.RefundContributions.AsNoTracking()
                         join m in _context.Members on rc.MemberId equals m.MemberId
-                        join s in _context.States on rc.StateId equals s.StateId into stateJoin
+                        join s in _context.States.AsNoTracking() on rc.StateId equals s.StateId into stateJoin
                         from s in stateJoin.DefaultIfEmpty()
-                        join d in _context.Designations on rc.DesignationId equals d.DesignationId into designationJoin
+                        join d in _context.Designations.AsNoTracking() on rc.DesignationId equals d.DesignationId into designationJoin
                         from d in designationJoin.DefaultIfEmpty()
-                        join y in _context.YearMasters on rc.YearOF equals y.YearOf into yearJoin
+                        join y in _context.YearMasters.AsNoTracking() on rc.YearOF equals y.YearOf into yearJoin
                         from y in yearJoin.DefaultIfEmpty()
                         where !rc.IsDeleted && rc.RefundContributionId == refundContributionId
                         select new RefundContributionDTO
