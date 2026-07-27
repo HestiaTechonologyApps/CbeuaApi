@@ -35,6 +35,13 @@ namespace Cbeua.Core.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<UserRegistration>> GetAllAsync()
+        {
+            return await _context.UserRegistrations
+                .OrderByDescending(r => r.RequestedDate)
+                .ToListAsync();
+        }
+
         public async Task<bool> AnyPendingStaffNoAsync(int staffNo)
         {
             return await _context.UserRegistrations

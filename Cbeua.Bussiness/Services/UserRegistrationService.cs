@@ -43,6 +43,30 @@ namespace Cbeua.Bussiness.Services
             }
         }
 
+        public async Task<CustomApiResponse> GetAllAsync()
+        {
+            try
+            {
+                var all = await _regRepo.GetAllAsync();
+                var dto = all.Select(r => new UserRegistrationListDTO
+                {
+                    UserRegistrationId = r.UserRegistrationId,
+                    UserName = r.UserName,
+                    UserEmail = r.UserEmail,
+                    StaffNo = r.StaffNo,
+                    PhoneNumber = r.PhoneNumber,
+                    RegistrationStatus = r.RegistrationStatus,
+                    RequestedDate = r.RequestedDate
+                }).ToList();
+
+                return new CustomApiResponse { IsSucess = true, StatusCode = 200, Value = dto };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse { IsSucess = false, Error = ex.Message, StatusCode = 500 };
+            }
+        }
+
         public async Task<CustomApiResponse> GetByIdAsync(int id)
         {
             try

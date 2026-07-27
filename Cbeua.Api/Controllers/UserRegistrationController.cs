@@ -24,6 +24,13 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _service.GetAllAsync();
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
