@@ -135,7 +135,7 @@ namespace Cbeua.Business.Services
                     CompanyId = 1,
                     StaffNo = request.StaffNo,
                     MemberId = member.MemberId,
-                    Role = "Staff"
+                    Role = "OfficeStaff"
                 };
 
                 await _userRepository.AddAsync(user);
