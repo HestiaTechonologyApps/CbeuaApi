@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Cbeua.Bussiness.Helpers;
+﻿using Cbeua.Bussiness.Helpers;
 using Cbeua.Core.Helpers;
+using Cbeua.Core.Repositories;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Cbeua.Business.Services
 {
@@ -15,20 +16,22 @@ namespace Cbeua.Business.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMemberRepository _memberRepository;
+        private readonly IUserRegistrationRepository _userRegistrationRepository;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
 
-        // In production, replace with persistent storage (DB/Cache)
         private readonly Dictionary<string, string> _resetTokens = new();
 
         public AuthService(
             IUserRepository userRepository,
             IMemberRepository memberRepository,
+            IUserRegistrationRepository userRegistrationRepository,
             IJwtService jwtService,
             ILogger<AuthService> logger)
         {
             _userRepository = userRepository;
             _memberRepository = memberRepository;
+            _userRegistrationRepository = userRegistrationRepository;
             _jwtService = jwtService;
             _logger = logger;
         }
@@ -106,57 +109,43 @@ namespace Cbeua.Business.Services
         {
             try
             {
-                // Check if StaffNo exists in Member table
                 var members = await _memberRepository.FindAsync(m => m.StaffNo == request.StaffNo);
                 var member = members.FirstOrDefault();
 
                 if (member == null)
                     return ApiResponseFactory.Fail("StaffNo does not exist. Please use a valid StaffNo.");
 
-                if (await _userRepository.AnyAsync(u => u.UserEmail == request.UserEmail))
+                if (await _userRepository.AnyAsync(u => u.UserEmail == request.UserEmail && !u.IsDeleted))
                     return ApiResponseFactory.Fail("Email already registered");
 
-                if (await _userRepository.AnyAsync(u => u.UserName == request.UserName))
+                if (await _userRepository.AnyAsync(u => u.UserName == request.UserName && !u.IsDeleted))
                     return ApiResponseFactory.Fail("Username already taken");
 
-                if (await _userRepository.AnyAsync(u => u.StaffNo == request.StaffNo))
+                if (await _userRepository.AnyAsync(u => u.StaffNo == request.StaffNo && !u.IsDeleted))
                     return ApiResponseFactory.Fail("StaffNo already registered");
 
-                var user = new User
+                if (await _userRegistrationRepository.AnyPendingStaffNoAsync(request.StaffNo))
+                    return ApiResponseFactory.Fail("A registration for this StaffNo is already pending approval");
+
+                var registration = new UserRegistration
                 {
                     UserName = request.UserName,
                     UserEmail = request.UserEmail,
                     PhoneNumber = request.PhoneNumber,
                     Address = request.Address,
                     PasswordHash = PasswordHelper.HashPassword(request.Password),
-                    IsActive = true,
-                    Islocked = false,
-                    CreateAt = DateTime.UtcNow,
                     CompanyId = 1,
                     StaffNo = request.StaffNo,
                     MemberId = member.MemberId,
-                    Role = "OfficeStaff"
+                    Role = "OfficeStaff",
+                    RegistrationStatus = "Pending",
+                    RequestedDate = DateTime.UtcNow
                 };
 
-                await _userRepository.AddAsync(user);
-                await _userRepository.SaveChangesAsync();
+                await _userRegistrationRepository.AddAsync(registration);
+                await _userRegistrationRepository.SaveChangesAsync();
 
-                var createdUser = await GetUserByEmailAsync(request.UserEmail);
-                if (createdUser == null)
-                    return ApiResponseFactory.Fail("Failed to create user. Please try again.");
-
-                // Get profile image from member
-                var profileImageSrc = member.ProfileImageSrc ?? "";
-                var token = _jwtService.GenerateToken(MapToUserDto(createdUser, profileImageSrc));
-
-                var data = new
-                {
-                    Token = token,
-                    ExpiresAt = DateTime.UtcNow.AddHours(24),
-                    User = MapToUserDto(createdUser, profileImageSrc)
-                };
-
-                return ApiResponseFactory.Success(data, "Registration successful");
+                return ApiResponseFactory.Success(null, "Registration submitted. Awaiting admin approval before you can log in.");
             }
             catch (Exception ex)
             {

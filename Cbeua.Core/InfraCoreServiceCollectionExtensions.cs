@@ -77,7 +77,7 @@ namespace Cbeua.InfraCore
             services.AddScoped<IContributionDetailRepository, ContributionDetailRepository>();
             services.AddScoped<IContributionMasterRepository, ContributionMasterRepository>();
             services.AddScoped<IMemberAccountDetailsRepository, MemberAccountDetailsRepository>();
-         
+            services.AddScoped<IUserRegistrationRepository, UserRegistrationRepository>();
 
 
 
