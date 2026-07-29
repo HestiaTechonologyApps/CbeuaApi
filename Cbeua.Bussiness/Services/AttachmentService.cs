@@ -8,9 +8,12 @@ using Cbeua.Domain.Entities.Common;
 public class AttachmentService : IAttachmentService
 {
     private readonly IAttachmentRepository _repo;
-    public AttachmentService(IAttachmentRepository repo)
+    private readonly ICurrentUserService _currentUser;
+    public AttachmentService(IAttachmentRepository repo, ICurrentUserService currentUser)
     {
         _repo = repo;
+      
+        _currentUser = currentUser;
     }
 
     public async Task<List<Attachment>> GetAllAsync() => (List<Attachment>)await _repo.GetAllAsync();
@@ -94,7 +97,7 @@ public class AttachmentService : IAttachmentService
             FilePath = filePath,
             AttachmentPath = filePath,
             UploaddedOn = DateTime.UtcNow,
-            UploadedBy = "System" // replace with actual user
+            UploadedBy = _currentUser?.UserId?.ToString() ?? "System"
         };
 
         await _repo.AddAsync(attachment);
