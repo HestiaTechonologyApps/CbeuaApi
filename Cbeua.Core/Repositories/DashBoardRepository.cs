@@ -41,11 +41,12 @@ namespace Cbeua.Core.Repositories
 
         public async Task<int> GetActiveContributionsAsync(int year)
         {
-            return await _context.ContributionDetails
-                .Where(cd => cd.Year == year.ToString())
-                .Select(cd => cd.StaffNo)
-   
-                .CountAsync();
+            var approvedMasters = await _context.ContributionMasters
+                .Where(cm => cm.Year == year.ToString() && cm.isApproved)
+                .Select(cm => cm.totalentry)
+                .ToListAsync();
+
+            return approvedMasters.Sum(te => int.TryParse(te, out var n) ? n : 0);
         }
 
         public async Task<int> GetActiveContributionsAsync(int year, bool previous)
