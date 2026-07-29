@@ -20,6 +20,7 @@ namespace Cbeua.Domain.Interfaces.IServices
 
         // Task<List<UserLoginLogDTO>> GetUserLogsAsync(int userId);
         Task<CustomApiResponse> ChangePassWord(PasswordChangeRequest passwordChangeRequest);
+        Task<CustomApiResponse> UpdateUserPartially(int id, UserPartialUpdateDTO dto);
 
         Task<PagedResult<UserListDTO>> GetPagedUsersAsync(UserPaginationParams parameters);
     }

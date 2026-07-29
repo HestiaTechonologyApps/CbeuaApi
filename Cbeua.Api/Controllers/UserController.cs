@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
 using CbeuaAPI.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cbeua.Api.Controllers
 {
@@ -139,6 +140,21 @@ namespace Cbeua.Api.Controllers
         {
             return await _service.ChangePassWord(passwordChangeRequest);
 
+        }
+        [HttpPost("{id}/update-partially")]
+        public async Task<CustomApiResponse> UpdateUserPartially(int id, [FromBody] UserPartialUpdateDTO dto)
+        {
+            try
+            {
+                if (id != dto.UserId)
+                    return ApiResponseFactory.Fail("Id mismatch", System.Net.HttpStatusCode.BadRequest);
+
+                return await _service.UpdateUserPartially(id, dto);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.Exception(ex);
+            }
         }
 
         [HttpGet("paged")]

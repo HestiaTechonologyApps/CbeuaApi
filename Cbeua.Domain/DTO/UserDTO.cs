@@ -42,6 +42,14 @@ namespace Cbeua.Domain.DTO
         public string Role { get; set; } = "";  // Added Role
         public bool IsActive { get; set; }
     }
+    public class UserPartialUpdateDTO
+    {
+        public int UserId { get; set; }
+        public string TypeofUpdate { get; set; } = string.Empty; 
+        public string? UserName { get; set; }
+        public string? UserEmail { get; set; }
+        public string? PhoneNumber { get; set; }
+    }
     public class PasswordChangeRequest
     {
         public int UserId { get; set; }

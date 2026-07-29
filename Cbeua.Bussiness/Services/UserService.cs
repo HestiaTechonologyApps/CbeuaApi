@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Cbeua.Bussiness.Services
 {
@@ -151,7 +152,57 @@ namespace Cbeua.Bussiness.Services
 
             return true;
         }
+        public async Task<CustomApiResponse> UpdateUserPartially(int id, UserPartialUpdateDTO dto)
+        {
+            try
+            {
+                var entity = await _repo.GetByIdAsync(id);
 
+                if (entity == null || entity.IsDeleted)
+                    return ApiResponseFactory.Fail("User not found or already deleted",
+                        System.Net.HttpStatusCode.NotFound);
+
+                if (dto.TypeofUpdate == "username")
+                {
+                    if (string.IsNullOrWhiteSpace(dto.UserName))
+                        return ApiResponseFactory.Fail("UserName is required.",
+                            System.Net.HttpStatusCode.BadRequest);
+
+                    entity.UserName = dto.UserName;
+                    await _repo.SaveChangesAsync();
+                    return ApiResponseFactory.Success(null, "Username updated successfully");
+                }
+                if (dto.TypeofUpdate == "useremail")
+                {
+                    if (string.IsNullOrWhiteSpace(dto.UserEmail))
+                        return ApiResponseFactory.Fail("UserEmail is required.",
+                            System.Net.HttpStatusCode.BadRequest);
+
+                    entity.UserEmail = dto.UserEmail;
+                    await _repo.SaveChangesAsync();
+                    return ApiResponseFactory.Success(null, "Email updated successfully");
+                }
+                if (dto.TypeofUpdate == "phonenumber")
+                {
+                    if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                        return ApiResponseFactory.Fail("PhoneNumber is required.",
+                            System.Net.HttpStatusCode.BadRequest);
+
+                    entity.PhoneNumber = dto.PhoneNumber;
+                    await _repo.SaveChangesAsync();
+                    return ApiResponseFactory.Success(null, "Phone number updated successfully");
+                }
+                else
+                {
+                    return ApiResponseFactory.Fail("Invalid update type specified",
+                        System.Net.HttpStatusCode.BadRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.Exception(ex);
+            }
+        }
         public async Task<CustomApiResponse> ChangePassWord(PasswordChangeRequest passwordChangeRequest)
         {
             var response = new CustomApiResponse();
