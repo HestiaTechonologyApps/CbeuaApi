@@ -61,7 +61,8 @@ namespace Cbeua.Business.Services
 
         public Task<List<StateWiseMembershipDto>> GetStateWiseMembershipAsync()
             => _repository.GetStateWiseMembershipAsync();
-
+        public Task<ClaimsSettledStatsDTO> GetClaimsSettledStatsAsync()
+    => _repository.GetClaimsSettledStatsAsync();
         public Task<List<TopPerformingStateDto>> GetTopPerformingStatesAsync(int year)
             => _repository.GetTopPerformingStatesAsync(year);
 

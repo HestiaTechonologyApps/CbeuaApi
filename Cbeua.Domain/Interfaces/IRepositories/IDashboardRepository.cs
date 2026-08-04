@@ -12,6 +12,8 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         Task<int> GetActiveContributionsAsync(int year, bool previous);
         Task<int> GetTotalClaimsAsync(int year);
         Task<decimal> GetTotalCollectionAsync(int year);
+       
+        Task<ClaimsSettledStatsDTO> GetClaimsSettledStatsAsync();
 
         Task<List<MonthlyContributionVsClaimDto>> GetMonthlyContributionVsClaimsAsync(int year);
         Task<ClaimTypeDistributionDto> GetClaimTypeDistributionAsync(int year);

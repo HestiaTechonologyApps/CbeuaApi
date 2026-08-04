@@ -6,6 +6,7 @@ namespace Cbeua.Domain.Interfaces.IServices
     {
         Task<DashboardResponseDto> GetDashboardAsync(int year);
         Task<DashboardOverviewDto> GetOverviewAsync(int year);
+        Task<ClaimsSettledStatsDTO> GetClaimsSettledStatsAsync();
         Task<List<MonthlyContributionVsClaimDto>> GetMonthlyContributionVsClaimsAsync(int year);
         Task<ClaimTypeDistributionDto> GetClaimTypeDistributionAsync(int year);
         Task<List<StateWiseMembershipDto>> GetStateWiseMembershipAsync();

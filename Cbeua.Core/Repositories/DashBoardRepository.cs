@@ -292,6 +292,29 @@ namespace Cbeua.Core.Repositories
             }
             return result;
         }
+        public async Task<ClaimsSettledStatsDTO> GetClaimsSettledStatsAsync()
+        {
+            var totalClaims = await _context.DeathClaims
+                .CountAsync(dc => !dc.IsDeleted);
+
+            var totalAmount = await _context.DeathClaims
+                .Where(dc => !dc.IsDeleted && dc.isApproved)
+                .SumAsync(dc => (decimal?)dc.Amount) ?? 0;
+
+            var activeMembers = await (
+                from m in _context.Members
+                join s in _context.statuses on m.StatusId equals s.StatusId
+                where !m.IsDeleted && s.Name == "Active"
+                select m.MemberId
+            ).CountAsync();
+
+            return new ClaimsSettledStatsDTO
+            {
+                TotalClaimsSettled = totalClaims,
+                TotalAmountDisbursed = totalAmount,
+                ActiveMembers = activeMembers
+            };
+        }
 
         // ── Helper ───────────────────────────────────────────────────────
 
