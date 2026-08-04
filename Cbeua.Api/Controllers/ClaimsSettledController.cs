@@ -19,6 +19,7 @@ namespace Cbeua.Api.Controllers
             _logger = logger;
         }
         [HttpGet("claims-settled-stats")]
+        [AllowAnonymous]
        
         public async Task<IActionResult> GetClaimsSettledStats()
         {
