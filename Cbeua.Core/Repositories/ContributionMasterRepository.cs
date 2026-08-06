@@ -110,41 +110,53 @@ namespace Cbeua.Core.Repositories
         {
             var rawDetails = await (
                 from detail in _context.ContributionDetails
-                join member in _context.Members
-                    on detail.StaffNo equals member.StaffNo.ToString()
-                join branch in _context.Branches
-                    on detail.DpCode equals branch.DpCode.ToString()
-                join circle in _context.Circles
-                    on detail.Circle equals circle.CircleCode
-                where detail.ContributionMasterId == masterId
-                      && !detail.isParked
-                      && !member.IsDeleted
-                      && !branch.IsDeleted
-                      && !circle.IsDeleted
+                where detail.ContributionMasterId == masterId && !detail.isParked
                 select new
                 {
                     detail.ContributionDetailId,
                     detail.ContributionMasterId,
-                    member.MemberId,
-                    branch.BranchId,
-                    circle.CircleId,
+                    MemberId = _context.Members
+                        .Where(m => m.StaffNo.ToString() == detail.StaffNo && !m.IsDeleted)
+                        .Select(m => (int?)m.MemberId)
+                        .FirstOrDefault(),
+                    BranchId = _context.Branches
+                        .Where(b => b.DpCode.ToString() == detail.DpCode && !b.IsDeleted)
+                        .Select(b => (int?)b.BranchId)
+                        .FirstOrDefault(),
+                    CircleId = detail.Circle == null
+                        ? (int?)null
+                        : _context.Circles
+                            .Where(c => c.CircleCode == detail.Circle && !c.IsDeleted)
+                            .Select(c => (int?)c.CircleId)
+                            .FirstOrDefault(),
                     detail.Month,
                     detail.Year,
                     detail.Amount
                 }
             ).ToListAsync();
 
-            return rawDetails.Select(d => new AccountReadyDto
+            // Guard: skip rows that couldn't resolve a valid Member/Branch —
+            // these would otherwise insert an Accounts row with a null/invalid FK.
+            var invalidRows = rawDetails.Where(d => d.MemberId == null || d.BranchId == null).ToList();
+            if (invalidRows.Any())
             {
-                ContributionDetailId = d.ContributionDetailId,
-                ContributionMasterId = d.ContributionMasterId,
-                MemberId = d.MemberId,
-                BranchId = d.BranchId,
-                CircleId = d.CircleId,
-                MonthCode = int.Parse(d.Month),
-                YearOf = int.Parse(d.Year),
-                Amount = d.Amount
-            }).ToList();
+                // TODO: decide how you want to surface these — log, park, or throw.
+                // For now they're filtered out silently below.
+            }
+
+            return rawDetails
+                .Where(d => d.MemberId != null && d.BranchId != null)
+                .Select(d => new AccountReadyDto
+                {
+                    ContributionDetailId = d.ContributionDetailId,
+                    ContributionMasterId = d.ContributionMasterId,
+                    MemberId = d.MemberId.Value,
+                    BranchId = d.BranchId.Value,
+                    CircleId = d.CircleId ?? 0, // adjust default/handling if CircleId is required downstream
+                    MonthCode = int.Parse(d.Month),
+                    YearOf = int.Parse(d.Year),
+                    Amount = d.Amount
+                }).ToList();
         }
 
         public async Task AddAccountsRangeAsync(List<Accounts> accounts)
