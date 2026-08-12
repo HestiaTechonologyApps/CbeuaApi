@@ -44,9 +44,10 @@ jobs:
       run: |
         echo "Stopping application..."
         echo '<html><body><h1>Maintenance in progress</h1></body></html>' > app_offline.htm
-        curl -T app_offline.htm \
+        curl -T app_offline.htm --retry 3 --retry-delay 5 --connect-timeout 20 \
           --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
-          ftp://win8231.site4now.net/cbeuagjf/app_offline.htm
+          ftp://win8231.site4now.net/cbeuagjf/app_offline.htm \
+          || echo "Warning: could not upload app_offline.htm, continuing anyway"
         sleep 15
     
     - name: Delete Old DLL
@@ -73,24 +74,32 @@ jobs:
         exclude: |
           **/.git*
           **/.git*/**
-    
+
     - name: Touch web.config
       run: |
         echo "Forcing IIS restart..."
-        curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
-          ftp://win8231.site4now.net/cbeuagjf/web.config -o web.config.temp 2>/dev/null || echo '<?xml version="1.0" encoding="utf-8"?><configuration><system.webServer><handlers><add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" /></handlers><aspNetCore processPath="dotnet" arguments=".\Cbeua.Api.dll" stdoutLogEnabled="false" hostingModel="inprocess" /></system.webServer></configuration>' > web.config.temp
-        
-        echo "<!-- Deploy: $(date) -->" >> web.config.temp
-        
-        curl -T web.config.temp \
+        # Note: the published web.config from the repo was already uploaded by
+        # "Deploy All Files" above. We just append a comment here to bump its
+        # mtime and trigger an IIS recycle - we do NOT want to replace it with
+        # a different fallback config if the download below fails.
+        if curl --retry 3 --retry-delay 5 --connect-timeout 20 \
           --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
-          ftp://win8231.site4now.net/cbeuagjf/web.config
+          ftp://win8231.site4now.net/cbeuagjf/web.config -o web.config.temp; then
+          echo "<!-- Deploy: $(date) -->" >> web.config.temp
+          curl -T web.config.temp --retry 3 --retry-delay 5 --connect-timeout 20 \
+            --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+            ftp://win8231.site4now.net/cbeuagjf/web.config \
+            || echo "Warning: could not re-upload web.config, skipping touch"
+        else
+          echo "Warning: could not download current web.config, skipping touch (repo's web.config is already deployed)"
+        fi
         sleep 5
-    
+
     - name: Start Application
       run: |
         echo "Starting application..."
-        curl --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
+        curl --retry 3 --retry-delay 5 --connect-timeout 20 \
+          --user "${{ secrets.WEB_DEPLOY_USERNAME }}:${{ secrets.WEB_DEPLOY_PASSWORD }}" \
           ftp://win8231.site4now.net/ \
           -Q "-DELE /cbeuagjf/app_offline.htm" 2>&1 || echo "Started"
         sleep 20
