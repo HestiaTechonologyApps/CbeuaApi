@@ -21,7 +21,7 @@ namespace Cbeua.Api.Controllers
         [HttpGet("{detailId}")]
         public async Task<IActionResult> GetById(long detailId)
         {
-            var result = await _service.GetByIdAsync(detailId);
+             var result = await _service.GetByIdAsync(detailId);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
