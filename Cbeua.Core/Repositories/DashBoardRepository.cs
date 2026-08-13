@@ -124,8 +124,8 @@ namespace Cbeua.Core.Repositories
                 from m in _context.Members.AsNoTracking()
                 where !m.IsDeleted && m.BranchId.HasValue
                 join b in _context.Branches.AsNoTracking() on m.BranchId equals b.BranchId
-                join c in _context.Circles.AsNoTracking() on b.CircleId equals c.CircleId
-                join s in _context.States.AsNoTracking() on c.StateId equals s.StateId
+                //join c in _context.Circles.AsNoTracking() on b.CircleId equals c.CircleId
+                join s in _context.States.AsNoTracking() on b.StateId equals s.StateId
                 group m by s.Name into g
                 orderby g.Count() descending
                 select new StateWiseMembershipDto
@@ -142,8 +142,8 @@ namespace Cbeua.Core.Repositories
                 from m in _context.Members.AsNoTracking()
                 where !m.IsDeleted && m.BranchId.HasValue
                 join b in _context.Branches.AsNoTracking() on m.BranchId equals b.BranchId
-                join c in _context.Circles.AsNoTracking() on b.CircleId equals c.CircleId
-                join s in _context.States.AsNoTracking() on c.StateId equals s.StateId
+               // join c in _context.Circles.AsNoTracking() on b.CircleId equals c.CircleId
+                join s in _context.States.AsNoTracking() on b.StateId equals s.StateId
                 group m by new { s.Name, s.Abbreviation } into g
                 select new
                 {
