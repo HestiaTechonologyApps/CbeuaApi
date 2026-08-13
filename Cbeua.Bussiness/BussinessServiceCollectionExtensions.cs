@@ -58,6 +58,8 @@ namespace Cbeua.Bussiness
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IBranchService, BranchService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IExpenseTypeService, ExpenseTypeService>();
+            services.AddScoped<IExpenseMasterService, ExpenseMasterService>();
             services.AddScoped<IDesignationsService, DesignationService>();
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IMonthService, MonthService>();

@@ -55,6 +55,8 @@ namespace Cbeua.InfraCore
             services.AddScoped<IStateRepository, StateRepository>();
             services.AddScoped<IBranchRepository, BranchRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IExpenseTypeRepository, ExpenseTypeRepository>();
+            services.AddScoped<IExpenseMasterRepository, ExpenseMasterRepository>();
             services.AddScoped<ITwilioSmsSender, TwilioSmsSender>();
            services.AddScoped<IDesignationRepository, DesignationRepository>();
             services.AddScoped<IStatusRepository, StatusRepository>();

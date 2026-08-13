@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Cbeua.Domain.DTO
+{
+    public class ExpenseTypeDTO
+    {
+        public int ExpenseTypeId { get; set; }
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool IsDeleted { get; set; } = false;
+        public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
+    }
+}
