@@ -31,5 +31,17 @@ namespace Cbeua.Core.Repositories
                     };
             return q;
         }
+        public IQueryable<ExpenseLookupDTO> GetExpenseLookup()
+        {
+            return _context.ExpenseTypes
+                .Where(b => !b.IsDeleted)
+                .Select(b => new ExpenseLookupDTO
+                {
+                    ExpenseTypeId = b.ExpenseTypeId,
+                    Name = b.Name,
+                    Description = b.Description,
+                   
+                });
+        }
     }
 }

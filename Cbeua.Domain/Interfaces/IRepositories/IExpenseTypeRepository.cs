@@ -11,5 +11,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     public interface IExpenseTypeRepository : IGenericRepository<ExpenseType>
     {
         IQueryable<ExpenseTypeDTO> QueryableExpenseTypes();
+        IQueryable<ExpenseLookupDTO> GetExpenseLookup();
     }
 }

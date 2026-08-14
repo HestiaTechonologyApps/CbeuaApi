@@ -10,11 +10,13 @@ namespace Cbeua.Bussiness.Services
     {
         private readonly IMemberRepository _memberRepository;
         private readonly IBranchRepository _branchRepository;
+        private readonly IExpenseTypeRepository _expenseTypeRepository;
 
-        public LookupService(IMemberRepository memberRepository, IBranchRepository branchRepository)
+        public LookupService(IMemberRepository memberRepository, IBranchRepository branchRepository, IExpenseTypeRepository expenseTypeRepository)
         {
             _memberRepository = memberRepository;
             _branchRepository = branchRepository;
+            _expenseTypeRepository = expenseTypeRepository;
         }
 
         public async Task<CustomApiResponse> GetPagedLookupAsync(LookupPaginationParams parameters)
@@ -25,6 +27,7 @@ namespace Cbeua.Bussiness.Services
             {
                 "member" => GetMemberLookup(parameters),
                 "branch" => GetBranchLookup(parameters),
+                "expensetype" => GetExpenseTypeLookup(parameters),
                 _ => new CustomApiResponse
                 {
                     IsSucess = false,
@@ -113,6 +116,46 @@ namespace Cbeua.Bussiness.Services
                 IsSucess = true,
                 StatusCode = 200,
                 Value = new PaginatedResult<BranchLookupDTO> { Data = items, Total = total }
+            };
+        }
+        private CustomApiResponse GetExpenseTypeLookup(LookupPaginationParams p)
+        {
+            var pageNumber = p.PageNumber <= 0 ? 1 : p.PageNumber;
+            var pageSize = p.PageSize <= 0 ? 10 : p.PageSize;
+
+            var query = _expenseTypeRepository.GetExpenseLookup();
+
+            if (!string.IsNullOrWhiteSpace(p.SearchTerm))
+            {
+                var s = p.SearchTerm.Trim().ToLower();
+                query = query.Where(x =>
+                    x.Name.ToLower().Contains(s));
+                  
+            }
+
+            var all = query.OrderBy(x => x.Name).ToList();
+            var total = all.Count;
+
+            var items = all.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            foreach (var i in items)
+                i.IsSelected = p.SelectedId.HasValue && i.ExpenseTypeId == p.SelectedId.Value;
+
+            if (p.SelectedId.HasValue && items.All(x => x.ExpenseTypeId != p.SelectedId.Value))
+            {
+                var selected = all.FirstOrDefault(x => x.ExpenseTypeId == p.SelectedId.Value);
+                if (selected != null)
+                {
+                    selected.IsSelected = true;
+                    items.Insert(0, selected);
+                }
+            }
+
+            return new CustomApiResponse
+            {
+                IsSucess = true,
+                StatusCode = 200,
+                Value = new PaginatedResult<ExpenseLookupDTO> { Data = items, Total = total }
             };
         }
     }
