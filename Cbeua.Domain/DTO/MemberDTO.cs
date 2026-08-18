@@ -12,6 +12,8 @@ namespace Cbeua.Domain.DTO
         public int MemberId { get; set; }
 
         public int StaffNo { get; set; }
+        public int? OldStaffNo { get; set; }
+
 
         public string DesignationName { get; set; } = "";
         public string BranchName { get; set; } = "";

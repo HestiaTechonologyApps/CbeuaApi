@@ -39,6 +39,9 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<MemberDTO> CreateAsync(Member member)
         {
+            if (await _repo.IsStaffNoInUseAsync(member.StaffNo))
+                throw new InvalidOperationException("Staff No already exists");
+
             member.IsDeleted = false;
             await _repo.AddAsync(member);
             await _repo.SaveChangesAsync();
@@ -58,6 +61,7 @@ namespace Cbeua.Bussiness.Services
             MemberDTO memberDTO = new MemberDTO();
             memberDTO.MemberId = member.MemberId;
             memberDTO.StaffNo = member.StaffNo;
+            memberDTO.OldStaffNo = member.OldStaffNo;
             memberDTO.DesignationId = member.DesignationId;
             memberDTO.CategoryId = member.CategoryId;
             memberDTO.BranchId = member.BranchId;
@@ -87,6 +91,7 @@ namespace Cbeua.Bussiness.Services
             {
                 MemberId = member.MemberId,
                 StaffNo = member.StaffNo,
+                OldStaffNo = member.OldStaffNo,
                 DesignationId = member.DesignationId,
                 CategoryId = member.CategoryId,
                 BranchId = member.BranchId,
@@ -115,6 +120,10 @@ namespace Cbeua.Bussiness.Services
         {
             var oldentity = await _repo.GetByIdAsync(member.MemberId);
             if (oldentity == null || oldentity.IsDeleted) return false;
+
+            if (member.StaffNo != oldentity.StaffNo
+                && await _repo.IsStaffNoInUseAsync(member.StaffNo, member.MemberId))
+                throw new InvalidOperationException("Staff No already exists");
 
             _repo.Detach(oldentity);
             _repo.Update(member);

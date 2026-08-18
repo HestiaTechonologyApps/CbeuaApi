@@ -70,6 +70,12 @@ namespace Cbeua.Api.Controllers
                 response.Value = created;
                 response.StatusCode = 201;
             }
+            catch (InvalidOperationException ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 400;
+            }
             catch (Exception ex)
             {
                 response.IsSucess = false;
@@ -78,6 +84,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] Member member)
         {
@@ -91,22 +98,29 @@ namespace Cbeua.Api.Controllers
                 return response;
             }
 
-            var updated = await _service.UpdateAsync(member);
-            if (!updated)
+            try
+            {
+                var updated = await _service.UpdateAsync(member);
+                if (!updated)
+                {
+                    response.IsSucess = false;
+                    response.Error = "Not found";
+                    response.StatusCode = 404;
+                }
+                else
+                {
+                    response.IsSucess = true;
+                    response.Value = member;
+                    response.StatusCode = 200;
+                }
+            }
+            catch (InvalidOperationException ex)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = member;
-                response.StatusCode = 200;
+                response.Error = ex.Message;
+                response.StatusCode = 400;
             }
             return response;
-
-
         }
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)

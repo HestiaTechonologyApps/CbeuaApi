@@ -30,6 +30,7 @@ namespace Cbeua.Core.Repositories
                     {
                         MemberId = m.MemberId,
                         StaffNo = m.StaffNo,
+                        OldStaffNo = m.OldStaffNo,
                         DesignationId = m.DesignationId,
                         CategoryId = m.CategoryId,
                         BranchId = m.BranchId,
@@ -75,6 +76,7 @@ namespace Cbeua.Core.Repositories
                     {
                         MemberId = m.MemberId,
                         StaffNo = m.StaffNo,
+                        OldStaffNo = m.OldStaffNo,
                         DesignationId = m.DesignationId,
                         CategoryId = m.CategoryId,
                         BranchId = m.BranchId,
@@ -115,7 +117,6 @@ namespace Cbeua.Core.Repositories
 
             if (branchId != 0)
                 q = q.Where(x => x.m.BranchId == branchId);
-
             return q.Select(x => new MemberLookupDTO
             {
                 MemberId = x.m.MemberId,
@@ -123,6 +124,14 @@ namespace Cbeua.Core.Repositories
                 MemberName = x.m.Name,
                 BranchName = x.b.Name
             });
+        }
+
+        public async Task<bool> IsStaffNoInUseAsync(int staffNo, int excludeMemberId = 0)
+        {
+            return await _context.Members.AsNoTracking()
+                .AnyAsync(m => !m.IsDeleted
+                    && m.MemberId != excludeMemberId
+                    && (m.StaffNo == staffNo || m.OldStaffNo == staffNo));
         }
     }
 }

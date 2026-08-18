@@ -13,5 +13,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         IQueryable<MemberDTO> GetQueryableMember();
         IQueryable<MemberLookupDTO> GetMemberLookup(int branchId = 0);
         IQueryable<MemberDTO> GetQueryableMemberById(int memberId);
+        Task<bool> IsStaffNoInUseAsync(int staffNo, int excludeMemberId = 0);
     }
 }
