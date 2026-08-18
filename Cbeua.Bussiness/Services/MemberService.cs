@@ -42,6 +42,10 @@ namespace Cbeua.Bussiness.Services
             if (await _repo.IsStaffNoInUseAsync(member.StaffNo))
                 throw new InvalidOperationException("Staff No already exists");
 
+            if (member.OldStaffNo.HasValue
+                && await _repo.IsStaffNoInUseAsync(member.OldStaffNo.Value))
+                throw new InvalidOperationException("Staff No already exists");
+
             member.IsDeleted = false;
             await _repo.AddAsync(member);
             await _repo.SaveChangesAsync();
@@ -121,8 +125,11 @@ namespace Cbeua.Bussiness.Services
             var oldentity = await _repo.GetByIdAsync(member.MemberId);
             if (oldentity == null || oldentity.IsDeleted) return false;
 
-            if (member.StaffNo != oldentity.StaffNo
-                && await _repo.IsStaffNoInUseAsync(member.StaffNo, member.MemberId))
+            if (await _repo.IsStaffNoInUseAsync(member.StaffNo, member.MemberId))
+                throw new InvalidOperationException("Staff No already exists");
+
+            if (member.OldStaffNo.HasValue
+                && await _repo.IsStaffNoInUseAsync(member.OldStaffNo.Value, member.MemberId))
                 throw new InvalidOperationException("Staff No already exists");
 
             _repo.Detach(oldentity);
