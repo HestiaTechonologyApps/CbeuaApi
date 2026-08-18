@@ -23,7 +23,7 @@ namespace Cbeua.Domain.Entities
 
          public int StaffNo { get; set; }
 
-
+        public int? OldStaffNo { get; set; }
 
 
         public int? DesignationId { get; set; }
