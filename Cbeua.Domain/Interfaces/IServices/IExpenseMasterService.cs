@@ -13,6 +13,7 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<List<ExpenseMasterDTO>> GetAllAsync();
         Task<ExpenseMasterDTO?> GetByIdAsync(int id);
         Task<ExpenseMasterDTO> CreateAsync(ExpenseMaster expenseMaster);
+        Task<CustomApiResponse> ApproveAsync(int id, int currentUserId, bool approve);
         Task<bool> UpdateAsync(ExpenseMaster expenseMaster);
         Task<bool> DeleteAsync(int id);
         Task<PagedResult<ExpenseMasterDTO>> GetPagedExpenseMastersAsync(ExpenseMasterPaginationParams parameters);
