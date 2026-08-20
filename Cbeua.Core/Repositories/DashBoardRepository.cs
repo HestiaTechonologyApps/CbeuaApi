@@ -250,9 +250,9 @@ namespace Cbeua.Core.Repositories
                 .Select(g => new { Month = g.Key, Total = g.Sum(x => x.Amount) })
                 .ToListAsync();
 
-            var expenses = await _context.DeathClaims
-                .Where(dc => !dc.IsDeleted && dc.YearOF == year && dc.DeathDate.HasValue)
-                .GroupBy(dc => dc.DeathDate!.Value.Month)
+            var expenses = await _context.ExpenseMasters
+                .Where(em => !em.IsDeleted && em.ExpenseDate.Year == year)
+                .GroupBy(em => em.ExpenseDate.Month)
                 .Select(g => new { Month = g.Key, Total = g.Sum(x => (decimal?)x.Amount) ?? 0 })
                 .ToListAsync();
 
