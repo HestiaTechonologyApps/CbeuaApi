@@ -18,6 +18,9 @@ namespace Cbeua.Domain.DTO
         public string PaymentMode { get; set; } = "";
         public string Description { get; set; } = "";
         public bool IsDeleted { get; set; } = false;
+        public Boolean isApproved { get; set; }
+        public String? ApprovedBy { get; set; } = "";
+        public DateTime? ApprovedDate { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
 

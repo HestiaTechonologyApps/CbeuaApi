@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +36,10 @@ namespace Cbeua.Core.Repositories
                         ReferenceNo = em.ReferenceNo,
                         PaymentMode = em.PaymentMode,
                         Description = em.Description,
-                        IsDeleted = em.IsDeleted
+                        IsDeleted = em.IsDeleted,
+                        ApprovedBy = em.ApprovedBy ?? "",
+                        isApproved = em.isApproved,
+                        ApprovedDate = em.ApprovedDate,
                     };
             return q;
         }
@@ -56,7 +60,10 @@ namespace Cbeua.Core.Repositories
                         ReferenceNo = em.ReferenceNo,
                         PaymentMode = em.PaymentMode,
                         Description = em.Description,
-                        IsDeleted = em.IsDeleted
+                        IsDeleted = em.IsDeleted,
+                        ApprovedBy = em.ApprovedBy ?? "",
+                        isApproved = em.isApproved,
+                        ApprovedDate = em.ApprovedDate,
                     };
             return q;
         }

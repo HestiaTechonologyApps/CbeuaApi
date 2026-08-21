@@ -24,5 +24,8 @@ namespace Cbeua.Domain.Entities
         public string Description { get; set; } = "";
 
         public bool IsDeleted { get; set; } = false;
+        public Boolean isApproved { get; set; } = false;
+        public String? ApprovedBy { get; set; } = "";
+        public DateTime? ApprovedDate { get; set; }
     }
 }
