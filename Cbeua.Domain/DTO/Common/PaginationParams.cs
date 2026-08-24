@@ -21,6 +21,7 @@ namespace Cbeua.Domain.DTO
         public string? SearchTerm { get; set; }
         public string? SortBy { get; set; }
         public bool SortDescending { get; set; } = false;
+        public bool GetAll { get; set; } = false;
     }
 
     public class LookupPaginationParams : BasePaginationParams

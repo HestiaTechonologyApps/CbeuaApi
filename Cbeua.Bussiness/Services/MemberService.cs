@@ -284,10 +284,19 @@ namespace Cbeua.Bussiness.Services
             var pageNumber = parameters.PageNumber;
             var pageSize = parameters.PageSize;
 
-            var pagedData = filteredMembers
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            List<MemberDTO> pagedData;
+
+            if (parameters.GetAll)
+            {
+                pagedData = filteredMembers.ToList();
+            }
+            else
+            {
+                pagedData = filteredMembers
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+            }
 
             // ✅ Return paginated result
             return new PagedResult<MemberDTO>
@@ -295,7 +304,7 @@ namespace Cbeua.Bussiness.Services
                 Data = pagedData,
                 TotalRecords = totalRecords,
                 PageNumber = pageNumber,
-                PageSize = pageSize
+                PageSize = parameters.GetAll ? totalRecords : pageSize
             };
         }
     }
