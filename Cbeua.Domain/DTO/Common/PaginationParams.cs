@@ -45,12 +45,18 @@ namespace Cbeua.Domain.DTO
     /// <summary>
     /// Pagination parameters for Member entity
     /// </summary>
-    public class MemberPaginationParams : BasePaginationParams
+    public class MemberPaginationParams
     {
         public int? BranchId { get; set; }
         public int? CategoryId { get; set; }
         public int? DesignationId { get; set; }
         public int? StatusId { get; set; }
         public int? GenderId { get; set; }
+        public string SearchTerm { get; set; } = "";
+        public string SortBy { get; set; } = "";
+        public bool SortDescending { get; set; } = false;
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public bool GetAll { get; set; } = false;
     }
 }
