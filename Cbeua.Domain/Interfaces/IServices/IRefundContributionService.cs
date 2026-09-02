@@ -18,5 +18,6 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<bool> UpdateAsync(RefundContribution coupon);
         Task<bool> DeleteAsync(int id);
         Task<PagedResult<RefundContributionDTO>> GetPagedRefundContributionsAsync(RefundContributionPaginationParams parameters);
+        Task<CustomApiResponse> GetMemberEligibilityAsync(int memberId, int? excludeRefundContributionId = null);
     }
 }

@@ -94,6 +94,12 @@ namespace Cbeua.Api.Controllers
                 response.Value = created;
                 response.StatusCode = 201;
             }
+            catch (InvalidOperationException ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 400;
+            }
             catch (Exception ex)
             {
                 response.IsSucess = false;
@@ -102,6 +108,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] RefundContribution refundContribution)
         {
@@ -115,22 +122,29 @@ namespace Cbeua.Api.Controllers
                 return response;
             }
 
-            var updated = await _service.UpdateAsync(refundContribution);
-            if (!updated)
+            try
+            {
+                var updated = await _service.UpdateAsync(refundContribution);
+                if (!updated)
+                {
+                    response.IsSucess = false;
+                    response.Error = "Not found";
+                    response.StatusCode = 404;
+                }
+                else
+                {
+                    response.IsSucess = true;
+                    response.Value = refundContribution;
+                    response.StatusCode = 200;
+                }
+            }
+            catch (InvalidOperationException ex)
             {
                 response.IsSucess = false;
-                response.Error = "Not found";
-                response.StatusCode = 404;
-            }
-            else
-            {
-                response.IsSucess = true;
-                response.Value = refundContribution;
-                response.StatusCode = 200;
+                response.Error = ex.Message;
+                response.StatusCode = 400;
             }
             return response;
-
-
         }
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
@@ -172,7 +186,11 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-
+        [HttpGet("member-eligibility/{memberId}")]
+        public async Task<CustomApiResponse> GetMemberEligibility(int memberId, [FromQuery] int? excludeRefundContributionId = null)
+        {
+            return await _service.GetMemberEligibilityAsync(memberId, excludeRefundContributionId);
+        }
 
     }
 }

@@ -48,4 +48,16 @@ namespace Cbeua.Domain.DTO
         public int PageSize { get; set; } = 10;
         public bool GetAll { get; set; } = false;
     }
+
+    public class MemberRefundEligibilityDTO
+    {
+        public int MemberId { get; set; }
+        public string LastContributionMonth { get; set; } = "";
+        public int LastContributionYear { get; set; }
+        public decimal LastContributionAmount { get; set; }
+        public decimal TotalContribution { get; set; }
+        public decimal ApprovedAmount { get; set; }
+        public decimal PendingAmount { get; set; }
+        public decimal AvailableAmount { get; set; }
+    }
 }

@@ -41,7 +41,12 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<RefundContributionDTO> CreateAsync(RefundContribution refundContribution)
         {
-            refundContribution.IsDeleted = false; // ✅ ENSURE NOT DELETED
+            var eligibility = await _repo.GetMemberRefundEligibilityAsync(refundContribution.MemberId);
+            if (refundContribution.Amount > eligibility.AvailableAmount)
+                throw new InvalidOperationException(
+                    $"Refund amount ({refundContribution.Amount}) exceeds the available balance ({eligibility.AvailableAmount}) for this member.");
+
+            refundContribution.IsDeleted = false; 
             await _repo.AddAsync(refundContribution);
             await _repo.SaveChangesAsync();
 
@@ -51,7 +56,7 @@ namespace Cbeua.Bussiness.Services
                recordId: refundContribution.RefundContributionId,
                oldEntity: null,
                newEntity: refundContribution,
-               changedBy: "System" // Replace with actual user info
+               changedBy: "System"
             );
 
             return await ConvertRefundContributionToDTO(refundContribution);
@@ -83,7 +88,14 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(RefundContribution refundContribution)
         {
             var oldentity = await _repo.GetByIdAsync(refundContribution.RefundContributionId);
-            if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+            if (oldentity == null || oldentity.IsDeleted) return false; 
+
+            var eligibility = await _repo.GetMemberRefundEligibilityAsync(
+                refundContribution.MemberId,
+                excludeRefundContributionId: refundContribution.RefundContributionId);
+            if (refundContribution.Amount > eligibility.AvailableAmount)
+                throw new InvalidOperationException(
+                    $"Refund amount ({refundContribution.Amount}) exceeds the available balance ({eligibility.AvailableAmount}) for this member.");
 
             _repo.Detach(oldentity);
             _repo.Update(refundContribution);
@@ -95,20 +107,20 @@ namespace Cbeua.Bussiness.Services
                recordId: refundContribution.RefundContributionId,
                oldEntity: oldentity,
                newEntity: refundContribution,
-               changedBy: "System" // Replace with actual user info
+               changedBy: "System" 
             );
 
             return true;
         }
 
+
         public async Task<bool> DeleteAsync(int id)
         {
             var refund = await _repo.GetByIdAsync(id);
-            if (refund == null || refund.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
+            if (refund == null || refund.IsDeleted) return false; 
+            var oldEntity = CloneRefundContribution(refund); 
 
-            var oldEntity = CloneRefundContribution(refund); // ✅ CLONE FOR AUDIT
-
-            // ✅ SOFT DELETE
+            
             refund.IsDeleted = true;
             _repo.Update(refund);
 
@@ -125,7 +137,6 @@ namespace Cbeua.Bussiness.Services
             return true;
         }
 
-        // ✅ ADDED CLONE METHOD FOR AUDIT
         private RefundContribution CloneRefundContribution(RefundContribution refund)
         {
             return new RefundContribution
@@ -303,6 +314,24 @@ namespace Cbeua.Bussiness.Services
                         ? new { Message = "Refund contribution approved successfully" }
                         : new { Message = "Refund contribution rejected successfully" }
                 };
+            }
+            catch (Exception ex)
+            {
+                return new CustomApiResponse
+                {
+                    IsSucess = false,
+                    Error = $"Exception: {ex.Message} | Inner: {ex.InnerException?.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<CustomApiResponse> GetMemberEligibilityAsync(int memberId, int? excludeRefundContributionId = null)
+        {
+            try
+            {
+                var eligibility = await _repo.GetMemberRefundEligibilityAsync(memberId, excludeRefundContributionId);
+                return new CustomApiResponse { IsSucess = true, StatusCode = 200, Value = eligibility };
             }
             catch (Exception ex)
             {

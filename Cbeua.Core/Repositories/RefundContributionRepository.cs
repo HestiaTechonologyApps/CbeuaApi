@@ -137,5 +137,47 @@ namespace Cbeua.Core.Repositories
             return query;
         }
 
+        public async Task<MemberRefundEligibilityDTO> GetMemberRefundEligibilityAsync(int memberId, int? excludeRefundContributionId = null)
+        {
+            var totalContribution = await _context.Accounts
+                .Where(a => a.MemeberId == memberId)
+                .SumAsync(a => (decimal?)a.Amount) ?? 0m;
+
+            var lastAccount = await (
+                from a in _context.Accounts
+                join m in _context.Months on a.MonthCode equals m.MonthCode
+                join y in _context.YearMasters on a.YearOf equals y.YearOf
+                where a.MemeberId == memberId
+                orderby y.YearName descending, a.MonthCode descending
+                select new { m.MonthName, y.YearName, a.Amount }
+            ).FirstOrDefaultAsync();
+
+            var refundQuery = _context.RefundContributions
+                .Where(rc => rc.MemberId == memberId && !rc.IsDeleted);
+
+            if (excludeRefundContributionId.HasValue)
+                refundQuery = refundQuery.Where(rc => rc.RefundContributionId != excludeRefundContributionId.Value);
+
+            var approvedAmount = await refundQuery
+                .Where(rc => rc.isApproved)
+                .SumAsync(rc => (decimal?)rc.Amount) ?? 0m;
+
+            var pendingAmount = await refundQuery
+                .Where(rc => !rc.isApproved)
+                .SumAsync(rc => (decimal?)rc.Amount) ?? 0m;
+
+            return new MemberRefundEligibilityDTO
+            {
+                MemberId = memberId,
+                LastContributionMonth = lastAccount?.MonthName ?? "",
+                LastContributionYear = lastAccount?.YearName ?? 0,
+                LastContributionAmount = lastAccount?.Amount ?? 0m,
+                TotalContribution = totalContribution,
+                ApprovedAmount = approvedAmount,
+                PendingAmount = pendingAmount,
+                AvailableAmount = totalContribution - approvedAmount - pendingAmount
+            };
+        }
+
     }
 }
