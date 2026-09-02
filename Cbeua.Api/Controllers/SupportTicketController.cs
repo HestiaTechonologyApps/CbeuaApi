@@ -127,7 +127,25 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
-
+       
+        [HttpGet("next-ticket-num")]
+        public async Task<CustomApiResponse> GetNextSupportTicketNum()
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                response.Value = await _service.GenerateNextSupportTicketNumAsync();
+                response.IsSucess = true;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
 
 
     }

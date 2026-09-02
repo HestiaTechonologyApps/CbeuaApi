@@ -11,5 +11,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
     public interface ISupportTicketRepository : IGenericRepository<SupportTicket>
     {
         IQueryable<SupportTicketDTO> GetQueryableSupportTickets();
+        Task<List<string>> GetAllSupportTicketNumsAsync();
     }
 }

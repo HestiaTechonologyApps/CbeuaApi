@@ -110,5 +110,18 @@ namespace Cbeua.Bussiness.Services
             await _repo.SaveChangesAsync();
             return true;
         }
+        public async Task<string> GenerateNextSupportTicketNumAsync()
+        {
+            var existingNums = await _repo.GetAllSupportTicketNumsAsync();
+
+            int maxNumber = 0;
+            foreach (var num in existingNums)
+            {
+                if (int.TryParse(num, out int n) && n > maxNumber)
+                    maxNumber = n;
+            }
+
+            return (maxNumber + 1).ToString();
+        }
     }
 }

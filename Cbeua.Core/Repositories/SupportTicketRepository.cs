@@ -2,6 +2,7 @@
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,13 @@ namespace Cbeua.Core.Repositories
                         
                     };
             return q;
+        }
+      
+        public async Task<List<string>> GetAllSupportTicketNumsAsync()
+        {
+            return await _context.SupportTickets
+                .Select(st => st.SupportTicketNum)
+                .ToListAsync();
         }
     }
 }

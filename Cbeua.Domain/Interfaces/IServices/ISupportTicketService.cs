@@ -15,5 +15,6 @@ namespace Cbeua.Domain.Interfaces.IServices
         Task<SupportTicketDTO> CreateAsync(SupportTicket supportTicket);
         Task<bool> UpdateAsync(SupportTicket supportTicket);
         Task<bool> DeleteAsync(int id);
+        Task<string> GenerateNextSupportTicketNumAsync();
     }
 }
