@@ -15,4 +15,10 @@ namespace Cbeua.Domain.DTO
         public int? GroupId { get; set; }
         public List<AuditLogDTO> AuditLogs { get; set; } = new List<AuditLogDTO>();
     }
+    public class StatusFilterDTO
+    {
+        public int StatusId { get; set; }
+        public string Name { get; set; } = "";
+      
+    }
 }

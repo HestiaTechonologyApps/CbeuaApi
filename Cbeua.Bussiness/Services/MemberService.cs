@@ -308,7 +308,7 @@ namespace Cbeua.Bussiness.Services
             };
         }
         // MemberService.cs
-        public async Task<List<StatusDTO>> GetDistinctMemberStatusesAsync()
+        public async Task<List<StatusFilterDTO>> GetDistinctMemberStatusesAsync()
         {
             return await _repo.GetDistinctMemberStatusesAsync();
         }

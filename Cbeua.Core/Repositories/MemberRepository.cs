@@ -134,14 +134,14 @@ namespace Cbeua.Core.Repositories
                     && (m.StaffNo == staffNo || m.OldStaffNo == staffNo));
         }
        
-        public async Task<List<StatusDTO>> GetDistinctMemberStatusesAsync()
+        public async Task<List<StatusFilterDTO>> GetDistinctMemberStatusesAsync()
         {
             return await _context.Members.AsNoTracking()
                 .Where(m => !m.IsDeleted)
                 .Join(_context.statuses.AsNoTracking(),
                       m => m.StatusId,
                       s => s.StatusId,
-                      (m, s) => new StatusDTO { StatusId = s.StatusId, Name = s.Name })
+                      (m, s) => new StatusFilterDTO { StatusId = s.StatusId, Name = s.Name })
                 .Distinct()
                 .ToListAsync();
         }

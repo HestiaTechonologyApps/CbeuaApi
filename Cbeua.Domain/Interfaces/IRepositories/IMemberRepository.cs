@@ -14,6 +14,6 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         IQueryable<MemberLookupDTO> GetMemberLookup(int branchId = 0);
         IQueryable<MemberDTO> GetQueryableMemberById(int memberId);
         Task<bool> IsStaffNoInUseAsync(int staffNo, int excludeMemberId = 0);
-        Task<List<StatusDTO>> GetDistinctMemberStatusesAsync();
+        Task<List<StatusFilterDTO>> GetDistinctMemberStatusesAsync();
     }
 }
