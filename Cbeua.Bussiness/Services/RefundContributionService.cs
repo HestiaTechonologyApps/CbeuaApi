@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Cbeua.Bussiness.Services
@@ -342,6 +343,40 @@ namespace Cbeua.Bussiness.Services
                     StatusCode = 500
                 };
             }
+        }
+        // RefundContributionService.cs
+        public async Task<string> GenerateNextRefundNoAsync(int stateId)
+        {
+            var stateName = await _repo.GetStateNameAsync(stateId);
+            var stateCode = GenerateStateCode(stateName);
+
+            var existingNos = await _repo.GetRefundNosByStateIdAsync(stateId);
+
+            var regex = new Regex($"^{Regex.Escape(stateCode)}(\\d+)$", RegexOptions.IgnoreCase);
+            int maxNumber = 0;
+
+            foreach (var no in existingNos)
+            {
+                if (string.IsNullOrWhiteSpace(no)) continue;
+                var match = regex.Match(no.Trim());
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int num) && num > maxNumber)
+                    maxNumber = num;
+            }
+
+            return $"{stateCode}{maxNumber + 1}";
+        }
+
+        private static string GenerateStateCode(string? stateName)
+        {
+            if (string.IsNullOrWhiteSpace(stateName)) return "GEN";
+
+            var words = stateName.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (words.Length > 1)
+                return string.Concat(words.Select(w => char.ToUpper(w[0]))); 
+
+            var word = words[0];
+            return (word.Length >= 3 ? word.Substring(0, 3) : word).ToUpper(); 
         }
     }
 }

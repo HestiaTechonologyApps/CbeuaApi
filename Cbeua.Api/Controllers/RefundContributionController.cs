@@ -191,6 +191,25 @@ namespace Cbeua.Api.Controllers
         {
             return await _service.GetMemberEligibilityAsync(memberId, excludeRefundContributionId);
         }
+        // RefundContributionController.cs
+        [HttpGet("next-refund-no/{stateId}")]
+        public async Task<CustomApiResponse> GetNextRefundNo(int stateId)
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                response.Value = await _service.GenerateNextRefundNoAsync(stateId);
+                response.IsSucess = true;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
 
     }
 }

@@ -13,6 +13,8 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         IQueryable<RefundContributionDTO> QueryableRefundContributions();
         IQueryable<RefundContributionDTO> QueryableRefundContributionByMemberId(int memberId);
         IQueryable<RefundContributionDTO> QueryableRefundContributionById(int refundContributionId);
+        Task<string?> GetStateNameAsync(int stateId);
+        Task<List<string>> GetRefundNosByStateIdAsync(int stateId);
         Task<MemberRefundEligibilityDTO> GetMemberRefundEligibilityAsync(int memberId, int? excludeRefundContributionId = null);
     }
 }

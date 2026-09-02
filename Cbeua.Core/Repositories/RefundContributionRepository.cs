@@ -136,6 +136,21 @@ namespace Cbeua.Core.Repositories
                         };
             return query;
         }
+        public async Task<string?> GetStateNameAsync(int stateId)
+        {
+            return await _context.States
+                .Where(s => s.StateId == stateId)
+                .Select(s => s.Name)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<string>> GetRefundNosByStateIdAsync(int stateId)
+        {
+            return await _context.RefundContributions
+                .Where(rc => rc.StateId == stateId)
+                .Select(rc => rc.RefundNO)
+                .ToListAsync();
+        }
 
         public async Task<MemberRefundEligibilityDTO> GetMemberRefundEligibilityAsync(int memberId, int? excludeRefundContributionId = null)
         {
