@@ -221,6 +221,24 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [HttpGet("statuses")]
+        public async Task<CustomApiResponse> GetDistinctMemberStatuses()
+        {
+            var response = new CustomApiResponse();
+            try
+            {
+                response.Value = await _service.GetDistinctMemberStatusesAsync();
+                response.IsSucess = true;
+                response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                response.IsSucess = false;
+                response.Error = ex.Message;
+                response.StatusCode = 500;
+            }
+            return response;
+        }
     }
 
 

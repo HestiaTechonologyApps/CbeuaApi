@@ -133,5 +133,17 @@ namespace Cbeua.Core.Repositories
                     && m.MemberId != excludeMemberId
                     && (m.StaffNo == staffNo || m.OldStaffNo == staffNo));
         }
+       
+        public async Task<List<StatusDTO>> GetDistinctMemberStatusesAsync()
+        {
+            return await _context.Members.AsNoTracking()
+                .Where(m => !m.IsDeleted)
+                .Join(_context.statuses.AsNoTracking(),
+                      m => m.StatusId,
+                      s => s.StatusId,
+                      (m, s) => new StatusDTO { StatusId = s.StatusId, Name = s.Name })
+                .Distinct()
+                .ToListAsync();
+        }
     }
 }

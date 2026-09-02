@@ -307,5 +307,10 @@ namespace Cbeua.Bussiness.Services
                 PageSize = parameters.GetAll ? totalRecords : pageSize
             };
         }
+        // MemberService.cs
+        public async Task<List<StatusDTO>> GetDistinctMemberStatusesAsync()
+        {
+            return await _repo.GetDistinctMemberStatusesAsync();
+        }
     }
 }

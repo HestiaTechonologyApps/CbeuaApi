@@ -19,5 +19,7 @@ namespace Cbeua.Domain.Interfaces.IServices
 
         // Add this new method for pagination
         Task<PagedResult<MemberDTO>> GetPagedMembersAsync(MemberPaginationParams parameters);
+        // IMemberService.cs
+        Task<List<StatusDTO>> GetDistinctMemberStatusesAsync();
     }
 }
