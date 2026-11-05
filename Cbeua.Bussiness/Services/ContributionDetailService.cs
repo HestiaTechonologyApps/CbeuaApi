@@ -11,10 +11,53 @@ namespace Cbeua.Bussiness.Services
     {
         private readonly IContributionDetailRepository _repo;
 
-        public ContributionDetailService(IContributionDetailRepository repo)
+        // >>> NEW CODE START
+        // We also need the monthly-contribution repository, because it has the
+        // methods that recount the totals and the new member count on the master record.
+        private readonly IMonthlyContributionRepository _monthlyRepo;
+        // <<< NEW CODE END
+
+        // >>> OLD CODE (commented out, replaced by the constructor below which also receives _monthlyRepo)
+        //public ContributionDetailService(IContributionDetailRepository repo)
+        //{
+        //    _repo = repo;
+        //}
+        // <<< END OLD CODE
+
+        // >>> NEW CODE START
+        public ContributionDetailService(IContributionDetailRepository repo, IMonthlyContributionRepository monthlyRepo)
         {
             _repo = repo;
+            _monthlyRepo = monthlyRepo;
         }
+
+        // Recounts the header numbers of a contribution after a row was parked or unparked.
+        // Call it AFTER the row change has been saved to the database.
+        //   updateNewMemberCount = true  -> also refresh the "New members" number (used by Unpark)
+        private async Task RefreshMasterNumbersAsync(long masterId, bool updateNewMemberCount)
+        {
+            var master = await _monthlyRepo.GetContributionMasterByIdAsync(masterId);
+            if (master == null) return;
+
+            if (updateNewMemberCount)
+            {
+                // Unpark only works for people who are now members, so the live "new members"
+                // count goes down. Clear the caches first so the count uses fresh data.
+                _monthlyRepo.InvalidateMemberLookup();
+                _monthlyRepo.InvalidateReportCache(masterId);
+
+                var liveNewMembers = await _monthlyRepo.GetNewMemberCountAsync(masterId);
+                master.NewMemberCount = liveNewMembers.ToString();
+                await _monthlyRepo.UpdateContributionMasterAsync(master);
+            }
+
+            // Total amount and total entries = only the rows that are NOT parked.
+            await _monthlyRepo.RecalculateMasterTotalsAsync(masterId);
+
+            // One save writes the master changes.
+            await _monthlyRepo.SaveChangesAsync();
+        }
+        // <<< NEW CODE END
 
         public async Task<CustomApiResponse> GetByIdAsync(long detailId)
         {
@@ -75,11 +118,27 @@ namespace Cbeua.Bussiness.Services
                 _repo.Update(detail);
                 await _repo.SaveChangesAsync();
 
+                // >>> NEW CODE START
+                // The row is now parked, so the total amount and total entries must go down.
+                // If this refresh fails, the row is still parked, so we do not return an error.
+                string parkNote = "Item parked successfully";
+                try
+                {
+                    await RefreshMasterNumbersAsync(detail.ContributionMasterId, updateNewMemberCount: false);
+                }
+                catch (Exception)
+                {
+                    parkNote = "Item parked successfully (header totals could not be refreshed)";
+                }
+                // <<< NEW CODE END
+
                 return new CustomApiResponse
                 {
                     IsSucess = true,
                     StatusCode = 200,
-                    Value = "Item parked successfully"
+                    // >>> CHANGED: was  Value = "Item parked successfully"
+                    Value = parkNote
+                    // <<< END CHANGED
                 };
             }
             catch (Exception ex)
@@ -191,11 +250,31 @@ namespace Cbeua.Bussiness.Services
                 _repo.Update(detail);
                 await _repo.SaveChangesAsync();
 
+                // >>> NEW CODE START
+                // The row is now unparked and posted to accounts, so:
+                //   total amount  +this row's amount
+                //   total entries +1
+                //   new members   recounted (this person is a member now, so the count goes down)
+                // If this refresh fails, the unpark itself already succeeded, so we do not return an error
+                // (otherwise the user would click Unpark again and get "Item is not parked").
+                string unparkNote = "Item unparked and posted to accounts successfully";
+                try
+                {
+                    await RefreshMasterNumbersAsync(detail.ContributionMasterId, updateNewMemberCount: true);
+                }
+                catch (Exception)
+                {
+                    unparkNote = "Item unparked and posted to accounts successfully (header totals could not be refreshed)";
+                }
+                // <<< NEW CODE END
+
                 return new CustomApiResponse
                 {
                     IsSucess = true,
                     StatusCode = 200,
-                    Value = "Item unparked and posted to accounts successfully"
+                    // >>> CHANGED: was  Value = "Item unparked and posted to accounts successfully"
+                    Value = unparkNote
+                    // <<< END CHANGED
                 };
             }
             catch (Exception ex)

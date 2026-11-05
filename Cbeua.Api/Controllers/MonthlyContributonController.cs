@@ -203,7 +203,7 @@ namespace Cbeua.Api.Controllers
             }
         }
 
-      
+
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(long id)
         {
@@ -232,18 +232,43 @@ namespace Cbeua.Api.Controllers
             return response;
         }
 
-   
+
+        //   [HttpGet("{id}/report")]
+        //   public async Task<IActionResult> GetReport(
+        //long id,
+        //[FromQuery] string type,
+        //[FromQuery] int pageNumber,
+        //[FromQuery] int pageSize)
+        //   {
+        //       var result = await _service.GetContributionReportAsync(id, type, pageNumber, pageSize);
+        //       return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        //   }
         [HttpGet("{id}/report")]
         public async Task<IActionResult> GetReport(
-     long id,
-     [FromQuery] string type,
-     [FromQuery] int pageNumber,
-     [FromQuery] int pageSize)
+       long id,
+       [FromQuery] string type,
+       [FromQuery] int pageNumber = 1,
+       [FromQuery] int pageSize = 50,
+       CancellationToken ct = default)
         {
-            var result = await _service.GetContributionReportAsync(id, type, pageNumber, pageSize);
+            pageSize = Math.Clamp(pageSize, 1, 200);
+            pageNumber = Math.Max(pageNumber, 1);
+
+            var result = await _service.GetContributionReportAsync(id, type, pageNumber, pageSize, ct);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
-     
+        [HttpGet("{id}/parked-count")]
+        public async Task<IActionResult> GetParkedCount(long id, CancellationToken ct = default)
+        {
+            var result = await _service.GetParkedCountAsync(id, ct);
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
+        [HttpGet("{id}/totals-preview")]
+        public async Task<IActionResult> GetTotalsPreview(long id, CancellationToken ct = default)
+        {
+            var result = await _service.GetTotalsPreviewAsync(id, ct);
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
     }
 }
