@@ -9,7 +9,7 @@ namespace Cbeua.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
     public class PublicPageController : ControllerBase
     {
         private readonly IPublicPageService _service;
@@ -19,6 +19,7 @@ namespace Cbeua.Api.Controllers
         }
 
         [HttpGet("public/home")]
+        [AllowAnonymous]
         public async Task<CustomApiResponse> GetAll()
         {
             var response = new CustomApiResponse();
