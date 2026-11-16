@@ -1,3 +1,4 @@
+using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
@@ -37,6 +38,12 @@ namespace Cbeua.Bussiness.Services
         public async Task<ExpenseMasterDTO> CreateAsync(ExpenseMaster expenseMaster)
         {
             expenseMaster.IsDeleted = false;
+            if (expenseMaster.Amount < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
+            // Approval only happens through ApproveAsync.
+            expenseMaster.isApproved = false;
+            expenseMaster.ApprovedBy = "";
+            expenseMaster.ApprovedDate = null;
             await _repo.AddAsync(expenseMaster);
             await _repo.SaveChangesAsync();
 
@@ -94,6 +101,15 @@ namespace Cbeua.Bussiness.Services
         {
             var oldentity = await _repo.GetByIdAsync(expenseMaster.ExpenseMasterId);
             if (oldentity == null || oldentity.IsDeleted) return false;
+
+            // Approval fields are owned by ApproveAsync; an approved expense keeps its amount.
+            expenseMaster.isApproved = oldentity.isApproved;
+            expenseMaster.ApprovedBy = oldentity.ApprovedBy;
+            expenseMaster.ApprovedDate = oldentity.ApprovedDate;
+            if (oldentity.isApproved && expenseMaster.Amount != oldentity.Amount)
+                throw new BusinessRuleException("The amount of an approved expense cannot be changed.");
+            if (expenseMaster.Amount < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
 
             _repo.Detach(oldentity);
             _repo.Update(expenseMaster);

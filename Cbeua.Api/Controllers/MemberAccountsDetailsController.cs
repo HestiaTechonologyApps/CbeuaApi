@@ -1,12 +1,14 @@
 ﻿using Cbeua.Domain.DTO;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cbeua.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MemberAccountsDetailsController : ControllerBase
     {
         private readonly IMemberAccountDetailsService _service;

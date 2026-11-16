@@ -19,6 +19,11 @@ public class ExceptionLoggingMiddleware
         {
             await _next(context);
         }
+        catch (Cbeua.Core.Helpers.BusinessRuleException ex)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+        }
         catch (Exception ex)
         {
             // Build ExceptionLog entity
@@ -44,9 +49,12 @@ public class ExceptionLoggingMiddleware
             // Save to database
            // await exceptionLogService.LogExceptionAsync(log);
 
-            // Optionally, rethrow or return a generic error response
+            // Log server-side (headers are left out: they carry the bearer token) and return only a trace id.
+            Serilog.Log.Error(ex, "Unhandled exception {Method} {Path} trace {TraceId}",
+                context.Request.Method, context.Request.Path, context.TraceIdentifier);
+
             context.Response.StatusCode = 500;
-            await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred." + ex.Message  });
+            await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred. Reference: " + context.TraceIdentifier });
         }
     }
 }

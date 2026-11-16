@@ -3,9 +3,13 @@ using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+
+
 
 namespace Cbeua.Core.Repositories
 {
@@ -58,7 +62,7 @@ namespace Cbeua.Core.Repositories
             await _context.ContributionDetails.AddAsync(detail);
         }
 
-   
+
         public async Task AddContributionDetailsRangeAsync(List<ContributionDetail> details)
         {
             _context.ChangeTracker.AutoDetectChangesEnabled = false;
@@ -94,7 +98,7 @@ namespace Cbeua.Core.Repositories
                     FileExtension = cm.FileExtension,
                     FileSize = cm.FileSize,
                     Month = cm.Month,
-                    MonthName = month.MonthName,  
+                    MonthName = month.MonthName,
                     Year = cm.Year,
                     Circle = cm.Circle,
                     TotalAmount = cm.totalamount,
@@ -123,7 +127,7 @@ namespace Cbeua.Core.Repositories
             _context.ContributionMasters.Remove(master);
         }
 
-     
+
         public void DetachAll()
         {
             var entries = _context.ChangeTracker.Entries().ToList();
@@ -132,16 +136,76 @@ namespace Cbeua.Core.Repositories
                 entry.State = EntityState.Detached;
             }
         }
+        //public async Task<int> GetNewMemberCountAsync(long contributionMasterId)
+        //{
+        //    return await _context.ContributionDetails
+        //        .Where(d => d.ContributionMasterId == contributionMasterId
+        //                 && !_context.Members.Any(m => m.StaffNo.ToString() == d.StaffNo))
+        //        .CountAsync();
+        //}
+        //private async Task<HashSet<int>> GetActiveMemberStaffNosAsync()  //portion added
+        //{
+        //    var nos = await _context.Members
+        //        .AsNoTracking()
+        //        .Where(m => !m.IsDeleted)
+        //        .Select(m => m.StaffNo)
+        //        .ToListAsync();
+        //    return nos.ToHashSet();
+        //}
+
+        public async Task<List<ContributionDetail>> GetNewMembersAsync(long contributionMasterId)
+        {
+            var memberNos = await GetActiveMemberStaffNosAsync();
+
+            var details = await _context.ContributionDetails
+                .AsNoTracking()
+                .Where(d => d.ContributionMasterId == contributionMasterId)
+                .ToListAsync();
+
+            return details
+                .Where(d => !int.TryParse(d.StaffNo?.Trim(), out var s) || !memberNos.Contains(s))
+                .ToList();
+        }
+
+        //helper added
+        private async Task<HashSet<int>> GetActiveMemberStaffNosAsync()
+        {
+            var nos = await _context.Members
+                .AsNoTracking()
+                .Where(m => !m.IsDeleted)
+                .Select(m => m.StaffNo)
+                .ToListAsync();
+            return nos.ToHashSet();
+        }
         public async Task<int> GetNewMemberCountAsync(long contributionMasterId)
         {
-            return await _context.ContributionDetails
-                .Where(d => d.ContributionMasterId == contributionMasterId
-                         && !_context.Members.Any(m => m.StaffNo.ToString() == d.StaffNo))
-                .CountAsync();
+            var memberNos = await GetActiveMemberStaffNosAsync();
+
+            var details = await _context.ContributionDetails
+                .AsNoTracking()
+                .Where(d => d.ContributionMasterId == contributionMasterId)
+                .ToListAsync();
+
+            var newMemberCount = details.Count(d => !int.TryParse(d.StaffNo?.Trim(), out var n) || !memberNos.Contains(n));
+
+            return newMemberCount;
         }
+        // till here
+        //reportss
+        //public async Task<List<ContributionDetail>> GetNewMembersAsync(long contributionMasterId)
+        //{
+        //    return await _context.ContributionDetails
+        //        .Where(d => d.ContributionMasterId == contributionMasterId
+        //                 && !_context.Members
+        //                     .Where(m => !m.IsDeleted)
+        //                     .Any(m => m.StaffNo.ToString() == d.StaffNo.Trim()))
+        //        .AsNoTracking()
+        //        .ToListAsync();
+        //}
+
         public async Task UpdateContributionMasterAsync(ContributionMaster master)
         {
-           _context.ContributionMasters.Update(master);
+            _context.ContributionMasters.Update(master);
         }
         public async Task<ContributionMaster?> GetContributionMasterByIdAsync(long contributionMasterId)
         {
@@ -152,17 +216,6 @@ namespace Cbeua.Core.Repositories
         {
             return _context.ContributionDetails
                 .Where(d => d.ContributionMasterId == contributionMasterId);
-        }
-        //reportss
-        public async Task<List<ContributionDetail>> GetNewMembersAsync(long contributionMasterId)
-        {
-            return await _context.ContributionDetails
-                .Where(d => d.ContributionMasterId == contributionMasterId
-                         && !_context.Members
-                             .Where(m => !m.IsDeleted)
-                             .Any(m => m.StaffNo.ToString() == d.StaffNo.Trim()))
-                .AsNoTracking()
-                .ToListAsync();
         }
 
         public async Task<List<ContributionDetail>> GetWrongBranchAsync(long contributionMasterId)
@@ -204,13 +257,22 @@ namespace Cbeua.Core.Repositories
         // ✅ AFTER — single query with NOT EXISTS
         public async Task<List<DefaulterDTO>> GetDefaultersAsync(string month, string year)
         {
-            return await _context.Members
-                .Where(m => !m.IsDeleted
-                         && !_context.ContributionDetails
-                             .Any(d => d.Month == month
-                                    && d.Year == year
-                                    && !d.isParked
-                                    && d.StaffNo == m.StaffNo.ToString()))
+            var paidRaw = await _context.ContributionDetails
+                .AsNoTracking()
+                .Where(d => d.Month == month && d.Year == year && !d.isParked)
+                .Select(d => d.StaffNo)
+                .Distinct()
+                .ToListAsync();
+
+            var paid = paidRaw
+                .Select(s => int.TryParse(s?.Trim(), out var n) ? n : (int?)null)
+                .Where(n => n.HasValue)
+                .Select(n => n!.Value)
+                .ToHashSet();
+
+            var members = await _context.Members
+                .AsNoTracking()
+                .Where(m => !m.IsDeleted)
                 .Select(m => new DefaulterDTO
                 {
                     MemberId = m.MemberId,
@@ -218,8 +280,9 @@ namespace Cbeua.Core.Repositories
                     Name = m.Name,
                     BranchId = m.BranchId
                 })
-                .AsNoTracking()
                 .ToListAsync();
+
+            return members.Where(m => !paid.Contains(m.StaffNo)).ToList();
         }
     }
 }

@@ -42,12 +42,19 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<RefundContributionDTO> CreateAsync(RefundContribution refundContribution)
         {
+            if (refundContribution.Amount <= 0)
+                throw new InvalidOperationException("Refund amount must be greater than zero.");
+
             var eligibility = await _repo.GetMemberRefundEligibilityAsync(refundContribution.MemberId);
             if (refundContribution.Amount > eligibility.AvailableAmount)
                 throw new InvalidOperationException(
                     $"Refund amount ({refundContribution.Amount}) exceeds the available balance ({eligibility.AvailableAmount}) for this member.");
 
-            refundContribution.IsDeleted = false; 
+            refundContribution.IsDeleted = false;
+            // Approval only happens through ApproveAsync.
+            refundContribution.isApproved = false;
+            refundContribution.ApprovedBy = "";
+            refundContribution.ApprovedDate = null;
             await _repo.AddAsync(refundContribution);
             await _repo.SaveChangesAsync();
 
@@ -89,7 +96,19 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(RefundContribution refundContribution)
         {
             var oldentity = await _repo.GetByIdAsync(refundContribution.RefundContributionId);
-            if (oldentity == null || oldentity.IsDeleted) return false; 
+            if (oldentity == null || oldentity.IsDeleted) return false;
+
+            // Approval fields are owned by ApproveAsync. Once approved, the member and amount are fixed
+            // (DD number/date and remarks can still be filled in afterwards).
+            refundContribution.isApproved = oldentity.isApproved;
+            refundContribution.ApprovedBy = oldentity.ApprovedBy;
+            refundContribution.ApprovedDate = oldentity.ApprovedDate;
+            if (oldentity.isApproved &&
+                (refundContribution.Amount != oldentity.Amount || refundContribution.MemberId != oldentity.MemberId))
+                throw new InvalidOperationException("The amount and member of an approved refund cannot be changed.");
+
+            if (refundContribution.Amount <= 0)
+                throw new InvalidOperationException("Refund amount must be greater than zero.");
 
             var eligibility = await _repo.GetMemberRefundEligibilityAsync(
                 refundContribution.MemberId,
@@ -288,7 +307,21 @@ namespace Cbeua.Bussiness.Services
                         StatusCode = 400
                     };
 
-                var oldEntity = CloneRefundContribution(entry); 
+                if (approve)
+                {
+                    // Re-check the balance at approval time: other refunds may have been created since this one.
+                    var eligibility = await _repo.GetMemberRefundEligibilityAsync(
+                        entry.MemberId, excludeRefundContributionId: entry.RefundContributionId);
+                    if (entry.Amount > eligibility.AvailableAmount)
+                        return new CustomApiResponse
+                        {
+                            IsSucess = false,
+                            Error = $"Refund amount ({entry.Amount}) exceeds the available balance ({eligibility.AvailableAmount}) for this member.",
+                            StatusCode = 400
+                        };
+                }
+
+                var oldEntity = CloneRefundContribution(entry);
 
                 entry.isApproved = approve;
                 entry.ApprovedBy = currentUserId.ToString();

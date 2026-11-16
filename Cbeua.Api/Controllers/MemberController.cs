@@ -176,14 +176,17 @@ namespace Cbeua.Api.Controllers
             Directory.CreateDirectory(uploadsFolder);
 
             var fileExtension = Path.GetExtension(profilePic.FileName);
+            if (!new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }.Contains(fileExtension.ToLowerInvariant()))
+                return new CustomApiResponse { IsSucess = false, Error = "Only image files (jpg, png, gif, webp) are allowed", StatusCode = 400 };
             var fileName = $"{memberId}_{Guid.NewGuid()}{fileExtension}";  // Changed from appUserId
             var filePath = Path.Combine(uploadsFolder, fileName);
 
             // Delete old profile pic if exists and is not empty
             if (!string.IsNullOrEmpty(member.ProfileImageSrc))
             {
-                var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", member.ProfileImageSrc.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
-                if (System.IO.File.Exists(oldFilePath))
+                // Only delete files inside this upload folder; the stored path is client-editable.
+                var oldFilePath = Cbeua.Core.Helpers.FileSafetyHelper.ResolveUnder(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), uploadsFolder, member.ProfileImageSrc);
+                if (oldFilePath != null && System.IO.File.Exists(oldFilePath))
                 {
                     try { System.IO.File.Delete(oldFilePath); } catch { /* ignore file delete errors */ }
                 }

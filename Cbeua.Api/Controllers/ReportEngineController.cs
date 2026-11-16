@@ -20,7 +20,6 @@ namespace Cbeua.Api.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<CustomApiResponse> GetAll()
         {
             var response = new CustomApiResponse();

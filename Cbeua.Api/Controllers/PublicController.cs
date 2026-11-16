@@ -210,6 +210,11 @@ namespace Cbeua.Api.Controllers
         [HttpGet("download/{attachmentId}")]
         public async Task<IActionResult> Download(int attachmentId)
         {
+            // Anonymous callers may only download attachments published to the public site.
+            var attachment = await _attachmentService.GetByIdAsync(attachmentId);
+            if (attachment == null || attachment.IsDeleted || attachment.TableName != "public")
+                return NotFound(ApiResponseFactory.Fail("Attachment not found", System.Net.HttpStatusCode.NotFound));
+
             var result = await _attachmentService.DownloadAttachmentAsync(attachmentId);
 
             if (result.ErrorMessage != null)

@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+using Cbeua.Api.Security;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,10 +63,11 @@ namespace Cbeua.Api.Controllers
             var result = await _service.GetParkedDetailsAsync(masterId, pageNumber, pageSize);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPost("{masterId}/approve")]
         public async Task<IActionResult> Approve(long masterId, [FromQuery] bool approve, [FromQuery] int currentUserId)
         {
-            var result = await _service.ApproveAsync(masterId, currentUserId, approve);
+            var result = await _service.ApproveAsync(masterId, User.GetUserId(), approve);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
     }
