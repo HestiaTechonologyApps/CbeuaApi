@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+using Cbeua.Api.Security;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +33,11 @@ namespace Cbeua.Api.Controllers
             var result = await _service.ParkItemAsync(detailId, dto.ParkReason);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPost("{detailId}/unpark")]
         public async Task<IActionResult> UnParkItem(long detailId, [FromQuery] int currentUserId)
         {
-            var result = await _service.UnParkItemAsync(detailId, currentUserId);
+            var result = await _service.UnParkItemAsync(detailId, User.GetUserId());
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
     }

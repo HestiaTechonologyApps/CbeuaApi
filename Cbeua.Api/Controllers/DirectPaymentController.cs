@@ -1,13 +1,16 @@
-﻿using Cbeua.Domain.DTO;
+using Cbeua.Api.Security;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cbeua.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DirectPaymentController : ControllerBase
     {
         private readonly IDirectPaymentService _service;
@@ -125,10 +128,11 @@ namespace Cbeua.Api.Controllers
 
 
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPut("approve/{id}")]
         public async Task<CustomApiResponse> Approve(int id, [FromQuery] bool approve, [FromQuery] int currentUserId)
         {
-            return await _service.ApproveAsync(id, currentUserId, approve);
+            return await _service.ApproveAsync(id, User.GetUserId(), approve);
         }
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)

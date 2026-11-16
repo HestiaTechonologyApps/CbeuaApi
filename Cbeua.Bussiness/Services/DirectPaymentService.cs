@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+﻿using Cbeua.Core.Helpers;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
@@ -44,6 +45,13 @@ namespace Cbeua.Bussiness.Services
 
         public async Task<DirectPaymentDTO> CreateAsync(DirectPayment directPayment)
         {
+            if (directPayment.Amount < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
+            // Approval (and its ledger posting) only happens through ApproveAsync.
+            directPayment.isApproved = false;
+            directPayment.ApprovedBy = "";
+            directPayment.ApprovedDate = null;
+            directPayment.IsDeleted = false;
             await _repo.AddAsync(directPayment);
             await _repo.SaveChangesAsync();
             await this._auditRepository.LogAuditAsync<DirectPayment>(
@@ -193,6 +201,19 @@ namespace Cbeua.Bussiness.Services
         public async Task<bool> UpdateAsync(DirectPayment directPayment)
         {
             var oldentity = await _repo.GetByIdAsync(directPayment.DirectPaymentId);
+            if (oldentity == null || oldentity.IsDeleted) return false;
+
+            // An approved payment is already posted to Accounts; editing it would desync (or re-open) the ledger.
+            if (oldentity.isApproved)
+                throw new BusinessRuleException("Approved payments cannot be edited.");
+            if (directPayment.Amount < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
+
+            // Approval fields are owned by ApproveAsync, never by the edit form.
+            directPayment.isApproved = oldentity.isApproved;
+            directPayment.ApprovedBy = oldentity.ApprovedBy;
+            directPayment.ApprovedDate = oldentity.ApprovedDate;
+
             _repo.Detach(oldentity);
             _repo.Update(directPayment);
             await _repo.SaveChangesAsync();
@@ -211,6 +232,8 @@ namespace Cbeua.Bussiness.Services
         {
             var directPayment = await _repo.GetByIdAsync(id);
             if (directPayment == null) return false;
+            if (directPayment.isApproved)
+                throw new BusinessRuleException("Approved payments cannot be deleted; their ledger posting would be orphaned.");
             _repo.Delete(directPayment);
             await _auditRepository.LogAuditAsync<DirectPayment>(
                tableName: AuditTableName,

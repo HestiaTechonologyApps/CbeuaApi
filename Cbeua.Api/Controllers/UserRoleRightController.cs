@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+﻿using Cbeua.Api.Security;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -59,6 +60,11 @@ namespace Cbeua.Api.Controllers
 
 
 
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
+
+
+
+
         [HttpPost]
         public async Task<CustomApiResponse> Create([FromBody] UserRoleRight userRoleRight)
         {
@@ -78,6 +84,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] UserRoleRight userRoleRight)
         {
@@ -108,6 +115,7 @@ namespace Cbeua.Api.Controllers
 
 
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {

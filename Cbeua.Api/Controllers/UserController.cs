@@ -1,3 +1,4 @@
+using Cbeua.Api.Security;
 ﻿using Cbeua.Core.Helpers;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
@@ -63,6 +64,11 @@ namespace Cbeua.Api.Controllers
 
 
 
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
+        
+
+
+
         [HttpPost]
         public async Task<CustomApiResponse> Create([FromBody] User user)
         {
@@ -82,6 +88,7 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPut("{id}")]
         public async Task<CustomApiResponse> Update(int id, [FromBody] User user)
         {
@@ -114,6 +121,7 @@ namespace Cbeua.Api.Controllers
 
             return response;
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpDelete("{id}")]
         public async Task<CustomApiResponse> Delete(int id)
         {
@@ -138,6 +146,9 @@ namespace Cbeua.Api.Controllers
         [HttpPost("ChangePassWord")]
         public async Task<CustomApiResponse> ChangePassWord([FromBody] PasswordChangeRequest passwordChangeRequest)
         {
+            // Only an admin may change another user's password.
+            if (!User.IsAdmin() && passwordChangeRequest.UserId != User.GetUserId())
+                return ApiResponseFactory.Fail("You can only change your own password", System.Net.HttpStatusCode.Forbidden);
             return await _service.ChangePassWord(passwordChangeRequest);
 
         }
@@ -148,6 +159,9 @@ namespace Cbeua.Api.Controllers
             {
                 if (id != dto.UserId)
                     return ApiResponseFactory.Fail("Id mismatch", System.Net.HttpStatusCode.BadRequest);
+
+                if (!User.IsAdmin() && id != User.GetUserId())
+                    return ApiResponseFactory.Fail("You can only update your own account", System.Net.HttpStatusCode.Forbidden);
 
                 return await _service.UpdateUserPartially(id, dto);
             }

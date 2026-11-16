@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+﻿using Cbeua.Core.Helpers;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
@@ -38,6 +39,12 @@ namespace Cbeua.Bussiness.Services
         public async Task<DeathClaimDTO> CreateAsync(DeathClaim deathClaim)
         {
             deathClaim.IsDeleted = false; // ✅ ENSURE NOT DELETED
+            if (deathClaim.Amount < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
+            // Approval only happens through ApproveAsync.
+            deathClaim.isApproved = false;
+            deathClaim.ApprovedBy = "";
+            deathClaim.ApprovedDate = null;
             await _repo.AddAsync(deathClaim);
             await _repo.SaveChangesAsync();
 
@@ -59,6 +66,16 @@ namespace Cbeua.Bussiness.Services
         {
             var oldentity = await _repo.GetByIdAsync(deathClaim.DeathClaimId);
             if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
+
+            // Approval fields are owned by ApproveAsync. Once approved, the member and amount are fixed
+            // (DD number/date can still be filled in afterwards).
+            deathClaim.isApproved = oldentity.isApproved;
+            deathClaim.ApprovedBy = oldentity.ApprovedBy;
+            deathClaim.ApprovedDate = oldentity.ApprovedDate;
+            if (oldentity.isApproved && (deathClaim.Amount != oldentity.Amount || deathClaim.MemberId != oldentity.MemberId))
+                throw new BusinessRuleException("The amount and member of an approved claim cannot be changed.");
+            if (deathClaim.Amount < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
 
             _repo.Detach(oldentity);
             _repo.Update(deathClaim);

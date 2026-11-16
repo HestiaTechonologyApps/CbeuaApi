@@ -43,6 +43,12 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Cbeua.Api.Security.AuthPolicies.AdminOnly,
+        policy => policy.RequireAuthenticatedUser()
+                        .RequireAssertion(ctx => Cbeua.Api.Security.ClaimsPrincipalExtensions.IsAdmin(ctx.User)));
+});
 builder.Services.AddHttpContextAccessor();
 CleanOldStdoutLogs();
 
@@ -121,8 +127,22 @@ if (!Directory.Exists(wellKnownPath))
     Directory.CreateDirectory(wellKnownPath);
 }
 
+// Bank contribution files hold member names and staff numbers; they are read by the API, never served directly.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/contributionfiles", StringComparison.OrdinalIgnoreCase))
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return;
+    }
+    await next();
+});
+
 // ADD THIS LINE - Serves files from wwwroot (including /profilepics)
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx => ctx.Context.Response.Headers["X-Content-Type-Options"] = "nosniff"
+});
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -131,15 +151,13 @@ app.UseStaticFiles(new StaticFileOptions
     ServeUnknownFileTypes = true
 });
 app.UseMiddleware<ExceptionLoggingMiddleware>();
-app.UseSwagger();
-app.UseSwaggerUI();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+// Swagger publishes the full API map, so it is off in production unless "EnableSwagger": true is configured.
+if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("EnableSwagger"))
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 //app.UseHttpsRedirection();
 app.UseCors();

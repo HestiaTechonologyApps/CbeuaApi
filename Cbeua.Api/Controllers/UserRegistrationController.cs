@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.Interfaces.IServices;
+using Cbeua.Api.Security;
+using Cbeua.Domain.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -38,10 +39,12 @@ namespace Cbeua.Api.Controllers
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
 
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
+
         [HttpPost("{id}/approve")]
         public async Task<IActionResult> Approve(int id, [FromQuery] bool approve, [FromQuery] int currentUserId, [FromQuery] string? rejectReason = null)
         {
-            var result = await _service.ApproveAsync(id, currentUserId, approve, rejectReason);
+            var result = await _service.ApproveAsync(id, User.GetUserId(), approve, rejectReason);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
     }

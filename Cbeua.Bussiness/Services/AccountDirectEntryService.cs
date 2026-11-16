@@ -1,4 +1,5 @@
-﻿using Cbeua.Domain.DTO;
+﻿using Cbeua.Core.Helpers;
+using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.Domain.Interfaces.IServices;
@@ -47,6 +48,12 @@ namespace Cbeua.Bussiness.Services
         public async Task<AccountsDirectEntryDTO> CreateAsync(AccountsDirectEntry accountsDirect)
         {
             accountsDirect.IsDeleted = false; // ✅ ENSURE NOT DELETED
+            if (accountsDirect.Amt < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
+            // Approval (and its ledger posting) only happens through ApproveAsync.
+            accountsDirect.isApproved = false;
+            accountsDirect.ApprovedBy = "";
+            accountsDirect.ApprovedDate = null;
             await _repo.AddAsync(accountsDirect);
             await _repo.SaveChangesAsync();
 
@@ -69,6 +76,17 @@ namespace Cbeua.Bussiness.Services
             var oldentity = await _repo.GetByIdAsync(accountsDirect.AccountsDirectEntryID);
             if (oldentity == null || oldentity.IsDeleted) return false; // ✅ CHECK IF DELETED
 
+            // An approved entry is already posted to Accounts; editing it would desync (or re-open) the ledger.
+            if (oldentity.isApproved)
+                throw new BusinessRuleException("Approved entries cannot be edited.");
+            if (accountsDirect.Amt < 0)
+                throw new BusinessRuleException("Amount cannot be negative.");
+
+            // Approval fields are owned by ApproveAsync, never by the edit form.
+            accountsDirect.isApproved = oldentity.isApproved;
+            accountsDirect.ApprovedBy = oldentity.ApprovedBy;
+            accountsDirect.ApprovedDate = oldentity.ApprovedDate;
+
             _repo.Detach(oldentity);
             _repo.Update(accountsDirect);
             await _repo.SaveChangesAsync();
@@ -89,6 +107,8 @@ namespace Cbeua.Bussiness.Services
         {
             var accountsDirectEntry = await _repo.GetByIdAsync(id);
             if (accountsDirectEntry == null || accountsDirectEntry.IsDeleted) return false; // ✅ CHECK IF ALREADY DELETED
+            if (accountsDirectEntry.isApproved)
+                throw new BusinessRuleException("Approved entries cannot be deleted; their ledger posting would be orphaned.");
 
             var oldEntity = CloneAccountsDirectEntry(accountsDirectEntry); // ✅ CLONE FOR AUDIT
 

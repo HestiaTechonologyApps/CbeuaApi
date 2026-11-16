@@ -1,4 +1,5 @@
-﻿// Controllers/AuthController.cs
+﻿using Cbeua.Api.Security;
+// Controllers/AuthController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -110,7 +111,7 @@ public class AuthController : Api_BaseController
             return ApiResponseFactory.Fail("Invalid request data", System.Net.HttpStatusCode.BadRequest);
         }
 
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var userId = User.GetUserId(); // SerialNumber claim = UserId (NameIdentifier holds the username)
         var result = await _authService.ChangePasswordAsync(userId, request);
 
         if (!result.IsSucess)
@@ -125,7 +126,7 @@ public class AuthController : Api_BaseController
     [Authorize]
     public async Task<CustomApiResponse> GetCurrentUser()
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var userId = User.GetUserId(); // SerialNumber claim = UserId (NameIdentifier holds the username)
         var result = await _authService.GetCurrentUserAsync(userId);
 
         if (!result.IsSucess)

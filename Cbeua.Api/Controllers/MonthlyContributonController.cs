@@ -120,6 +120,8 @@ namespace Cbeua.Api.Controllers
             Directory.CreateDirectory(uploadsFolder);
 
             var fileExtension = Path.GetExtension(dto.ContributionFile.FileName);
+            if (Cbeua.Core.Helpers.FileSafetyHelper.IsBlockedExtension(dto.ContributionFile.FileName))
+                return new CustomApiResponse { IsSucess = false, Error = "This file type is not allowed", StatusCode = 400 };
             var fileName = $"Contribution_{dto.YearOf}_{dto.MonthCode}_{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
@@ -169,6 +171,8 @@ namespace Cbeua.Api.Controllers
             Directory.CreateDirectory(uploadsFolder);
 
             var fileExtension = Path.GetExtension(dto.ContributionFile.FileName);
+            if (Cbeua.Core.Helpers.FileSafetyHelper.IsBlockedExtension(dto.ContributionFile.FileName))
+                return new CustomApiResponse { IsSucess = false, Error = "This file type is not allowed", StatusCode = 400 };
             var fileName = $"Contribution_{dto.YearOf}_{dto.MonthCode}_{Guid.NewGuid()}{fileExtension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 

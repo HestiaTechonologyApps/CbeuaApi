@@ -1,3 +1,4 @@
+using Cbeua.Api.Security;
 using Cbeua.Domain.DTO;
 using Cbeua.Domain.Entities;
 using Cbeua.Domain.Interfaces.IServices;
@@ -105,10 +106,11 @@ namespace Cbeua.Api.Controllers
             }
             return response;
         }
+        [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPut("approve/{id}")]
         public async Task<CustomApiResponse> Approve(int id, [FromQuery] bool approve, [FromQuery] int currentUserId)
         {
-            return await _service.ApproveAsync(id, currentUserId, approve);
+            return await _service.ApproveAsync(id, User.GetUserId(), approve);
         }
 
         [HttpDelete("{id}")]

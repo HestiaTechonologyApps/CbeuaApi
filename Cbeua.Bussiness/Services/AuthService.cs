@@ -165,9 +165,12 @@ namespace Cbeua.Business.Services
                 var resetToken = PasswordHelper.GenerateResetToken();
                 _resetTokens[resetToken] = email;
 
-                _logger.LogInformation("Reset token for {Email}: {Token}", email, resetToken);
+                // The token must only reach the user by email. Never log it or return it: returning it would let
+                // anyone reset any account, and a null-vs-token response would reveal which emails exist.
+                // TODO: send the token by email once a reset screen exists (reset is non-functional today).
+                _logger.LogInformation("Password reset requested for an existing account");
 
-                return ApiResponseFactory.Success(resetToken, "If the email exists, a reset link has been sent.");
+                return ApiResponseFactory.Success(null, "If the email exists, a reset link has been sent.");
             }
             catch (Exception ex)
             {
