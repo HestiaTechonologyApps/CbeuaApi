@@ -18,6 +18,7 @@ namespace Cbeua.Domain.Interfaces.IRepositories
         Task<int> GetNewMemberCountAsync(long contributionMasterId);
         int GetContributionDetailsCountByMasterId(long masterId);               
         void RemoveContributionDetails(List<ContributionDetail> details);
+        Task DeleteContributionDetailsByMasterIdAsync(long masterId);
         void RemoveContributionMaster(ContributionMaster master);
         Task UpdateContributionMasterAsync(ContributionMaster master);
         Task<ContributionMaster?> GetContributionMasterByIdAsync(long contributionMasterId);

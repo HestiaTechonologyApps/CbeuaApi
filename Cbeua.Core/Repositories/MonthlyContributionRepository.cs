@@ -122,6 +122,14 @@ namespace Cbeua.Core.Repositories
             _context.ContributionDetails.RemoveRange(details);
         }
 
+        // Single set-based DELETE instead of loading every detail and deleting row by row.
+        public async Task DeleteContributionDetailsByMasterIdAsync(long masterId)
+        {
+            await _context.ContributionDetails
+                .Where(d => d.ContributionMasterId == masterId)
+                .ExecuteDeleteAsync();
+        }
+
         public void RemoveContributionMaster(ContributionMaster master)
         {
             _context.ContributionMasters.Remove(master);
@@ -181,14 +189,14 @@ namespace Cbeua.Core.Repositories
         {
             var memberNos = await GetActiveMemberStaffNosAsync();
 
-            var details = await _context.ContributionDetails
+            // Only the StaffNo column is needed, not the whole row (FullString etc.)
+            var staffNos = await _context.ContributionDetails
                 .AsNoTracking()
                 .Where(d => d.ContributionMasterId == contributionMasterId)
+                .Select(d => d.StaffNo)
                 .ToListAsync();
 
-            var newMemberCount = details.Count(d => !int.TryParse(d.StaffNo?.Trim(), out var n) || !memberNos.Contains(n));
-
-            return newMemberCount;
+            return staffNos.Count(s => !int.TryParse(s?.Trim(), out var n) || !memberNos.Contains(n));
         }
         // till here
         //reportss
@@ -220,24 +228,40 @@ namespace Cbeua.Core.Repositories
 
         public async Task<List<ContributionDetail>> GetWrongBranchAsync(long contributionMasterId)
         {
-            return await _context.ContributionDetails
-                .Where(d => d.ContributionMasterId == contributionMasterId
-                         && !_context.Branches
-                             .Where(b => !b.IsDeleted)
-                             .Any(b => b.DpCode.ToString() == d.DpCode.Trim()))
+            // Load the (small) set of valid branch codes once and compare in memory,
+            // instead of a per-row correlated subquery with CAST on the Branches table.
+            var dpCodes = (await _context.Branches
+                    .AsNoTracking()
+                    .Where(b => !b.IsDeleted)
+                    .Select(b => b.DpCode)
+                    .ToListAsync())
+                .ToHashSet();
+
+            var details = await _context.ContributionDetails
                 .AsNoTracking()
+                .Where(d => d.ContributionMasterId == contributionMasterId)
                 .ToListAsync();
+
+            return details
+                .Where(d => !int.TryParse(d.DpCode?.Trim(), out var dp) || !dpCodes.Contains(dp))
+                .ToList();
         }
 
         public async Task<List<ContributionDetail>> GetWrongCircleAsync(long contributionMasterId)
         {
-            return await _context.ContributionDetails
-                .Where(d => d.ContributionMasterId == contributionMasterId
-                         && !_context.Circles
-                             .Where(c => !c.IsDeleted)
-                             .Any(c => c.CircleCode == d.Circle))
+            var circleCodes = (await _context.Circles
+                    .AsNoTracking()
+                    .Where(c => !c.IsDeleted)
+                    .Select(c => c.CircleCode)
+                    .ToListAsync())
+                .ToHashSet();
+
+            var details = await _context.ContributionDetails
                 .AsNoTracking()
+                .Where(d => d.ContributionMasterId == contributionMasterId)
                 .ToListAsync();
+
+            return details.Where(d => !circleCodes.Contains(d.Circle)).ToList();
         }
 
         public async Task<List<ContributionDetail>> GetParkedItemsAsync(long contributionMasterId)

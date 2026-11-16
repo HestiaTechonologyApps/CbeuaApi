@@ -124,8 +124,7 @@ namespace Cbeua.Bussiness.Services
                     };
                 }
 
-                var children = _repo.GetContributionDetailsByMasterId(master.ContributionMasterId);
-                _repo.RemoveContributionDetails(children);
+                await _repo.DeleteContributionDetailsByMasterIdAsync(master.ContributionMasterId);
                 _repo.RemoveContributionMaster(master);
             }
 
@@ -280,8 +279,7 @@ namespace Cbeua.Bussiness.Services
 
                 foreach (var master in oldMasters)
                 {
-                    var children = _repo.GetContributionDetailsByMasterId(master.ContributionMasterId);
-                    _repo.RemoveContributionDetails(children);
+                    await _repo.DeleteContributionDetailsByMasterIdAsync(master.ContributionMasterId);
                     _repo.RemoveContributionMaster(master);
                 }
                 await _repo.SaveChangesAsync();
@@ -618,9 +616,7 @@ namespace Cbeua.Bussiness.Services
                 };
 
                 // ── 9. Remove old details ─────────────────────────────────────────
-                var oldDetails = _repo.GetContributionDetailsByMasterId(contributionMaster.ContributionMasterId);
-                _repo.RemoveContributionDetails(oldDetails);
-                await _repo.SaveChangesAsync();
+                await _repo.DeleteContributionDetailsByMasterIdAsync(contributionMaster.ContributionMasterId);
 
                 // ── 10. Update master fields ──────────────────────────────────────
                 contributionMaster.FileName = fileName;
@@ -795,9 +791,7 @@ namespace Cbeua.Bussiness.Services
                     contributionMaster = existingMasters.First();
 
                     // Delete only the old details
-                    var children = _repo.GetContributionDetailsByMasterId(contributionMaster.ContributionMasterId);
-                    _repo.RemoveContributionDetails(children);
-                    await _repo.SaveChangesAsync();
+                    await _repo.DeleteContributionDetailsByMasterIdAsync(contributionMaster.ContributionMasterId);
 
                     // Update master fields in place
                     contributionMaster.FileName = monthly.FileName;
