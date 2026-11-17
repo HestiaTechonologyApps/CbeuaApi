@@ -33,6 +33,23 @@ namespace Cbeua.Api.Controllers
             var result = await _service.ParkItemAsync(detailId, dto.ParkReason);
             return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
         }
+
+        // Park several selected rows of one contribution at once.
+        [HttpPost("master/{masterId}/park-bulk")]
+        public async Task<IActionResult> ParkItems(long masterId, [FromBody] BulkParkDto dto)
+        {
+            var result = await _service.ParkItemsAsync(masterId, dto.DetailIds, dto.ParkReason);
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
+
+        // Park every unparked discrepancy of a type (NEWMEMBERS / WRONGBRANCH / WRONGCIRCLE / ALL).
+        [HttpPost("master/{masterId}/park-all")]
+        public async Task<IActionResult> ParkDiscrepancies(long masterId, [FromBody] ParkDiscrepanciesDto dto)
+        {
+            var result = await _service.ParkDiscrepanciesAsync(masterId, dto.ReportType, dto.ParkReason);
+            return result.IsSucess ? Ok(result) : StatusCode(result.StatusCode, result);
+        }
+
         [Authorize(Policy = AuthPolicies.AdminOnly)]
         [HttpPost("{detailId}/unpark")]
         public async Task<IActionResult> UnParkItem(long detailId, [FromQuery] int currentUserId)

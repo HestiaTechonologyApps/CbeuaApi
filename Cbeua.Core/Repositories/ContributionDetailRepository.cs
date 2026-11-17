@@ -2,6 +2,8 @@
 using Cbeua.Domain.Interfaces.IRepositories;
 using Cbeua.InfraCore.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,6 +64,80 @@ namespace Cbeua.Core.Repositories
                 .Where(m => m.StaffNo == staffNo && !m.IsDeleted)
                 .Select(m => (int?)m.MemberId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<string?> GetMasterStatusAsync(long masterId)
+        {
+            return await _context.ContributionMasters
+                .AsNoTracking()
+                .Where(m => m.ContributionMasterId == masterId)
+                .Select(m => m.ContributionStatus)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Dictionary<string, List<long>>> GetUnparkedDiscrepancyIdsAsync(long masterId)
+        {
+            // Same rules as the NEWMEMBERS / WRONGBRANCH / WRONGCIRCLE reports,
+            // restricted to rows that are not parked.
+            var memberNos = (await _context.Members.AsNoTracking()
+                    .Where(m => !m.IsDeleted).Select(m => m.StaffNo).ToListAsync()).ToHashSet();
+            var dpCodes = (await _context.Branches.AsNoTracking()
+                    .Where(b => !b.IsDeleted).Select(b => b.DpCode).ToListAsync()).ToHashSet();
+            var circleCodes = (await _context.Circles.AsNoTracking()
+                    .Where(c => !c.IsDeleted).Select(c => c.CircleCode).ToListAsync()).ToHashSet();
+
+            var rows = await _context.ContributionDetails
+                .AsNoTracking()
+                .Where(d => d.ContributionMasterId == masterId && !d.isParked)
+                .Select(d => new { d.ContributionDetailId, d.StaffNo, d.DpCode, d.Circle })
+                .ToListAsync();
+
+            var result = new Dictionary<string, List<long>>
+            {
+                ["NEWMEMBERS"] = new(),
+                ["WRONGBRANCH"] = new(),
+                ["WRONGCIRCLE"] = new()
+            };
+
+            foreach (var r in rows)
+            {
+                if (!int.TryParse(r.StaffNo?.Trim(), out var staffNo) || !memberNos.Contains(staffNo))
+                    result["NEWMEMBERS"].Add(r.ContributionDetailId);
+                if (!int.TryParse(r.DpCode?.Trim(), out var dp) || !dpCodes.Contains(dp))
+                    result["WRONGBRANCH"].Add(r.ContributionDetailId);
+                if (!circleCodes.Contains(r.Circle))
+                    result["WRONGCIRCLE"].Add(r.ContributionDetailId);
+            }
+
+            return result;
+        }
+
+        public async Task<int> CountParkedAsync(long masterId)
+        {
+            return await _context.ContributionDetails
+                .CountAsync(d => d.ContributionMasterId == masterId && d.isParked);
+        }
+
+        public async Task<int> ParkDetailsAsync(long masterId, IEnumerable<long> detailIds, string parkReason)
+        {
+            var now = DateTime.Now;
+            int parked = 0;
+
+            // Chunked so the IN list stays small; one set-based UPDATE per chunk.
+            foreach (var chunk in detailIds.Distinct().Chunk(1000))
+            {
+                var ids = chunk.ToList();
+                parked += await _context.ContributionDetails
+                    .Where(d => d.ContributionMasterId == masterId
+                             && !d.isParked
+                             && ids.Contains(d.ContributionDetailId))
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(d => d.isParked, true)
+                        .SetProperty(d => d.ParkReason, parkReason)
+                        .SetProperty(d => d.Parkedon, (DateTime?)now));
+            }
+
+            return parked;
         }
 
         public async Task SaveChangesAsync()
